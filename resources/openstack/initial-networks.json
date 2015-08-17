@@ -1,0 +1,25 @@
+{
+	"type": "container",
+	"resources":
+		[
+		 {
+			 "stateMachine": "content",
+			 "sm_args": "/tmp/initial_networks.sh",
+			 "CONTENT": "neutron net-create ext-net --shared --router:external=True\n
+neutron subnet-create ext-net --name ext-subnet --allocation-pool start=172.17.2.230,end=172.17.2.240 --disable-dhcp --gateway 172.17.2.254 172.17.2.0/24\n
+neutron net-create net1\n
+neutron subnet-create net1 --name subnet1 --gateway 10.0.0.1 10.0.0.0/24\n
+neutron router-create router1\n
+neutron router-interface-add router1 subnet1\n
+neutron router-gateway-set router1 ext-net"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "bash /tmp/initial_networks.sh",
+			 "OS_USERNAME": "admin",
+			 "OS_PASSWORD": "password",
+			 "OS_TENANT_NAME": "admin",
+			 "OS_AUTH_URL": "http://orchestra:35357/v2.0"
+		 }
+		]
+}

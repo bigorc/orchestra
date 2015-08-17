@@ -1,0 +1,25 @@
+{
+	"type": "container",
+	"resources":
+		[
+		 {
+			 "stateMachine": "package",
+			 "sm_args": "apache2 memcached libapache2-mod-wsgi openstack-dashboard",
+			 "sm_state": "installed",
+			 "FORCE_YES": "true"
+		 },
+		 {
+			 "stateMachine": "package",
+			 "sm_args": "openstack-dashboard-ubuntu-theme",
+			 "sm_state": "not_installed"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service apache2 restart"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service memcached restart"
+		 }
+		]
+}

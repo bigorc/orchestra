@@ -1,0 +1,141 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "ceilometer-agent-compute",
+      "sm_state": "installed"
+    },
+    {
+    	"type": "ini",
+    	"file": "/etc/nova/nova.conf",
+    	"contain_properties": 
+    		[
+    		 {
+    			 "section": "DEFAULT",
+    			 "name": "instance_usage_audit",
+    			 "value": "True"
+    		 },
+    		 {
+    			 "section": "DEFAULT",
+    			 "name": "instance_usage_audit_period",
+    			 "value": "hour"
+    		 },
+    		 {
+    			 "section": "DEFAULT",
+    			 "name": "notify_on_state_change",
+    			 "value": "vm_and_task_state"
+    		 },
+    		 {
+    			 "section": "DEFAULT",
+    			 "name": "notification_driver",
+    			 "value": "nova.openstack.common.notifier.rpc_notifier"
+    		 },
+    		 {
+    			 "section": "DEFAULT",
+    			 "name": "notification_driver",
+    			 "value": "ceilometer.compute.nova_notifier"
+    		 }
+    		]
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service nova-compute restart"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/ceilometer/ceilometer.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://ceilometer:password@orchestra/ceilometer"
+        },
+        {
+        	"section": "publisher",
+        	"name": "metering_secret",
+        	"value": "secret"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://orchestra:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "orchestra"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "ceilometer"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_host",
+        	"value": "orchestra"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_password",
+        	"value": "password"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "log_dir",
+        	"value": "/var/log/ceilometer"
+        },
+        {
+            "section": "DEFAULT",
+            "name": "auth_strategy",
+            "value": "keystone"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_auth_url",
+        	"value": "http://controller:5000/v2.0"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_username",
+        	"value": "ceilometer"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_tenant_name",
+        	"value": "service"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_password",
+        	"value": "password"
+        }
+      ]
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service ceilometer-agent-compute restart",
+    }
+  ]
+}

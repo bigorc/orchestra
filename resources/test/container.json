@@ -1,0 +1,13 @@
+{
+  "type": "container",
+  "resources": [{
+      "sm_args": "r1",
+      "stateMachine": "dummy",
+      "sm_state": "state1"
+    }, {
+      "sm_args": "r2",
+      "sm_state": "state1",
+      "stateMachine": "dummy"
+    }
+  ]
+}

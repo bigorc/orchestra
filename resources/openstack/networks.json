@@ -1,0 +1,7 @@
+{
+  "networks": ["management", "tunnel", "external", "storage"],
+  "nifs": ["eth0", "eth1", "eth2", ""],
+  "gateways": ["", "", "", ""],
+  "gateway": {"[$networks]": "[$gateways]"},
+  "cidrs": ["", "", "", ""]
+}

@@ -1,0 +1,171 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE ceilometer;GRANT ALL PRIVILEGES ON ceilometer.* TO 'ceilometer'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON ceilometer.* TO 'ceilometer'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "ceilometer-api ceilometer-collector ceilometer-agent-central  ceilometer-agent-notification ceilometer-alarm-evaluator ceilometer-alarm-notifier python-ceilometerclient mongodb-server",
+      "sm_state": "installed"
+    },
+    {
+    	"type": "option",
+    	"file": "/etc/mongodb.conf",
+    	"contain_properties":
+    		[
+    		 {
+    			 "bind_ip": "0.0.0.0"
+    		 }
+    		]
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service mongodb restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "mongo --host controller --eval 'db = db.getSiblingDB(\"ceilometer\");db.addUser({user: \"ceilometer\", pwd: \"password\", roles: [ \"readWrite\", \"dbAdmin\" ]})'"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/ceilometer/ceilometer.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mongodb://ceilometer:password@orchestra/ceilometer"
+        },
+        {
+        	"section": "publisher",
+        	"name": "metering_secret",
+        	"value": "secret"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://orchestra:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "orchestra"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "ceilometer"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_host",
+        	"value": "orchestra"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_password",
+        	"value": "password"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "log_dir",
+        	"value": "/var/log/ceilometer"
+        },
+        {
+            "section": "DEFAULT",
+            "name": "auth_strategy",
+            "value": "keystone"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_auth_url",
+        	"value": "http://controller:5000/v2.0"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_username",
+        	"value": "ceilometer"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_tenant_name",
+        	"value": "service"
+        },
+        {
+        	"section": "service_credentials",
+        	"name": "os_password",
+        	"value": "password"
+        }
+      ]
+    },
+    {
+      "stateMachine": "file",
+      "sm_args": "/var/lib/ceilometer/ceilometer.sqlite",
+      "sm_state": "non_existent"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/ceilometer.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone user-create --name=ceilometer --pass=password --email=ceilometer@example.com\n
+keystone user-role-add --user=ceilometer --tenant=metering --role=admin\n
+keystone service-create --name=ceilometer --type=image --description=\"OpenStack Metering Service\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ metering / {print $2}') --publicurl=http://orchestra:8777 --internalurl=http://orchestra:8777 --adminurl=http://orchestra:8777\n"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/ceilometer.sh",
+      "SERVICE_TOKEN": "ADMIN",
+      "SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service ceilometer-agent-central restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service ceilometer-agent-notification restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service ceilometer-api restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service ceilometer-collector restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service ceilometer-alarm-evaluator restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service ceilometer-alarm-notifier restart"
+    }
+  ]
+}

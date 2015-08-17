@@ -1,0 +1,16 @@
+{
+	"type": "option",
+	"file": "test/option.conf",
+	"contain_properties": [
+		{
+			"name": "key1",
+			"value": "value1"
+		}
+	],
+	"not_contain_properties": [
+		{
+			"name": "key4",
+			"value": "value4"
+		}
+	]
+}

@@ -1,0 +1,124 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE cinder;GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "cinder-api cinder-scheduler",
+      "sm_state": "installed"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/cinder/cinder.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://cinder:password@orchestra/cinder"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://orchestra:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "orchestra"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "cinder"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+          "section": "paste_deploy",
+          "name": "flavor",
+          "value": "keystone"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rpc_backend",
+        	"value": "rabbit"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_host",
+        	"value": "orchestra"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_userid",
+        	"value": "guest"
+        },
+        {
+        	"section": "DEFAULT",
+        	"name": "rabbit_password",
+        	"value": "password"
+        }
+      ]
+    },
+    {
+      "stateMachine": "file",
+      "sm_args": "/var/lib/cinder/cinder.sqlite",
+      "sm_state": "non_existent"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "cinder-manage db sync"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/cinder.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone user-create --name=cinder --pass=password --email=cinder@example.com\n
+keystone user-role-add --user=cinder --tenant=service --role=admin\n
+keystone service-create --name=cinder --type=volume --description=\"OpenStack Block Storage\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://orchestra:8776/v1/%\(tenant_id\)s --internalurl=http://orchestra:8776/v1/%\(tenant_id\)s --adminurl=http://orchestra:8776/v1/%\(tenant_id\)s\n
+keystone service-create --name=cinderv2 --type=volumev2 --description=\"OpenStack Block Storage V2\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://orchestra:8776/v2/%\(tenant_id\)s --internalurl=http://orchestra:8776/v2/%\(tenant_id\)s --adminurl=http://orchestra:8776/v2/%\(tenant_id\)s\n"
+
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/cinder.sh",
+      "SERVICE_TOKEN": "ADMIN",
+      "SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service cinder-scheduler restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service cinder-api restart"
+    }
+  ]
+}

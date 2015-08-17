@@ -1,0 +1,19 @@
+{
+  "type": "container",
+  "ntp_server": "",
+  "resources": [{
+      "$parent": "lib/ubuntu/package.json",
+      "name": "ntp"
+    }, {
+      "$parent": "lib/ubuntu/service.json",
+      "name": "ntp"
+    }, {
+      "$parent": "lib/ubuntu/ntp-conf.json",
+      "properties": [{
+        "type": "property",
+        "name": "server",
+        "value": "$ntp_server"
+      }]
+    }
+  ]
+}

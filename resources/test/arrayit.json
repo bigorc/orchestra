@@ -1,0 +1,9 @@
+{
+  "$parent": "test/arrit_parent.json",
+  "[$arr2]": [2,3],
+  "akey": "$a",
+  "num": [4,5],
+   "arr3": ["d","e"],
+   "[$arr3]": "[$num]"
+   "nested": {"[$arr3]": 2}
+}

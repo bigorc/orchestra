@@ -1,0 +1,19 @@
+{
+  "$parent": "openstack/networks.json",
+  
+  "controller": { 
+    "hostname":"controller", 
+    "ip": {"[$networks]": ["192.168.178.139/24", "192.168.131.164/24", "", ""]}, 
+    "nif": {"[$networks]": "[$nifs]"}
+  },
+  "network": { 
+    "hostname":"network", 
+    "ip": {"[$networks]": []}, 
+    "nif": {"[$networks]": []}
+  },
+  "compute": [{ 
+    "hostname":"compute1", 
+    "ip": {"[$networks]": []}, 
+    "nif": {"[$networks]": []}
+  }]
+}

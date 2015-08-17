@@ -1,0 +1,27 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "ntp",
+      "sm_state": "installed"
+    },
+    {
+      "type": "option",
+      "file": "/etc/ntp.conf",
+      "multiValue": "true",
+      "operator": " ",
+      "contain_properties": [
+        {
+          "name": "server",
+          "value": "1.cn.pool.ntp.org iburst"
+        }
+      ]
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service ntp restart",
+      "sm_state": ""
+    }
+  ]
+}

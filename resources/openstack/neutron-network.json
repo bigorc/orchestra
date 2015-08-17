@@ -1,0 +1,309 @@
+{
+	"type": "container",
+	"resources":
+		[
+		 {
+			 "type": "option",
+			 "file": "/etc/sysctl.conf",
+			 "contain_properties":
+				 [
+				  {
+					  "name": "net.ipv4.ip_forward",
+					  "value": 1
+				  },
+				  {
+					  "name": "net.ipv4.conf.all.rp_filter",
+					  "value": 0
+				  },
+				  {
+					  "name": "net.ipv4.conf.default.rp_filter",
+					  "value": 0
+				  },
+				  {
+					  "name": "net.bridge.bridge-nf-call-arptables",
+					  "value": 1
+				  },
+				  {
+					  "name": "net.bridge.bridge-nf-call-iptables",
+					  "value": 1
+				  },
+				  {
+					  "name": "net.bridge.bridge-nf-call-ip6tables",
+					  "value": 1
+				  }
+				 ]
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "sysctl -p"
+		 },
+		 {
+			 "stateMachine": "package",
+			 "sm_args": "neutron-plugin-ml2 neutron-plugin-openvswitch-agent openvswitch-datapath-dkms neutron-l3-agent neutron-dhcp-agent",
+			 "sm_state": "installed"
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/neutron/neutron.conf",
+			 "contain_properties":
+				 [
+				  {
+					  "section": "DEFAULT",
+					  "name": "auth_strategy",
+					  "value": "keystone"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "auth_uri",
+					  "value": "http://orchestra:5000"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "auth_host",
+					  "value": "orchestra"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "auth_protocol",
+					  "value": "http"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "auth_port",
+					  "value": "35357"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "admin_tenant_name",
+					  "value": "service"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "admin_user",
+					  "value": "neutron"
+				  },
+				  {
+					  "section": "keystone_authtoken",
+					  "name": "admin_password",
+					  "value": "password"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "rpc_backend",
+					  "value": "neutron.openstack.common.rpc.impl_kombu"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "rabbit_host",
+					  "value": "orchestra"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "rabbit_password",
+					  "value": "password"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "core_plugin",
+					  "value": "ml2"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "service_plugins",
+					  "value": "router"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "allow_overlapping_ips",
+					  "value": "True"
+				  }
+				 ]
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/neutron/l3_agent.ini",
+			 "contain_properties":
+				 [
+				  {
+					  "section": "DEFAULT",
+					  "name": "interface_driver",
+					  "value": "neutron.agent.linux.interface.OVSInterfaceDriver"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "use_namespaces",
+					  "value": "True"
+				  }
+				 ]
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/neutron/dhcp_agent.ini",
+			 "contain_properties":
+				 [
+				  {
+					  "section": "DEFAULT",
+					  "name": "interface_driver",
+					  "value": "neutron.agent.linux.interface.OVSInterfaceDriver"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "dhcp_driver",
+					  "value": "neutron.agent.linux.dhcp.Dnsmasq"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "use_namespaces",
+					  "value": "True"
+				  }
+				 ]
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/neutron/metadata_agent.ini",
+			 "contain_properties":
+				 [
+				  {
+					  "section": "DEFAULT",
+					  "name": "auth_url",
+					  "value": "http://orchestra:5000/v2.0"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "auth_region",
+					  "value": "regionOne"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "admin_tenant_name",
+					  "value": "service"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "admin_user",
+					  "value": "neutron"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "admin_password",
+					  "value": "password"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "nova_metadata_ip",
+					  "value": "orchestra"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "metadata_proxy_shared_secret",
+					  "value": "secret"
+				  }
+				 ]
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/nova/nova.conf",
+			 "contain_properties":
+				 [
+				  {
+					  "section": "DEFAULT",
+					  "name": "service_neutron_metadata_proxy",
+					  "value": "true"
+				  },
+				  {
+					  "section": "DEFAULT",
+					  "name": "neutron_metadata_proxy_shared_secret",
+					  "value": "secret"
+				  }
+				 ]
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service nova-api restart"
+		 },
+		 {
+			 "type": "ini",
+			 "file": "/etc/neutron/plugins/ml2/ml2_conf.ini",
+			 "contain_properties": 
+				 [
+				  {
+					  "section": "ml2",
+					  "name": "type_drivers",
+					  "value": "gre"
+				  },
+				  {
+					  "section": "ml2",
+					  "name": "tenant_network_types",
+					  "value": "gre"
+				  },
+				  {
+					  "section": "ml2",
+					  "name": "mechanism_drivers",
+					  "value": "openvswitch"
+				  },
+				  {
+					  "section": "ml2_type_gre",
+					  "name": "tunnel_id_ranges",
+					  "value": "1:1000"
+				  },
+				  {
+					  "section": "securitygroup",
+					  "name": "firewall_driver",
+					  "value": "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+				  },
+				  {
+					  "section": "securitygroup",
+					  "name": "enable_security_group",
+					  "value": "True"
+				  },
+				  {
+					  "section": "ovs",
+					  "name": "local_ip",
+					  "value": "192.168.131.164"
+				  },
+				  {
+					  "section": "ovs",
+					  "name": "tunnel_type",
+					  "value": "gre"
+				  },
+				  {
+					  "section": "ovs",
+					  "name": "enable_tunneling",
+					  "value": "True"
+				  }
+				 ]
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service openvswitch-switch restart"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "ovs-vsctl add-br br-int"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "ovs-vsctl add-br br-ex"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "ovs-vsctl add-port br-ex eth2"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service neutron-plugin-openvswitch-agent restart"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service neutron-l3-agent restart"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service neutron-dhcp-agent restart"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service neutron-metadata-agent restart"
+		 }
+		]
+}

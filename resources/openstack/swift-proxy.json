@@ -1,0 +1,127 @@
+{
+  "PROXY_LOCAL_NET_IP": "192.168.131.167",
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "swift swift-proxy memcached python-keystoneclient python-swiftclient python-webob",
+      "sm_state": "installed"
+    },
+    {
+    	"type": "option",
+    	"file": "/etc/memcached.conf",
+    	"operator": " ",
+    	"contain_properties":
+    		[
+    		 {
+    			 "name": "-l",
+    			 "value": "$PROXY_LOCAL_NET_IP"
+    		 }
+    		]
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service memcached restart"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/swift/proxy-server.conf",
+      "contain_properties": [
+        {
+          "section": "DEFAULT",
+          "name": "bind_port",
+          "value": "8080"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "user",
+          "value": "swift"
+        },
+        {
+          "section": "pipeline:main",
+          "name": "pipeline",
+          "value": "healthcheck cache authtoken keystoneauth proxy-server"
+        },
+        {
+          "section": "app:proxy-server",
+          "name": "use",
+          "value": "egg:swift#proxy"
+        },
+        {
+        	"section": "app:proxy-server",
+        	"name": "allow_account_management",
+        	"value": "true"
+        },
+        {
+        	"section": "app:proxy-server",
+        	"name": "account_autocreate",
+        	"value": "true"
+        },
+        {
+        	"section": "filter:keystoneauth",
+        	"name": "use",
+        	"value": "egg:swift#keystoneauth"
+        },
+        {
+        	"section": "filter:keystoneauth",
+        	"name": "operator_roles",
+        	"value": "Member,admin,swiftoperator"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "paste.filter_factory",
+        	"value": "keystoneclient.middleware.auth_token:filter_factory"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "auth_host",
+        	"value": "orchestra"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "auth_port",
+        	"value": "35357"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "auth_protocol",
+        	"value": "http"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "admin_tenant_name",
+        	"value": "service"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "admin_user",
+        	"value": "swift"
+        },
+        {
+        	"section": "filter:authtoken",
+        	"name": "admin_password",
+        	"value": "password"
+        },
+        {
+        	"section": "filter:cache",
+        	"name": "use",
+        	"value": "egg:swift#memcache"
+        },
+        {
+        	"section": "filter:catch_errors",
+        	"name": "use",
+        	"value": "egg:swift#catch_errors"
+        },
+        {
+        	"section": "filter:healthcheck",
+        	"name": "use",
+        	"value": "egg:swift#healthcheck"
+        }
+      ]
+    },
+    {
+    	"stateMachine": "cmd",
+        "sm_args": "chown -R swift:swift /var/swift/recon"
+    }
+  ]
+}

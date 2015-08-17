@@ -1,0 +1,75 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "sm_state": "",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE keystone;GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "keystone",
+      "sm_state": "installed"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/keystone/keystone.conf",
+      "contain_properties": [
+        {
+          "section": "DEFAULT",
+          "name": "admin_token",
+          "value": "ADMIN"
+        },
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://keystone:password@orchestra/keystone"
+        }
+      ]
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "keystone-manage db_sync"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service keystone restart"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "sleep 2s"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/keystone.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone tenant-create --name=admin --description=\"Admin Tenant\"\n
+keystone role-create --name=admin\n
+keystone user-create --name=admin --pass=password --email=admin@example.com --tenant_id=$(keystone tenant-list | awk '/ admin / {print $2}')\n
+keystone user-role-add --user=admin --tenant=admin --role=admin\n
+keystone user-role-add --user=admin --role=_member_ --tenant=admin\n
+keystone tenant-create --name=service --description=\"Service Tenant\"\n
+keystone service-create --name=keystone --type=identity --description=\"OpenStack Identity\"\n
+keystone endpoint-create --service_id=$(keystone service-list | awk '/ identity / {print $2}') --publicurl=http://orchestra:5000/v2.0 --internalurl=http://orchestra:5000/v2.0 --adminurl=http://orchestra:35357/v2.0"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/keystone.sh",
+      "OS_SERVICE_TOKEN": "ADMIN",
+      "OS_SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/root/adminrc.sh",
+      "sm_state": "set",
+      "CONTENT": "export OS_USERNAME=admin
+export OS_PASSWORD=password
+export OS_TENANT_NAME=admin
+export OS_AUTH_URL=http://orchestra:35357/v2.0"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+	"$parent": "test/ns1.json",
+	"c": "$b"
+}

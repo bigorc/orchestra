@@ -1,0 +1,50 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE swift;GRANT ALL PRIVILEGES ON swift.* TO 'swift'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON swift.* TO 'swift'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/swift.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone user-create --name=swift --pass=password --email=swift@example.com\n
+keystone user-role-add --user=swift --tenant=service --role=admin\n
+keystone service-create --name=swift --type=object-store --description=\"OpenStack Object Storage\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ object-store / {print $2}') --publicurl=http://orchestra:8080/v1/AUTH_%(tenant_id)s --internalurl=http://orchestra:8080/v1/AUTH_%(tenant_id)s --adminurl=http://orchestra:8080\n"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/swift.sh",
+      "SERVICE_TOKEN": "ADMIN",
+      "SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+    },
+    {
+    	"stateMachine": "file",
+    	"sm_args": "/etc/swift/swift.conf",
+    	"sm_state": "existent"
+    },
+    {
+    	"type": "ini",
+    	"file": "/etc/swift/swift.conf",
+    	"contain_properties":
+    		[
+    		 {
+    			 "section": "swift-hash",
+    			 "name": "swift_hash_path_prefix",
+    			 "value": "xrfuniounenqjnw"
+    		 },
+    		 {
+    			 "section": "swift-hash",
+    			 "name": "swift_hash_path_suffix",
+    			 "value": "fLIbertYgibbitZ"
+    		 }
+    		]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+	"type": "option",
+	"file": "test/ntp.conf",
+	"multiValue": "true",
+	"operator": " ",
+	"contain_properties": [
+        {
+          "name": "server",
+          "value": "1.cn.pool.ntp.org iburst"
+        },
+        {
+          "name": "restrict",
+          "value": "-4 default kod notrap nomodify",
+        },
+        {
+          "name": "restrict",
+          "value": "-6 default kod notrap nomodify"
+        }
+    ]
+}
