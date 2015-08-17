@@ -1,0 +1,55 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+  http://www.springframework.org/schema/tx 
+  http://www.springframework.org/schema/tx/spring-tx.xsd">
+  
+  <tx:annotation-driven />
+  <context:component-scan 
+      base-package="org.oc.orchestra.dao" />
+  <bean id="securityManager" class="org.apache.shiro.config.IniSecurityManagerFactory">
+  	<constructor-arg value="shiro.ini"/>
+  </bean>
+  
+  <bean id="voldemortFactory" class="voldemort.client.SocketStoreClientFactory">
+  	<constructor-arg ref="clientConfig"/>
+  </bean>
+  <bean id="mongoClient" class="com.mongodb.MongoClient">
+  	<constructor-arg index="0">
+  		<value>localhost</value>
+  	</constructor-arg>
+  	<constructor-arg index="1">
+  		<value>27017</value>
+  	</constructor-arg>
+  </bean>
+  <bean id="clientConfig" class="voldemort.client.ClientConfig">
+  	<property name="bootstrapUrls" value="tcp://localhost:6666"/>
+  </bean>
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    destroy-method="close">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+    <property name="url" value="jdbc:mysql://localhost:3306/orchestra" />
+    <property name="username" value="orchestra" />
+    <property name="password" value="password" />
+  </bean>
+  <bean id="transactionManager"
+  	  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="userDao" class="org.oc.orchestra.dao.UserDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="userRoleRelationDao" class="org.oc.orchestra.dao.UserRoleRelationDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+  </bean>
+  <!-- 
+  <bean id="clientDao" class="org.oc.orchestra.dao.ClientDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+  </bean>
+   -->
+</beans>
