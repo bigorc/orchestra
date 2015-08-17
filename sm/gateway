@@ -1,0 +1,40 @@
+#!/bin/bash
+
+status() {
+	sudo ip route list|grep -q $1
+	if [ $? == 0 ]; then
+		echo "existent"
+	else
+		echo "non_existent"
+	fi
+}
+
+gateway_add() {
+	echo "Adding gateway $1 $ORCP_NIF"
+	sudo route add default gw $1 dev $ORCP_NIF
+	if [[ $ORCP_IS_GATEWAY_PERSISTENT == "YES" ]] || [[ $ORCP_IS_GATEWAY_PERSISTENT == "yes" ]]; then
+		FILE="/etc/network/interfaces.d/$ORCP_NIF.cfg"
+		if [ -f $FILE ]; then
+			echo "Persisting gateway"
+			echo "gateway $1" >> $FILE
+		fi
+	fi
+}
+
+gateway_del() {
+	echo "Deleting gateway $1 $ORCP_NIF"
+	sudo route del default gw $1 dev $ORCP_NIF
+	if [[ $ORCP_IS_GATEWAY_PERSISTENT == "YES" ]] || [[ $ORCP_IS_GATEWAY_PERSISTENT == "yes" ]]; then
+		FILE="/etc/network/interfaces.d/$ORCP_NIF.cfg"
+		if [ -f $FILE ]; then
+			echo "Removing gateway $1 from $FILE"
+			sudo sed -i -r '/gateway(\s)+192/d' $FILE
+		fi
+	fi
+}
+
+case $2 in
+existent) gateway_add $1;;
+non_existent) gateway_del $1;;
+status) status $1;;
+esac

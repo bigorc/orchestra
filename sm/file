@@ -1,0 +1,38 @@
+#!/bin/bash
+
+file_exist() {
+	if [ -f $1 ]; then
+		return
+	else 
+		mkdir -p `dirname $1`
+		touch $1
+	fi
+}
+
+file_not_exist() {
+	if [ -f $1 ]; then
+		rm $1
+	else
+		return
+	fi
+}
+
+status() {
+	if [ -f $1 ]; then
+		echo existent
+	else
+		echo non_existent
+	fi
+}
+
+uri() {
+    echo file_$1| tr \/ \\
+}
+
+case $2 in
+existent) file_exist $1;;
+non_existent) file_not_exist $1;;
+status) status $1;;
+uri) uri $1;;
+esac
+

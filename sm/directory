@@ -1,0 +1,37 @@
+#!/bin/bash
+
+exist() {
+	if [ -d $1 ]; then
+		return
+	else 
+		mkdir -p $1
+	fi
+}
+
+not_exist() {
+	if [ -d $1 ]; then
+		rm -r $1
+	else
+		return
+	fi
+}
+
+status() {
+	if [ -d $1 ]; then
+		echo existent
+	else
+		echo non_existent
+	fi
+}
+
+uri() {
+    echo directory_$1| tr \/ \\
+}
+
+case $2 in
+existent) exist $1;;
+non_existent) not_exist $1;;
+status) status $1;;
+uri) uri $1;;
+esac
+

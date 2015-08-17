@@ -1,0 +1,24 @@
+#!/bin/bash
+
+download() {
+	if [[ $FILENAME == "" ]]; then
+		echo $1
+		wget -c $1
+	else
+		wget -c $1 -O $FILENAME
+	fi
+}
+
+status() {
+	if [[ $FILENAME != "" ]] && [ -f $FILENAME ]; then
+		echo "downloaded"
+	else
+		echo "not_downloaded"
+	fi
+}
+
+for last; do true; done
+case $last in
+status) status $1;;
+downloaded) download $1;;
+esac

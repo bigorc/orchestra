@@ -1,0 +1,90 @@
+#!/bin/bash
+
+source ./common/functions.sh
+
+status() {
+	NIF_SYSDIR="/sys/class/net/$1"
+	if [ -d $NIF_SYSDIR ];
+	then
+		OPERSTATE=`sudo cat $NIF_SYSDIR/operstate`
+    	echo $OPERSTATE
+	else
+    	echo "non_existent"
+	fi
+}
+
+nif_up() {
+	echo "Bringing up network interface $1"
+	sudo ip link set $1 up
+}
+
+nif_down() {
+	echo "Bringing down network interface $1"
+	sudo ip link set $1 down
+}
+
+nif_persist() {
+	if [[ $NIF_MODE == "static" ]] && [[ $NIF_IP == "" ]]; then
+		echo "NIF_IP must be set when NIF_MODE is static"
+	fi
+	echo "Persisting nif $1"
+	add_source
+	if [[ ! -d /etc/network/interfaces.d ]]; then
+		mkdir -p /etc/network/interfaces.d
+	else
+		FILE="/etc/network/interfaces.d/$1.cfg"
+		if [ -f $FILE ]
+		then
+			mv $FILE $FILE.bak
+		fi
+
+		echo "auto $1" >> $FILE
+		echo "iface $1 inet $NIF_MODE" >> $FILE
+		if [[ $NIF_IP != "" ]]; then
+			if [[ $NIF_IP == */* ]]; then
+				echo "CIDR detected"
+				IFS='/' read -ra ARR <<< "$NIF_IP"
+				echo "address ${ARR[0]}" >> $FILE
+				MASK=$(cidr2mask ${ARR[1]})
+				echo "netmask $MASK" >> $FILE
+			else
+				if [[ $MASK == "" ]]
+				then
+					MASK="255.255.255.255"
+				fi
+				echo "Netmask $MASK"
+				echo "address $NIF_IP" >> $FILE
+				echo "netmask $MASK" >> $FILE
+			fi
+		fi
+		if [[ $GATEWAY != "" ]]; then
+			echo "Gateway $GATEWAY"
+			echo "gateway $GATEWAY" >> $FILE
+		fi
+		if [[ $NIF_UP != "" ]]; then
+			echo "up $NIF_UP" >> $FILE
+		fi
+		if [[ $NIF_DOWN != "" ]]; then
+			echo "down $NIF_DOWN" >> $FILE
+		fi
+	fi
+}
+
+start() {
+	if [[ $NIF_PERSISTENT == "YES" ]] || [[ $NIF_PERSISTENT == "yes" ]]; then
+		nif_persist $1
+	fi
+}
+
+uri() {
+	echo nif_$1
+}
+
+start $1
+case $2 in
+up) nif_up $1;;
+down) nif_down $1;;
+status) status $1;;
+start) start $1;;
+uri) uri $1;;
+esac

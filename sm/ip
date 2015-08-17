@@ -1,0 +1,104 @@
+#!/bin/bash
+source common/functions.sh
+
+ip_add() {
+	echo "Adding ip $1 to $ORCP_NIF"
+	sudo ip addr add $1 dev $ORCP_NIF
+	if [[ $ORCP_IS_IP_VIRTUAL == "YES" ]] || [[ $ORCP_IS_IP_VIRTUAL == "yes" ]] ;
+	then
+		return
+	else
+		echo "Persisting ip $1"
+		if [[ ! -d /etc/network/interfaces.d ]]
+		then
+			mkdir -p /etc/network/interfaces.d
+		else
+			FILE="/etc/network/interfaces.d/$ORCP_NIF.cfg"
+			if [ -f $FILE ]
+			then
+				mv $FILE $FILE.bak
+			fi
+
+			echo "auto $ORCP_NIF" >> $FILE
+			echo "iface $ORCP_NIF inet static" >> $FILE
+			if [[ $1 == */* ]]
+			then
+				echo "CIDR detected"
+				IFS='/' read -ra ARR <<< "$1"
+				echo "address ${ARR[0]}" >> $FILE
+				MASK=$(cidr2mask ${ARR[1]})
+				echo "netmask $MASK" >> $FILE
+			else
+				if [[ $ORCP_MASK == "" ]]
+				then
+					MASK="255.255.255.255"
+				else
+					MASK=$ORCP_MASK
+				fi
+				echo "Netmask $MASK"
+				echo "address $1" >> $FILE
+				echo "netmask $MASK" >> $FILE
+			fi
+		fi
+		
+	fi
+}
+
+ip_del() {
+	for ip in `sudo ip addr|grep $1|awk '{print $2}'`
+	do
+		echo "Deleting ip $ip to $ORCP_NIF"
+		sudo ip addr del $ip dev $ORCP_NIF
+	done
+	if [[ $ORCP_IS_IP_VIRTUAL == "YES" ]] || [[ $ORCP_IS_IP_VIRTUAL == "yes" ]] ;
+	then
+		return
+	else
+		FILE="/etc/network/interfaces.d/$1.cfg"
+		if [ ! -f $FILE ]
+		then
+			return
+		fi
+		if [[ $1 == */* ]]
+		then
+			echo "CIDR detected"
+			IFS='/' read -ra ARR <<< "$1"
+			IP=${ARR[0]}
+			MASK=$(cidr2mask ${ARR[1]})
+		else
+			IP=$1
+			if [[ $ORCP_MASK == "" ]]; then
+				MASK="255.255.255.255"
+			else
+				MASK=$ORCP_MASK
+			fi
+		fi
+		echo "Netmask $MASK"
+		if grep -q $IP $FILE && grep -q $MASK $FILE; then
+			echo "Removing file $FILE"
+			rm $FILE
+		fi
+	fi
+}
+
+status() {
+	sudo sudo ip addr|grep $1
+	if [ $? == 0 ];
+	then
+		echo "existent";
+	else
+		echo "non_existent";
+	fi
+}
+
+uri() {
+	echo "ip_$2"
+}
+
+add_source
+case $2 in
+existent) ip_add $2;;
+non_existent) ip_del $2;;
+status) status $2;;
+uri) uri $2;;
+esac

@@ -1,0 +1,73 @@
+#!/bin/bash
+
+package_install() {
+	echo "Installing...." $@
+	if [[ $FORCE_YES == "true" ]]; then
+		sudo apt-get install -y --force-yes $@
+	else
+		sudo apt-get install -y $@
+	fi
+}
+
+package_remove() {
+	echo "Removing ...." $@
+	sudo apt-get autoremove --purge -y $@
+}
+
+package_update() {
+	sudo apt-get update
+}
+
+package_upgrade() {
+	sudo apt-get upgrade
+}
+
+package_dist_upgrade() {
+	sudo apt-get dist-upgrade
+}
+
+status() {
+	count=0
+	for i in $@
+	do
+    	sudo aptitude show $i|grep -q "State: installed"
+    	if [ $? != 0 ]; then
+			(( count=count+1 ))
+		fi
+	done
+	echo $count $#
+	if [ $count == 0 ]; then
+		echo "installed"
+	elif [ $count == $# ]; then
+		echo "not_installed"
+	else
+		echo "not_all_installed"
+	fi
+}
+
+uri() {
+	echo -n package_
+	for i in $@
+	do
+		echo -n $i
+		echo -n _
+	done
+}
+
+if [ $# == 1 ]; then
+	case $1 in
+		updated) package_update ;;
+		upgraded) package_upgrade ;;
+		dis-upgraded) package_dist_upgrade ;;
+	esac
+fi
+	
+nargs=$#
+(( a=$nargs-1 ))
+case ${!nargs} in
+installed) package_install ${@:1:$a};;
+not_installed) package_remove ${@:1:$a};;
+status) status ${@:1:$a};;
+uri) uri ${@:1:$a};;
+esac
+

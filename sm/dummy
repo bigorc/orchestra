@@ -1,0 +1,33 @@
+#!/bin/bash
+
+status() {
+	if [[ $ORCP_STATE != "" ]]; then
+		echo $ORCP_STATE
+	else
+		echo "state1"
+	fi
+}
+
+error_exit() {
+	echo "error" 1>&2
+	exit 1
+}
+
+read_stdin() {
+	IFS= read -r var
+	echo $var
+}
+
+uri() {
+    echo dummy_$1
+}
+
+case $2 in
+state1) echo "state1";;
+state2) echo "state2";;
+error) error_exit;;
+read) read_stdin;;
+status) status;;
+uri) uri $1;;
+esac
+

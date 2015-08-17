@@ -1,0 +1,31 @@
+#!/bin/bash
+
+
+service_start() {
+	sudo service $1 start
+}
+
+service_stop() {
+	sudo service $1 stop
+}
+
+service_status() {
+	sudo service --status-all | grep -q "\[ + \]  $1"
+	if [ $? == 0 ]; then
+		echo "running"
+	else
+		echo "stopped"
+	fi
+}
+
+uri() {
+	echo service_$1
+}
+
+case $2 in
+running) service_start $1;;
+stopped) service_stop $1;;
+status) service_status $1;;
+uri) uri $1;;
+esac
+

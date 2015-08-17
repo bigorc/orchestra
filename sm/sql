@@ -1,0 +1,16 @@
+#!/bin/bash
+
+run_mysql() {
+	mysql -u$DB_USERNAME -p$DB_PASSWORD $DATABASE -e "$SQL" 
+}
+
+status() {
+	echo ""
+}
+
+for last; do true; done
+
+case $last in
+status) status;;
+mysql) run_mysql $2;;
+esac
