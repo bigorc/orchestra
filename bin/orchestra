@@ -1,0 +1,9 @@
+#!/bin/bash
+
+CLASSPATH=target/classes
+for i in lib/*.jar
+do
+	CLASSPATH="$i:$CLASSPATH"
+done
+
+java -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
