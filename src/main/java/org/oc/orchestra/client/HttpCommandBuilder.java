@@ -34,6 +34,32 @@ public class HttpCommandBuilder {
 	private Map<String, String> parameters;
 	private Map<String, String> headers;
 	private String target;
+	private boolean needAuthHeader;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean isNeedAuthHeader() {
+		return needAuthHeader;
+	}
+
+	public HttpCommandBuilder setNeedAuthHeader(boolean needAuthHeader) {
+		this.needAuthHeader = needAuthHeader;
+		return this;
+	}
 
 	public HttpCommandBuilder(String username, String password) {
 		this.username = username;
@@ -46,7 +72,12 @@ public class HttpCommandBuilder {
 	public HttpCommand build() {
 		
 		try {
-			if(!target.equals("apikey") || !target.equals("client")) {
+			if(needAuthHeader) {
+				String auth = username + ":" + password;
+				byte[] encodedAuth = Base64.encode(auth.getBytes(StandardCharsets.UTF_8));
+				String authHeader = "Basic " + new String(encodedAuth);
+				request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+			} else {
 				ClientAuthHelper helper = new ClientAuthHelper(username, password);
 				String apikey = helper.getApikey();
 				setParameter(Constants.PARAMETER_APIKEY, apikey);
@@ -107,12 +138,6 @@ public class HttpCommandBuilder {
 	public HttpCommandBuilder setTarget(String target) {
 		this.target = target;
 		uriBuilder.setPath("/" + target);
-		if(target.equals("apikey") || target.equals("client")) {
-			String auth = username + ":" + password;
-			byte[] encodedAuth = Base64.encode(auth.getBytes(StandardCharsets.UTF_8));
-			String authHeader = "Basic " + new String(encodedAuth);
-			request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-		}
 		return this;
 	}
 	

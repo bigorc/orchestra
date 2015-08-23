@@ -15,10 +15,6 @@
   <bean id="securityManager" class="org.apache.shiro.config.IniSecurityManagerFactory">
   	<constructor-arg value="shiro.ini"/>
   </bean>
-  
-  <bean id="voldemortFactory" class="voldemort.client.SocketStoreClientFactory">
-  	<constructor-arg ref="clientConfig"/>
-  </bean>
   <bean id="mongoClient" class="com.mongodb.MongoClient">
   	<constructor-arg index="0">
   		<value>localhost</value>
@@ -26,9 +22,6 @@
   	<constructor-arg index="1">
   		<value>27017</value>
   	</constructor-arg>
-  </bean>
-  <bean id="clientConfig" class="voldemort.client.ClientConfig">
-  	<property name="bootstrapUrls" value="tcp://localhost:6666"/>
   </bean>
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
     destroy-method="close">

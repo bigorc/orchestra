@@ -2,16 +2,14 @@ package org.oc.orchestra.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service("clientDao")
@@ -81,5 +79,14 @@ public class ClientDaoImpl extends JdbcDaoSupport implements ClientDao {
 		}
 
 		
+	}
+
+	@Override
+	public List<Client> findAll() {
+		List<Client> clients = getJdbcTemplate().
+			      query("SELECT * FROM clients",
+			      new ClientMapper()
+			      );
+		return clients;
 	}
 }

@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.shiro.codec.Base64;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -46,7 +47,7 @@ public class ClientAuthHelper {
 	public ClientAuthHelper(String username, String password) {
 		this.username = username;
 		this.password = password;
-		this.filename = username + ".apikey";
+		this.filename = new Md5Hash(username) + ".apikey";
 	}
 	
 	public String getApikey() {
@@ -60,33 +61,30 @@ public class ClientAuthHelper {
 
 	private String getApikeyFromServer() {
 		HttpCommandBuilder builder = new HttpCommandBuilder(username, password);
-		String auth = username + ":" + password;
-		String authHeaderValue = "Basic " + 
-				Base64.encodeToString(auth.getBytes(StandardCharsets.UTF_8));
 		HttpCommand command = builder.setScheme("https")
+			.setNeedAuthHeader(true)
 			.setHost(host)
 			.setPort(port)
-			.setAction("read")
+			.setAction("update")
 			.setTarget("apikey")
 			.addPathParameter(username)
-			.addHeader("Authorization", authHeaderValue)
+			.addPathParameter(Client.getName())
 			.build();
 		HttpResponse response = command.execute();
-		if(404 == response.getStatusLine().getStatusCode()) {
-			HttpCommand command2 = builder.setScheme("https")
-					.setHost(host)
-					.setPort(port)
-					.setAction("create")
-					.setTarget("apikey")
-					.addPathParameter(username)
-					.addHeader("Authorization", authHeaderValue)
-					.build();
-			response = command2.execute();
-			System.out.println(response.getStatusLine().getStatusCode());
-			if(response.getStatusLine().getStatusCode() != 201) {
-				throw new RuntimeException("Unable to get apikey from server.");
-			}
+		if(200 != response.getStatusLine().getStatusCode()) {
+			throw new RuntimeException("Unable to get apikey from server.");
 		}
+		String apikey = saveApikeyToFile(response);
+		
+		return apikey;
+	}
+	
+	public void removeApikeyFile() {
+		File file = new File(filename);
+		if(file.exists()) file.delete();
+	}
+
+	public String saveApikeyToFile(HttpResponse response) {
 		Reader in = null;
 		try {
 			in = new InputStreamReader(response.getEntity().getContent());
@@ -110,7 +108,6 @@ public class ClientAuthHelper {
 			}
 			CipherUtil.encrypt(jsonString , out , password);
 		}
-		
 		return apikey;
 	}
 

@@ -51,20 +51,30 @@ public class AuthFilter extends Filter {
 			System.out.println("username:" + username + ";password:" + password);
 			
 			ShiroAuth shiro = new ShiroAuth(username, password);
-			String user = path.split("/")[2];
-			System.out.println(user);
 			if(!shiro.isAuthenticated()) {
 				System.out.println("user is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "You are not authenticated");
-			} else if (!shiro.hasRole("admin") && !shiro.hasPermission("apikey:" + user + ":*")) {
+			} else if (path.startsWith("/apikey")) {
+				String user = path.split("/")[2];
+				System.out.println(user);
+				if(!shiro.hasRole("admin") && !shiro.hasPermission("apikey:" + user + ":*")) {
+					logger.info("Unauthorized user " + user);
+					response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
+				}
+			} else if(!shiro.hasRole("admin")) {
 				System.out.println("user is not authorized!");
-				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You are not authorized");
+				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
 			}
 		} else {
 			ShiroAuth shiro = new ShiroAuth(request);
+			if(!request.getClientInfo().isAuthenticated()) {
+				logger.info("Unauthorized client");
+				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
+			}
+			
 			if(!shiro.isAuthenticated()) {
-				System.out.println("user is not authenticated!");
-				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "You are not authenticated");
+				logger.info("user is not authenticated!");
+				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "Not authenticated");
 			}
 		}
 		return result;

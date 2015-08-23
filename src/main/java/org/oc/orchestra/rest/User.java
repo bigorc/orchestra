@@ -90,10 +90,11 @@ public class User extends ServerResource {
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		String username = (String) getRequest().getAttributes().get("username");
 		String password = getQuery().getValues("password");
-		System.out.println(password + " " + password.getBytes(Charsets.UTF_8));
+
 		org.oc.orchestra.dao.User user = userDao.getUser(username );
 		
-		String encryptedPassword = encryptPassword(password);
+		String encryptedPassword;
+		encryptedPassword = encryptPassword(password);
 		
 		if(user == null) {
 			user = new org.oc.orchestra.dao.User();
