@@ -1,6 +1,0 @@
-{
-  "$parent": "lib/ini.json",
-  "file": "/etc/ntp.conf",
-  "operator": " "
-  "multiValue": "True"
-}

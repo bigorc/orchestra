@@ -68,35 +68,15 @@ public class ArgsHelper {
 		}
 		
 		if(cmd.hasOption("U")) {
-			String filename = cmd.getOptionValue("U");
-			System.out.println(filename);
-
-//			httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			commandBuilder.setTarget("pro");
 			
-//			HttpPost httppost = new HttpPost(uriBuilder.build());
-			commandBuilder.setMethod("post");
-			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			File file = new File(filename);
-			builder.addBinaryBody("field1", file, ContentType.APPLICATION_OCTET_STREAM, filename);
-			
-			HttpEntity multipart = builder.build();
-
-		    commandBuilder.setEntity(multipart);
-		    System.out.println("executing request " + commandBuilder.getRequest().getRequestLine());
-
 		}
 		
 	}
 
 	private static Options getOptions() {
 		Options options = new Options();
-		Option upload   = OptionBuilder.withArgName( "file" )
-                .hasArg()
-                .withDescription("Upload parameterized resource object")
-                .withLongOpt("upload")
-                .create('U');
-		Option user = OptionBuilder.withArgName( "name" )
+
+		Option user = OptionBuilder.withArgName( "User Name" )
                 .hasArg()
                 .withDescription("User name")
                 .withLongOpt("user")
@@ -141,8 +121,11 @@ public class ArgsHelper {
                 .withDescription("user password")
                 .withLongOpt("user_pass")
                 .create("up");
-		
-		options.addOption(upload);
+		Option path = OptionBuilder.withArgName( "Path" )
+                .hasArg()
+                .withDescription("path")
+                .withLongOpt("path")
+                .create("path");
 		options.addOption(user);
 		options.addOption(password);
 		options.addOption(server);
@@ -152,6 +135,7 @@ public class ArgsHelper {
 		options.addOption(keystore_password);
 		options.addOption(name);
 		options.addOption(user_pass);
+		options.addOption(path);
 		return options;
 	}
 

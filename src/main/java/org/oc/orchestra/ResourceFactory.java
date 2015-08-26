@@ -1,5 +1,8 @@
 package org.oc.orchestra;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -135,7 +138,13 @@ public class ResourceFactory {
 
 	public static List<Resource> makeResources(String filename) {
 		List<Resource> result = new ArrayList<Resource>();
-		InputStream is = ClassLoader.getSystemResourceAsStream(filename);
+		InputStream is;
+		try {
+			is = new FileInputStream(filename);
+		} catch (FileNotFoundException e) {
+			is = ClassLoader.getSystemResourceAsStream(filename);
+		} 
+				
 		if(is == null) {
 			Json.downloadFileIfNeeded(filename);
 			is = ClassLoader.getSystemResourceAsStream(filename);
@@ -147,6 +156,11 @@ public class ResourceFactory {
 			result.add(makeResource((JSONObject) obj));
 		} else if(obj instanceof JSONArray) {
 			result = makeResources((JSONArray) obj);
+		}
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return result;
 	}

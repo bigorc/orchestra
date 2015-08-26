@@ -1,4 +1,0 @@
-{
-  "parent": "lib/ubuntu/ntp.json",
-  "ntp_server": "$/pub/ntp_server"
-}

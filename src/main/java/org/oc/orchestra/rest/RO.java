@@ -12,6 +12,7 @@ import java.util.List;
 
 
 
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -26,16 +27,16 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-public class PRO extends ServerResource {
-	private static String pro_path = "/pro/";
+public class RO extends ServerResource {
+	private static String ro_path = "ro/";
 	
 	@Get
-	public Representation getPro() throws URISyntaxException {
+	public Representation getRo() throws URISyntaxException {
 		System.out.println("Pro resource was invoked");
 		String filename = getQuery().getValues("filename");
 		System.out.println("filename is " + filename);
 		
-		File file = new File(getClass().getResource(pro_path + filename).toURI());
+		File file = new File(ro_path + filename);
 		if(!file.exists()) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
@@ -48,7 +49,7 @@ public class PRO extends ServerResource {
 	}
 	
 	@Post
-	public Representation createPro(Representation input) throws Exception {
+	public Representation createRo(Representation input) throws Exception {
 		RestletFileUpload fileUpload = new RestletFileUpload(
 				new DiskFileItemFactory());
 		List<FileItem> fileItems = fileUpload.parseRepresentation(input);
@@ -58,8 +59,15 @@ public class PRO extends ServerResource {
 			filename = tmp.getName();
 			String path = tmp.getPath();
 			System.out.println(path + ":" + filename);
-			String pro_base_path = "resources/pro/";
-			File file = new File(pro_base_path + filename);
+			String upload_path = getQuery().getValues("upload_path");
+			File file;
+			if(upload_path == null) {
+				file = new File(ro_path + filename);
+			} else {
+				file = new File(ro_path + upload_path);
+				file.mkdirs();
+				file = new File(ro_path + upload_path + "/" + filename);
+			}
 			file.createNewFile();
 			fi.write(file);
 		}

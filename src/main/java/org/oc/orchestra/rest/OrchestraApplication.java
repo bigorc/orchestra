@@ -9,7 +9,7 @@ public class OrchestraApplication extends Application {
 	@Override
 	public Restlet createInboundRoot(){
 		Router router = new Router(getContext());
-		router.attach("/pro", PRO.class);
+		router.attach("/ro", RO.class);
 		router.attach("/users", Users.class);
 		router.attach("/user/{username}", User.class);
 		router.attach("/userrole/{username}/{rolename}", UserRole.class);

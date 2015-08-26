@@ -16,6 +16,8 @@ public class TargetFactory {
 			target = new ApikeyTarget(builder);
 		} else if(targetName.equals("user")) {
 			target = new UserTarget(builder);
+		} else if(targetName.equals("ro")) {
+			target = new RoTarget(builder);
 		}
 		return target;
 	}

@@ -228,8 +228,8 @@ public class ClientAuthHelper {
 				content = entity.getContent();
 			if (content == null) return "";
 			string = IOUtils.toString(content, StandardCharsets.UTF_8);
-		} catch (IllegalStateException | IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			return "";
 		}
 		
 		System.out.println(string);

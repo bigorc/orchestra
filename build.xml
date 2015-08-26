@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Ant-Test" default="main" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="orchestra" default="main" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
   <!-- Sets variables which can later be used. -->
   <!-- The value of a property is accessed via ${} -->
   <property name="src.dir" location="src/main/java;src/main/antlr4;target/generated-sources/antlr4" />
@@ -7,15 +7,14 @@
   <property name="dist.dir" location="dist" />
   <property name="docs.dir" location="docs" />
   <property name="lib.dir" location="lib" />
-  <artifact:dependencies filesetId="dependency.fileset">
-    <pom file="pom.xml"/>
-  </artifact:dependencies>
   <path id="classpath">
 	<fileset dir="${lib.dir}">
 		<include name="*.jar"/>
 	</fileset>
-  	<fileset refid="dependency.fileset"/>
   </path>
+  <target name="resolve">
+    <ivy:retrieve />
+  </target>
 	  
   <!-- Deletes the existing build, docs and dist directory-->
   <target name="clean">

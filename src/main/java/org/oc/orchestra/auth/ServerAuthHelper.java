@@ -233,10 +233,10 @@ public class ServerAuthHelper {
 	}
 
 	private String getRequestPayload() {
-		String string = request.getEntityAsText();
-		if(string == null) string = "";
-		System.out.println(string);
-		return string;
+//		String string = request.getEntity().getDigest().toString();
+//		if(string == null) string = "";
+//		System.out.println(string);
+		return "";
 	}
 
 	private String getSignedHeadersString() {
