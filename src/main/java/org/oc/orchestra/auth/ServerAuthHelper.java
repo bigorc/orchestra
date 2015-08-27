@@ -4,9 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -17,16 +15,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.oc.orchestra.sm.StateMachine;
 import org.oc.util.CipherUtil;
 import org.oc.util.HttpUtil;
 import org.oc.util.SpringUtil;
 import org.restlet.Request;
+import org.restlet.data.Digest;
 import org.restlet.data.Form;
 import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
@@ -47,7 +44,6 @@ public class ServerAuthHelper {
 	private static final int REQUEST_TIMEOUT = 5;
 	public static final String LAST_DELETION_TIME = "last_delete";
 	public static final String MINUTESTAMPS = "minute_stamps";
-	private static Map<String, String> cache;
 	private Request request;
 	private static DB db;
 	private static DBCollection debugColl;
@@ -204,15 +200,15 @@ public class ServerAuthHelper {
 		String canonicalQueryString = canonicalizeQueryString();
 		String canonicalHeadersString = canonicalizeHeadersString();
 		String signedHeadersString = getSignedHeadersString();
-		String requestPayloadHashHex = CipherUtil.toHex(CipherUtil.hash(getRequestPayload()));
+//		String requestPayloadHashHex = CipherUtil.toHex(CipherUtil.hash(getRequestPayload()));
 		
 		String canonicalRequest =
 				method + Constants.NEW_LINE +
 				canonicalURI + Constants.NEW_LINE +
 				canonicalQueryString + Constants.NEW_LINE +
 				canonicalHeadersString + Constants.NEW_LINE +
-				signedHeadersString + Constants.NEW_LINE +
-				requestPayloadHashHex;
+				signedHeadersString;
+//				+ Constants.NEW_LINE + requestPayloadHashHex;
 		
 		debugColl = db.getCollection("debug");
 		DBObject matcher = debugColl.findOne();
@@ -224,19 +220,12 @@ public class ServerAuthHelper {
 		System.out.println("Does the canonical header match?" + matcher.get("cheader").equals(canonicalHeadersString));
 		System.out.println(matcher.get("sheader") + "|" + signedHeadersString);
 		System.out.println("Does the signed header match?" + matcher.get("sheader").equals(signedHeadersString));
-		System.out.println(matcher.get("payload") + "|" + requestPayloadHashHex);
-		System.out.println("Does the payload match?" + matcher.get("payload").equals(requestPayloadHashHex));
+//		System.out.println(matcher.get("payload") + "|" + requestPayloadHashHex);
+//		System.out.println("Does the payload match?" + matcher.get("payload").equals(requestPayloadHashHex));
 		
 		
 		System.out.println(canonicalRequest);
 		return canonicalRequest;
-	}
-
-	private String getRequestPayload() {
-//		String string = request.getEntity().getDigest().toString();
-//		if(string == null) string = "";
-//		System.out.println(string);
-		return "";
 	}
 
 	private String getSignedHeadersString() {

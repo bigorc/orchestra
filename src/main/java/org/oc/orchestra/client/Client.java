@@ -97,9 +97,25 @@ import com.google.common.base.Charsets;
 public class Client {
 	private static final transient Logger logger = LoggerFactory.getLogger(Client.class);
 	
-	static String host = "orchestra";
-	static int port = 8183;
+	static String server = "orchestra";
+	static int server_port = 8183;
 	
+	public static String getServer() {
+		return server;
+	}
+
+	public static void setServer(String server) {
+		Client.server = server;
+	}
+
+	public static int getServer_port() {
+		return server_port;
+	}
+
+	public static void setServer_port(int server_port) {
+		Client.server_port = server_port;
+	}
+
 	private static String name;
 	protected static String zkClientResourcePath;
 	protected static String zkTaskClientPath;
@@ -108,8 +124,25 @@ public class Client {
 
 	private String connectString;
 	private CuratorFramework curator;
-	private String username;
-	private String password;
+	private static String username;
+	
+	public static String getUsername() {
+		return username;
+	}
+
+	public static void setUsername(String username) {
+		Client.username = username;
+	}
+
+	public static String getPassword() {
+		return password;
+	}
+
+	public static void setPassword(String password) {
+		Client.password = password;
+	}
+
+	private static String password;
 	private String keystorename = "keystore/clientKey.jks";
 
 	public Client(String connectString) {

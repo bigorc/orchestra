@@ -166,24 +166,23 @@ public class ClientAuthHelper {
 		String canonicalQueryString = canonicalizeQueryString(request);
 		String canonicalHeadersString = canonicalizeHeadersString(request);
 		String signedHeadersString = getSignedHeadersString(request);
-		String requestPayloadHashHex = CipherUtil.toHex(
-				CipherUtil.hash(getRequestPayload(request)));
-		
+//		String requestPayloadHashHex = CipherUtil.toHex(
+//				CipherUtil.hash(getRequestPayload(request)));
 		
 		matcher = new BasicDBObject();
 		matcher.put("uri", canonicalURI);
 		matcher.put("query", canonicalQueryString);
 		matcher.put("cheader", canonicalHeadersString);
 		matcher.put("sheader", signedHeadersString);
-		matcher.put("payload", requestPayloadHashHex);
+//		matcher.put("payload", requestPayloadHashHex);
 		
 		String canonicalRequest =
 				method + Constants.NEW_LINE +
 				canonicalURI + Constants.NEW_LINE +
 				canonicalQueryString + Constants.NEW_LINE +
 				canonicalHeadersString + Constants.NEW_LINE +
-				signedHeadersString + Constants.NEW_LINE +
-				requestPayloadHashHex;
+				signedHeadersString;
+//				+ Constants.NEW_LINE + requestPayloadHashHex;
 		System.out.println(canonicalRequest);
 		return canonicalRequest;
 	}
@@ -218,23 +217,23 @@ public class ClientAuthHelper {
 		}
 		return buffer.toString();
 	}
-
-	private static String getRequestPayload(HttpCommandBuilder request) {
-		InputStream content = null;
-		String string = null;
-		try {
-			HttpEntity entity = request.getEntity();
-			if(entity != null) 
-				content = entity.getContent();
-			if (content == null) return "";
-			string = IOUtils.toString(content, StandardCharsets.UTF_8);
-		} catch (Exception e) {
-			return "";
-		}
-		
-		System.out.println(string);
-		return string;
-	}
+//
+//	private static String getRequestPayload(HttpCommandBuilder request) {
+//		InputStream content = null;
+//		String string = null;
+//		try {
+//			HttpEntity entity = request.getEntity();
+//			if(entity != null) 
+//				content = entity.getContent();
+//			if (content == null) return "";
+//			string = IOUtils.toString(content, StandardCharsets.UTF_8);
+//		} catch (Exception e) {
+//			return "";
+//		}
+//		
+//		System.out.println(string);
+//		return string;
+//	}
 
 	private static class HeaderComparator implements Comparator<org.apache.http.Header> {
 		@Override

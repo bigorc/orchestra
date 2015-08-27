@@ -48,17 +48,19 @@ public class ArgsHelper {
         } else {
         	username = prompt("username:");
         }
-        
+        Client.setUsername(username);
         if(cmd.hasOption('p')) {
         	password = cmd.getOptionValue('p');
         } else {
         	password = prompt("password:");
         }
-	    
+	    Client.setPassword(password);
 		String [] targets = cmd.getArgs();
 		HttpCommandBuilder commandBuilder = new HttpCommandBuilder(username, password);
 		host = cmd.hasOption('s') ? cmd.getOptionValue('s') : host;
+		Client.setServer(host);
 		port = cmd.hasOption("port") ? Integer.valueOf(cmd.getOptionValue("port")) : port;
+		Client.setServer_port(port);
 		commandBuilder.setScheme("https").setHost(host).setPort(port);
 		if(targets.length == 0) {
 			startCli();
@@ -66,11 +68,6 @@ public class ArgsHelper {
 		} else {
 			new TargetFactory(commandBuilder).getTarget(targets[0]).execute(targets[1], cmd);
 		}
-		
-		if(cmd.hasOption("U")) {
-			
-		}
-		
 	}
 
 	private static Options getOptions() {
@@ -126,6 +123,11 @@ public class ArgsHelper {
                 .withDescription("path")
                 .withLongOpt("path")
                 .create("path");
+		Option recursive = OptionBuilder.withArgName( "Recursive" )
+                .withDescription("Recursive")
+                .withLongOpt("recursive")
+                .create('r');
+		
 		options.addOption(user);
 		options.addOption(password);
 		options.addOption(server);
@@ -136,6 +138,7 @@ public class ArgsHelper {
 		options.addOption(name);
 		options.addOption(user_pass);
 		options.addOption(path);
+		options.addOption(recursive);
 		return options;
 	}
 

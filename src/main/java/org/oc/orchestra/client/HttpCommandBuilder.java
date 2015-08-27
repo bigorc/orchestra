@@ -4,7 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -31,7 +33,7 @@ public class HttpCommandBuilder {
 	private String password;
 	private HttpRequestBase request;
 	private URIBuilder uriBuilder;
-	private Map<String, String> parameters;
+	private Map<String, Object> parameters;
 	private Map<String, String> headers;
 	private String target;
 	private boolean needAuthHeader;
@@ -65,7 +67,7 @@ public class HttpCommandBuilder {
 		this.username = username;
 		this.password = password;
 		uriBuilder = new URIBuilder();
-		parameters = new HashMap<String, String>();
+		parameters = new HashMap<String, Object>();
 		headers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	}
 
@@ -162,6 +164,22 @@ public class HttpCommandBuilder {
 		return this;
 	}
 
+	public HttpCommandBuilder addParameter(String name, String value) {
+		uriBuilder.addParameter(name, value);
+		if(parameters.get(name) == null) {
+			parameters.put(name, value);
+		} else {
+			if(parameters.get(name) instanceof List) {
+				((List)parameters.get(name)).add(value);
+			} else {
+				List<String> list = new ArrayList<String>();
+				list.add((String) parameters.get(name));
+				list.add(value);
+				parameters.put(name, list);
+			}
+		}
+		return this;
+	}
 	public HttpCommandBuilder setEntity(HttpEntity entity) {
 		if(request instanceof HttpPost) {
 			((HttpPost)request).setEntity(entity);
@@ -190,9 +208,12 @@ public class HttpCommandBuilder {
 	}
 	
 	public String getParameter(String name) {
-		return parameters.get(name);
+		return (String) parameters.get(name);
 	}
 
+	public String getParameter(String name, int index) {
+		return (String) ((List)parameters.get(name)).get(index); 
+	}
 	public String getMethod() {
 		return request.getMethod();
 	}

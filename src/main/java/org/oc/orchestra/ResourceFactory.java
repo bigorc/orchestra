@@ -138,17 +138,7 @@ public class ResourceFactory {
 
 	public static List<Resource> makeResources(String filename) {
 		List<Resource> result = new ArrayList<Resource>();
-		InputStream is;
-		try {
-			is = new FileInputStream(filename);
-		} catch (FileNotFoundException e) {
-			is = ClassLoader.getSystemResourceAsStream(filename);
-		} 
-				
-		if(is == null) {
-			Json.downloadFileIfNeeded(filename);
-			is = ClassLoader.getSystemResourceAsStream(filename);
-		}
+		InputStream is = Json.openInputStream(filename);
 		Reader reader = new InputStreamReader(is);
 		Object obj = JSONValue.parse(reader);
 		if(obj == null) throw new RuntimeException("Invalid json.");
@@ -164,5 +154,6 @@ public class ResourceFactory {
 		}
 		return result;
 	}
+
 	
 }

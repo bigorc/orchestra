@@ -1,6 +1,8 @@
 package org.oc.json;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.oc.orchestra.client.Client;
 import org.oc.orchestra.client.HttpCommand;
 import org.oc.orchestra.client.HttpCommandBuilder;
 import org.slf4j.Logger;
@@ -56,56 +59,44 @@ public class Json {
 	}
 	
 	public Json(String filename) {
-		InputStream is = ClassLoader.getSystemResourceAsStream(filename);
-		if(is == null) {
-			downloadFileIfNeeded(filename);
-			is = ClassLoader.getSystemResourceAsStream(filename);
-		}
+		InputStream is = openInputStream(filename);
 		Reader reader = new InputStreamReader(is);
 		Object obj = JSONValue.parse(reader);
 		if(obj instanceof JSONObject) this.root = (JSONObject) obj;
 		if(obj instanceof JSONArray) this.rootArray = (JSONArray) obj;
 	}
 
-	public static void downloadFileIfNeeded(String filename) {
-		File file = new File(FileUtils.getUserDirectoryPath() + "/.pro/" + filename);
-		FileOutputStream fos = null;
-		InputStream is = null;
-		
-		if(!file.exists()) {
+	public static InputStream openInputStream(String filename) {
+		InputStream is;
+		try {
+			is = new FileInputStream(filename);
+		} catch (FileNotFoundException e) {
+			is = ClassLoader.getSystemResourceAsStream(filename);
+		} 
+
+		if(is == null) {
 			try {
-				fos = FileUtils.openOutputStream(file);
-				is = openInputStream(filename);
-				int ch = 0;
-				while((ch=is.read()) != -1){  
-		            fos.write(ch);  
-		        }
+				is = httpInputStream(filename);
 			} catch (IOException e) {
 				e.printStackTrace();
-			} finally {
-				try {
-					is.close();
-					fos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
 			}
 		}
+		return is;
 	}
-
-	public static InputStream openInputStream(String filename) throws ClientProtocolException, IOException {
-        String username = "admin";
-		String password = "admin";
-		String host = "orchestra";
-		int port = 8183;
+	
+	public static InputStream httpInputStream(String filename) throws ClientProtocolException, IOException {
+        String username = Client.getUsername();
+		String password = Client.getPassword();
+		String host = Client.getServer();
+		int port = Client.getServer_port();
+		
 		HttpCommand cmd = new HttpCommandBuilder(username, password)
 			.setHost(host)
 			.setScheme("https")
 			.setPort(port)
 			.setAction("read")
-			.setTarget("pro")
-			.setParameter("filename", "test/nif-eth1.json")
+			.setTarget("ro")
+			.setParameter("filename", filename)
 			.build();
 		HttpResponse response = cmd.execute();
         InputStream in = response.getEntity().getContent();
