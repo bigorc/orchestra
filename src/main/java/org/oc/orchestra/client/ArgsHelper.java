@@ -1,9 +1,13 @@
 package org.oc.orchestra.client;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLine;
@@ -42,30 +46,50 @@ public class ArgsHelper {
 		Options options = getOptions();
 		CommandLineParser parser = new GnuParser();
 		cmd = parser.parse(options, args);
-        
+        Properties conf = new Properties();
+        InputStream is = new FileInputStream("conf/client.conf");
+		conf.load(is);
 	    if(cmd.hasOption('u')) {
         	username = cmd.getOptionValue('u');
         } else {
-        	username = prompt("username:");
+        	username = conf.containsKey("username") ? 
+        			conf.getProperty("username") : prompt("username:");
         }
         Client.setUsername(username);
+        
         if(cmd.hasOption('p')) {
         	password = cmd.getOptionValue('p');
         } else {
-        	password = prompt("password:");
+        	password = conf.containsKey("password") ?
+        			conf.getProperty("password") : prompt("password:");
         }
 	    Client.setPassword(password);
+	    
 		String [] targets = cmd.getArgs();
 		HttpCommandBuilder commandBuilder = new HttpCommandBuilder(username, password);
-		host = cmd.hasOption('s') ? cmd.getOptionValue('s') : host;
+		host = cmd.hasOption('s') ? 
+				cmd.getOptionValue('s') : conf.containsKey("server") ? 
+						conf.getProperty("server") : host;
 		Client.setServer(host);
-		port = cmd.hasOption("port") ? Integer.valueOf(cmd.getOptionValue("port")) : port;
+		
+		port = cmd.hasOption("port") ? 
+				Integer.valueOf(cmd.getOptionValue("port")) : 
+					conf.containsKey("port") ? Integer.valueOf(conf.getProperty("port")) : port;
 		Client.setServer_port(port);
-		commandBuilder.setScheme("https").setHost(host).setPort(port);
+
 		if(targets.length == 0) {
 			startCli();
 			System.exit(0);
+		} else if(targets.length == 1){
+			zk_connect_string = cmd.hasOption('z') ? cmd.getOptionValue('z') : zk_connect_string;
+			if(targets[0].equals("start-daemons")) {
+				Client client = new Client(zk_connect_string);
+				client.createParents();
+				client.startTaskWatcher();
+				client.startResourcesWatcher();
+			}
 		} else {
+			commandBuilder.setScheme("https").setHost(host).setPort(port);
 			new TargetFactory(commandBuilder).getTarget(targets[0]).execute(targets[1], cmd);
 		}
 	}

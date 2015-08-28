@@ -147,6 +147,10 @@ public class Client {
 
 	public Client(String connectString) {
 		this.connectString = connectString;
+		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
+		curator = CuratorFrameworkFactory.newClient(connectString, retryPolicy );
+		curator.start();
+		
 	}
 
 	public Client(String username, String password) {
@@ -235,9 +239,7 @@ public class Client {
 	}
 
 	public void createParents() {
-		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
-		curator = CuratorFrameworkFactory.newClient(connectString, retryPolicy );
-		curator.start();
+		
 		String resourcePath = null;
 		String taskPath = null;
 		try {
