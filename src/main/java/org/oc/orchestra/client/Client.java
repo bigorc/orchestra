@@ -179,6 +179,7 @@ public class Client {
 	}
 	
 	void startTaskWatcher() {
+		logger.info("Registering task watcher");
 		new Thread() {
 			public void run() {
 				String taskClientPath = Client.getZkTaskClientPath();
@@ -209,7 +210,7 @@ public class Client {
 	}
 	
 	void startResourcesWatcher() {
-		
+		logger.info("Registering resource watcher");
 		new Thread() {
 			public void run() {
 				try {
