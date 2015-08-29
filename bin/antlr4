@@ -1,0 +1,5 @@
+#!/bin/bash
+BASEDIR=`pwd`
+cd src/main/antlr4
+java -jar $BASEDIR/lib/antlr-4.5-complete.jar -no-listener -visitor -o $BASEDIR/target/generated-sources/antlr4 -package org.oc.orchestra.parser org/oc/orchestra/parser/Rules.g4
+cd $BASEDIR
