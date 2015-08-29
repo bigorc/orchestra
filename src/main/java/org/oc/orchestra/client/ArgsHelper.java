@@ -81,7 +81,8 @@ public class ArgsHelper {
 			startCli();
 			System.exit(0);
 		} else if(targets.length == 1){
-			zk_connect_string = cmd.hasOption('z') ? cmd.getOptionValue('z') : zk_connect_string;
+			zk_connect_string = cmd.hasOption('z') ? cmd.getOptionValue('z') : 
+				conf.containsKey("zk_connect_string") ? conf.getProperty("zk_connect_string") : zk_connect_string;
 			if(targets[0].equals("start-daemons")) {
 				Client client = new Client(zk_connect_string);
 				client.createParents();
