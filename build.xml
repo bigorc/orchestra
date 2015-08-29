@@ -2,6 +2,7 @@
 <project name="orchestra" default="main" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
   <!-- Sets variables which can later be used. -->
   <!-- The value of a property is accessed via ${} -->
+  <property name="antlr.src.dir" location="target/generated-sources/antlr4" />
   <property name="src.dir" location="src/main/java;src/main/antlr4;target/generated-sources/antlr4" />
   <property name="build.dir" location="target/classes" />
   <property name="dist.dir" location="dist" />
@@ -12,6 +13,9 @@
 		<include name="*.jar"/>
 	</fileset>
   </path>
+  <target name="parser" depends="makedir">
+    <exec executable="bin/antlr4"/>
+  </target>
   <target name="resolve">
     <ivy:retrieve />
   </target>
@@ -28,10 +32,11 @@
     <mkdir dir="${build.dir}" />
     <mkdir dir="${docs.dir}" />
     <mkdir dir="${dist.dir}" />
+    <mkdir dir="${antlr.src.dir}" />
   </target>
 
   <!-- Compiles the java code (including the usage of library for JUnit -->
-  <target name="compile" depends="clean, makedir">
+  <target name="compile" depends="clean, makedir, parser">
     <javac nowarn="on" srcdir="${src.dir}" destdir="${build.dir}">
       <classpath>
       	<path refid="classpath"/>
