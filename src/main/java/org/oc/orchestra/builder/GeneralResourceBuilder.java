@@ -37,7 +37,7 @@ public class GeneralResourceBuilder extends ResourceFactory implements Builder {
 		} else {
 			resource.setArgs(args);;
 		}
-		
+		resource.setClient((String) json.get("client"));
 		Iterator it = json.keySet().iterator();
 		while(it.hasNext()) {
 			String key = (String) it.next();

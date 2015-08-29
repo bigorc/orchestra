@@ -25,7 +25,7 @@ public class OptionBuilder implements Builder {
 		String operator = (String) json.get("operator");
 		option = new Option(filename, operator);
 		option.setMultiValue(multiValue);
-		
+		option.setClient((String) json.get("client"));
 		if(json.get("contain_properties") != null) {
 			JSONArray array = (JSONArray) json.get("contain_properties");
 			Iterator it = array.iterator();
