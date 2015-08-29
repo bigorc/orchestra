@@ -46,7 +46,7 @@ public class GeneralResource extends Resource {
 		if(client == null || client.equals(Client.getName())) {
 			run(state);
 		} else {
-			coordinator.assignResourceTask(this);
+			Client.getCoordinator(client).asyncAssignResourceTask(this);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class GeneralResource extends Resource {
 			if(state == null) return "";
 			return state;
 		} else {
-			return coordinator.getState(getUri(), toRO());
+			return Client.getCoordinator(client).getState(uri(), toRO());
 		}
 	}
 	

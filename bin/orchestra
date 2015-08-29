@@ -1,10 +1,28 @@
 #!/bin/bash
 
+JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 CLASSPATH=target/classes
+LOG=logs/orchestra.log
+
 for i in lib/*.jar
 do
 	CLASSPATH="$i:$CLASSPATH"
 done
 CLASSPATH=examples/:$CLASSPATH
 
+start() {
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $LOG -errfile $LOG org.oc.orchestra.client.Client 
+	exit 0
+}
+
+stop() {
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -stop -outfile $LOG -errfile $LOG org.oc.orchestra.client.Client 
+	exit 0
+}
+case $1 in
+start-daemons) start;;
+stop-daemons) stop;;
+esac
 java -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
+
+

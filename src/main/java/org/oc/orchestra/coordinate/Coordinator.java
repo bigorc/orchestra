@@ -34,4 +34,6 @@ public interface Coordinator {
 	String getState(String uri, String config);
 
 	String asyncAssignTask(String task, String config);
+
+	void asyncAssignResourceTask(Resource resource);
 }

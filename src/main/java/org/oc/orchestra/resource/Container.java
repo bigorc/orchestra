@@ -29,7 +29,7 @@ public class Container extends Resource {
 			}
 			return "all_ready";
 		} else {
-			return coordinator.getState(getUri(), toRO());
+			return Client.getCoordinator(client).getState(uri(), toRO());
 		}
 	}
 
@@ -48,7 +48,7 @@ public class Container extends Resource {
 				r.realize();
 			}
 		} else {
-			coordinator.assignResourceTask(this);
+			Client.getCoordinator(client).asyncAssignResourceTask(this);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class Container extends Resource {
 	public String uri() {
 		StringBuffer source = new StringBuffer();
 		for(Resource r : resources) {
-			source.append(r.getUri());
+			source.append(r.uri());
 		}
 		String md5 = new Md5Hash(source.toString()).toString();
 		return "container_" + md5;

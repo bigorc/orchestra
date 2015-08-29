@@ -18,7 +18,7 @@ public abstract class Resource extends AbstractStateMachine {
 	public void setCoordinator(Coordinator coordinator) {
 		this.coordinator = coordinator;
 	}
-	public String getUri() {
+	public String uri() {
 		return uri;
 	}
 

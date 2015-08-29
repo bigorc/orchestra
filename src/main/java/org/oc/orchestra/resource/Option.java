@@ -8,6 +8,7 @@ import java.util.List;
 import org.ini4j.Options;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.oc.orchestra.client.Client;
 import org.oc.orchestra.resource.Ini.Property;
 
 public class Option extends Configuration {
@@ -135,26 +136,34 @@ public class Option extends Configuration {
 	@Override
 	public void realize() {
 		init();
-		for(Property p : contain_properties) {
-			add(p.name, p.value);
-		}
-		
-		for(Property p : not_contain_properties) {
-			remove(p.name, p.value);
+		if(client == null || client.equals(Client.getName())) {
+			for(Property p : contain_properties) {
+				add(p.name, p.value);
+			}
+
+			for(Property p : not_contain_properties) {
+				remove(p.name, p.value);
+			}
+		} else {
+			Client.getCoordinator(client).asyncAssignResourceTask(this);
 		}
 	}
 
 	@Override
 	public String getCurrentState() {
 		init();
-		for(Property p : contain_properties) {
-			if(!contains(p.name, p.value)) return "not_configured";
+		if(client == null || client.equals(Client.getName())) {
+			for(Property p : contain_properties) {
+				if(!contains(p.name, p.value)) return "not_configured";
+			}
+
+			for(Property p : not_contain_properties) {
+				if(contains(p.name, p.value)) return "not_configured";
+			}
+			return "configured";
+		} else {
+			return Client.getCoordinator(client).getState(uri(), toRO());
 		}
-		
-		for(Property p : not_contain_properties) {
-			if(contains(p.name, p.value)) return "not_configured";
-		}
-		return "configured";
 	}
 
 

@@ -3,6 +3,9 @@
     <dependencies>
         <dependency org="commons-lang" name="commons-lang" rev="2.6"/>
         <dependency org="commons-cli" name="commons-cli" rev="1.2"/>
+        <dependency org="commons-dbcp" name="commons-dbcp" rev="1.2.2"/>
+        <dependency org="commons-io" name="commons-io" rev="2.4"/>
+        <dependency org="commons-daemon" name="commons-daemon" rev="1.0.15"/>
         <dependency org="org.mongodb" name="mongo-java-driver" rev="2.13.1"/>
         <dependency org="joda-time" name="joda-time" rev="2.7"/>
         <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1"/>
@@ -16,8 +19,6 @@
         <dependency org="org.springframework" name="spring-jdbc" rev="3.2.11.RELEASE"/>
         <dependency org="org.springframework" name="spring-tx" rev="3.2.11.RELEASE" transitive="false"/>
         <dependency org="mysql" name="mysql-connector-java" rev="5.1.32"/>
-        <dependency org="commons-dbcp" name="commons-dbcp" rev="1.2.2"/>
-        <dependency org="commons-io" name="commons-io" rev="2.4"/>
         <dependency org="junit" name="junit" rev="4.9"/>
         <dependency org="org.apache.shiro" name="shiro-core" rev="1.2.3"/>
         <dependency org="org.apache.shiro" name="shiro-spring" rev="1.2.3"/>

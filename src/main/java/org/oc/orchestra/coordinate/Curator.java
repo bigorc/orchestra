@@ -87,13 +87,13 @@ public class Curator implements Coordinator {
 		GeneralResource ge = new GeneralResource();
 		ge.setStateMachine(type);
 		ge.setArgs(getArg(args));
-		return getState(ge.getUri(), ge.toRO());
+		return getState(ge.uri(), ge.toRO());
 	}
 
 	@Override
 	public String getProState(String pro) {
 		List<Resource> resources = ResourceFactory.makeResources(pro);
-		return getState(resources.get(0).getUri(), resources.get(0).toRO());
+		return getState(resources.get(0).uri(), resources.get(0).toRO());
 	}
 
 	protected String zkPathize(String pro) {
@@ -183,7 +183,7 @@ public class Curator implements Coordinator {
 		GeneralResource ge = new GeneralResource();
 		ge.setStateMachine(type);
 		ge.setArgs(getArg(args));
-		return asyncGeState(ge.getUri(), ge.toRO());
+		return asyncGeState(ge.uri(), ge.toRO());
 	}
 
 	private String getArg(List<String> args) {
@@ -203,7 +203,7 @@ public class Curator implements Coordinator {
 	@Override
 	public Future<String> asyncGetProState(String pro) {
 		List<Resource> resources = ResourceFactory.makeResources(pro);
-		return asyncGeState(resources.get(0).getUri(), resources.get(0).toRO());
+		return asyncGeState(resources.get(0).uri(), resources.get(0).toRO());
 	}
 	
 	@Override
@@ -212,16 +212,22 @@ public class Curator implements Coordinator {
 		gs.setArgs(getArg(args));
 		gs.setState(state);
 		gs.setStateMachine(type);
-		String task = generateTask(gs.getUri());
+		String task = generateTask(gs.uri());
 		return assignTask(task, gs.toRO());
 	}
 	
 	@Override
 	public void assignResourceTask(Resource resource) {
-		String task = generateTask(resource.getUri());
+		String task = generateTask(resource.uri());
 		assignTask(task, resource.toRO());
 	}
 
+	@Override
+	public void asyncAssignResourceTask(Resource resource) {
+		String task = generateTask(resource.uri());
+		asyncAssignTask(task, resource.toRO());
+	}
+	
 	@Override
 	public boolean assignProTask(String pro) {
 		List<Resource> resources = ResourceFactory.makeResources(pro);

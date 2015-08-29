@@ -25,7 +25,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
+import java.util.Timer;
 import java.util.UUID;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -38,6 +40,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.daemon.Daemon;
+import org.apache.commons.daemon.DaemonContext;
+import org.apache.commons.daemon.DaemonInitException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -78,6 +83,7 @@ import org.json.simple.JSONValue;
 import org.oc.orchestra.ResourceFactory;
 import org.oc.orchestra.auth.KeystoreHelper;
 import org.oc.orchestra.constraint.Constraint;
+import org.oc.orchestra.coordinate.Coordinator;
 import org.oc.orchestra.coordinate.Curator;
 import org.oc.orchestra.coordinate.ResourceWatcher;
 import org.oc.orchestra.coordinate.TaskWatcher;
@@ -94,7 +100,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 
-public class Client {
+public class Client implements Daemon{
+	private int resource_check_period = 60000;
+	private int task_check_period = 60000;
+	
 	private static final transient Logger logger = LoggerFactory.getLogger(Client.class);
 	
 	static String server = "orchestra";
@@ -122,10 +131,22 @@ public class Client {
 
 	private static final String keystore_pass = "password";
 
-	private String connectString;
+	private static String connectString;
 	private CuratorFramework curator;
 	private static String username;
 	
+	public static String getConnectString() {
+		return connectString;
+	}
+
+	public static void setConnectString(String connectString) {
+		Client.connectString = connectString;
+	}
+
+	public static void setCoordinator(Coordinator coordinator) {
+		Client.coordinator = coordinator;
+	}
+
 	public static String getUsername() {
 		return username;
 	}
@@ -143,8 +164,13 @@ public class Client {
 	}
 
 	private static String password;
+
+	private static Coordinator coordinator;
 	private String keystorename = "keystore/clientKey.jks";
 
+	public Client() {
+		
+	}
 	public Client(String connectString) {
 		this.connectString = connectString;
 		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
@@ -170,32 +196,10 @@ public class Client {
 			r.realize();
 		}*/
 	}
-
-
-	public void start() {
-		createParents();
-		startResourcesWatcher();
-		startTaskWatcher();
-	}
 	
 	void startTaskWatcher() {
-		logger.info("Registering task watcher");
-		new Thread() {
-			public void run() {
-				String taskClientPath = Client.getZkTaskClientPath();
-				TaskWatcher watcher = new TaskWatcher(curator, taskClientPath);
-				List<String> children;
-				try {
-					children = curator.getChildren().usingWatcher(
-							watcher).forPath(taskClientPath);
-					//tasks children might be added before watchers are registered
-					//that's handled here
-					watcher.handleTasks(children);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		Timer timer = new Timer();
+        timer.schedule(new TaskWatcherTimerTask(curator) , 0, task_check_period);
 	}
 
 	protected static String getZkTaskClientPath() {
@@ -210,22 +214,8 @@ public class Client {
 	}
 	
 	void startResourcesWatcher() {
-		logger.info("Registering resource watcher");
-		new Thread() {
-			public void run() {
-				try {
-					String clientResourcePath = Client.getZkClientResourcePath();
-					ResourceWatcher watcher = new ResourceWatcher(curator, clientResourcePath);
-					List<String> children = curator.getChildren().usingWatcher(
-							watcher).forPath(clientResourcePath);
-					//read task children might be added before watchers are registered
-					//that's handled here
-					watcher.handleResources(children);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		Timer timer = new Timer();
+        timer.schedule(new ResourceWatcherTimerTask(curator) , 0, resource_check_period);
 	}
 
 	public static String getZkClientResourcePath() throws UnknownHostException {
@@ -279,5 +269,66 @@ public class Client {
 		}
 		return name;
 	}
+
+	public static Coordinator getCoordinator() {
+		if(coordinator == null) {
+			coordinator = new Curator(connectString);
+		}
+		return coordinator;
+	}
 	
+	public static Coordinator getCoordinator(String client) {
+		coordinator = new Curator(connectString, client);
+		return coordinator;
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void init(DaemonContext arg0) throws DaemonInitException, Exception {
+		System.out.println("orchestra client daemon started.");
+		config();
+	}
+
+	private void config() {
+		Properties conf = new Properties();
+        InputStream is;
+		try {
+			is = new FileInputStream("conf/client.conf");
+			conf.load(is);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		username = conf.getProperty("username");
+		password = conf.getProperty("password");
+		connectString = conf.containsKey("zk_connect_string") ? conf.getProperty("zk_connect_string") : connectString;
+		resource_check_period = conf.containsKey("resource_check_period") ? 
+			Integer.valueOf(conf.getProperty("resource_check_period")) : 
+			resource_check_period;
+		task_check_period = conf.containsKey("task_check_period") ? 
+			Integer.valueOf(conf.getProperty("task_check_period")) : 
+			task_check_period;
+
+		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
+		curator = CuratorFrameworkFactory.newClient(connectString, retryPolicy );
+		curator.start();
+	}
+
+	@Override
+	public void start() {
+		createParents();
+		startResourcesWatcher();
+		startTaskWatcher();
+	}
+
+	@Override
+	public void stop() throws Exception {
+		System.out.println("orchestra client daemon stopped.");
+	}
 }

@@ -217,7 +217,7 @@ public class Ini extends Configuration {
 				remove(p.section, p.name, p.value);
 			}
 		} else {
-			coordinator.assignResourceTask(this);
+			Client.getCoordinator(client).asyncAssignResourceTask(this);
 		}
 	}
 
@@ -234,7 +234,7 @@ public class Ini extends Configuration {
 			}
 			return "configured";
 		} else {
-			return coordinator.getState(getUri(), toRO());
+			return Client.getCoordinator(client).getState(uri(), toRO());
 		}
 	}
 	
