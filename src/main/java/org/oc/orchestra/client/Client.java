@@ -167,6 +167,8 @@ public class Client implements Daemon{
 
 	private static Coordinator coordinator;
 	private String keystorename = "keystore/clientKey.jks";
+	private Timer taskTimer;
+	private Timer resourceTimer;
 
 	public Client() {
 		
@@ -198,8 +200,8 @@ public class Client implements Daemon{
 	}
 	
 	void startTaskWatcher() {
-		Timer timer = new Timer();
-        timer.schedule(new TaskWatcherTimerTask(curator) , 0, task_check_period);
+		taskTimer = new Timer();
+        taskTimer.schedule(new TaskWatcherTimerTask(curator) , 0, task_check_period);
 	}
 
 	protected static String getZkTaskClientPath() {
@@ -214,8 +216,8 @@ public class Client implements Daemon{
 	}
 	
 	void startResourcesWatcher() {
-		Timer timer = new Timer();
-        timer.schedule(new ResourceWatcherTimerTask(curator) , 0, resource_check_period);
+		resourceTimer = new Timer();
+        resourceTimer.schedule(new ResourceWatcherTimerTask(curator) , 0, resource_check_period);
 	}
 
 	public static String getZkClientResourcePath() throws UnknownHostException {
@@ -330,5 +332,7 @@ public class Client implements Daemon{
 	@Override
 	public void stop() throws Exception {
 		System.out.println("orchestra client daemon stopped.");
+		taskTimer.cancel();
+		resourceTimer.cancel();
 	}
 }

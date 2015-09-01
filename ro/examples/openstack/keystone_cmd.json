@@ -1,8 +1,0 @@
-{
-      "stateMachine": "cmd",
-      "sm_args": "glance image-create --name \"cirros\" --disk-format qcow2 --container-format bare --is-public True --progress --file /root/cirros.img",
-      "OS_USERNAME": "admin",
-	"OS_PASSWORD": "password",
-	"OS_TENANT_NAME": "admin",
-	"OS_AUTH_URL": "http://orchestra:35357/v2.0"
-    }
