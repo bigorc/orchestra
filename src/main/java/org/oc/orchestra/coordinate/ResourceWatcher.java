@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
@@ -25,7 +27,8 @@ public class ResourceWatcher implements CuratorWatcher {
 	private static final transient Logger logger = LoggerFactory.getLogger(ResourceWatcher.class);
 	private CuratorFramework curator;
 	private String clientResourcePath;
-	static Map<String, Timer> timers = new HashMap<String, Timer>(); 
+	static Map<String, Timer> timers = new HashMap<String, Timer>();
+	static Map<String, Object> locks = new HashMap<String, Object>();
 	static int CLEANUP_TIME = 10000;
 	
 	public ResourceWatcher(CuratorFramework curator, String clientResourcePath) {
@@ -44,10 +47,18 @@ public class ResourceWatcher implements CuratorWatcher {
 				}
 			}
 		}
+		
 		for(String uri : children) {
 			byte[] data = null;
+			String uriPath = clientResourcePath + "/" + uri;
 			try {
-				String uriPath = clientResourcePath + "/" + uri;
+				synchronized(locks) {
+					if(!locks.containsKey(uriPath)) {
+						locks.put(uriPath, null);
+					} else {
+						return;
+					}
+				}
 				data = curator.getData().forPath(uriPath);
 				String statusPath = uriPath + "/" + "state";
 				if(curator.checkExists().forPath(statusPath) == null) {
@@ -67,6 +78,8 @@ public class ResourceWatcher implements CuratorWatcher {
 				//
 			}catch (Exception e) {
 				e.printStackTrace();
+			} finally {
+				locks.remove(uriPath);
 			}
 		}
 	}

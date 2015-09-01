@@ -11,12 +11,12 @@ done
 CLASSPATH=examples/:$CLASSPATH
 
 start() {
-	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $LOG -errfile $LOG org.oc.orchestra.client.Client 
+	jsvc -home $JAVA_HOME -cp $CLASSPATH org.oc.orchestra.client.Client 
 	exit 0
 }
 
 stop() {
-	jsvc -home $JAVA_HOME -cp $CLASSPATH -stop -outfile $LOG -errfile $LOG org.oc.orchestra.client.Client 
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -stop org.oc.orchestra.client.Client 
 	exit 0
 }
 case $1 in

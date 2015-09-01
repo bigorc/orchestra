@@ -1,6 +1,8 @@
 package org.oc.orchestra.coordinate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
@@ -18,7 +20,8 @@ public class TaskWatcher implements CuratorWatcher {
 	private static final transient Logger logger = LoggerFactory.getLogger(TaskWatcher.class);
 	private CuratorFramework curator;
 	private String taskClientPath;
-
+	static Map<String, Object> locks = new HashMap<String, Object>();
+	
 	public TaskWatcher(CuratorFramework curator, String taskClientPath) {
 		this.curator = curator;
 		this.taskClientPath = taskClientPath;
@@ -36,6 +39,13 @@ public class TaskWatcher implements CuratorWatcher {
 		if(tasks == null || tasks.size() == 0) return;
 		for(String task : tasks) {
 			String taskPath = taskClientPath + "/" + task;
+			synchronized(locks) {
+				if(locks.containsKey(taskPath)) {
+					return;
+				} else {
+					locks.put(taskPath, null);
+				}
+			}
 			//check if the task is done
 			try {
 				if(curator.checkExists().forPath(taskPath + "/" + "taskStatus") == null) {
@@ -55,6 +65,8 @@ public class TaskWatcher implements CuratorWatcher {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
+			} finally {
+				locks.remove(taskPath);
 			}
 		}
 	}

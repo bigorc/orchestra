@@ -1,7 +1,10 @@
 package org.oc.orchestra.coordinate;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,7 @@ import org.apache.zookeeper.data.Stat;
 import org.joda.time.DateTime;
 import org.oc.orchestra.ResourceFactory;
 import org.oc.orchestra.client.Client;
+import org.oc.orchestra.coordinate.ResourceWatcher.CleanupTask;
 import org.oc.orchestra.resource.GeneralResource;
 import org.oc.orchestra.resource.Resource;
 import org.slf4j.Logger;
@@ -47,6 +51,8 @@ public class Curator implements Coordinator {
 	protected String clientTaskPath;
 	protected String clientResourcePath;
 	private int timeout;
+	static Map<String, Timer> timers = new HashMap<String, Timer>();
+	private long read_state_period = 60000;
 	
 	public static Curator getInstance() {
 		if(instance == null) {
@@ -65,7 +71,7 @@ public class Curator implements Coordinator {
 				curator.create().forPath(basePath, baseData);
 			}
 			if(curator.checkExists().forPath(baseTaskPath) == null) {
-				curator.create().forPath(baseTaskPath, "todo node".getBytes());
+				curator.create().forPath(baseTaskPath, "task node".getBytes());
 			}
 			if(curator.checkExists().forPath(baseResourcePath) == null) {
 				curator.create().forPath(baseResourcePath, "resource node".getBytes());
@@ -125,39 +131,17 @@ public class Curator implements Coordinator {
 		try {
 			String lockPath = resourcePath + "/lock";
 			InterProcessMutex lock = new InterProcessMutex(curator, lockPath);
-			
+			Timer timer = new Timer();
+			ReadStateTimerTask readStateTimerTask = new ReadStateTimerTask(curator, statePath, config);
+			timer.schedule(readStateTimerTask, 0, read_state_period);
+			timers.put(statePath, timer);
 			logger.info("acuiring lock");
 			lock.acquire();
 			logger.info("acuired lock");
-			StateWatcher watcher = new StateWatcher(curator);
-			//corner cases. 
-			//1) The state path is added before the watcher is set
-			//2) The uri path is deleted before it is locked
-			if(curator.checkExists().usingWatcher(watcher).forPath(statePath) != null) {
-				//handle case 1)
-				logger.info("Corner case 1");
-				byte[] data = curator.getData().forPath(statePath);
-				watcher.set(new String(data));
-			} else {
-				//handle case 2)
-				byte[] data = curator.getData().forPath(resourcePath);
-				String str = new String(data);
-				if(!str.trim().endsWith("}")) {
-//					System.out.println("Got data:" + str + "from " + resourcePath);
-					curator.setData().forPath(resourcePath, config.getBytes());
-				}
-				String countPath = resourcePath + "/count";
-				SharedCount count = new SharedCount(curator, countPath , 0);
-				count.start();
-				int counter = count.getCount();
-				counter = counter + 1;
-				logger.info("Counter:" + counter);
-				count.setCount(counter);
-				count.close();
-			}
+			
 			lock.release();
 			logger.info("released lock");
-			return watcher;
+			return readStateTimerTask;
 		} catch (Exception e) {
 			
 		}
