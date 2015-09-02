@@ -3,19 +3,16 @@
   "resources": [
     {
       "stateMachine": "package",
-      "sm_args": "ubuntu-cloud-keyring",
+      "sm_args": "python-software-properties",
       "sm_state": "installed"
     },
     {
-      "stateMachine": "content",
-      "sm_args": "/etc/apt/sources.list.d/cloudarchive-kilo.list",
-      "sm_state": "set",
-      "CONTENT": "deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/kilo main"
+      "stateMachine": "cmd",
+      "sm_args": "add-apt-repository cloud-archive:icehouse"
     },
     {
       "stateMachine": "cmd",
       "sm_args": "apt-get update"
-      "sm_state": ""
     }
   ]
 }

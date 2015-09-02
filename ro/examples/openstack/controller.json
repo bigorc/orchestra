@@ -1,0 +1,10 @@
+{
+  "type": "container",
+  "client": "controller",
+  "resources": [
+    "$'examples/openstack/ntp-server.json'",
+    "$'examples/openstack/mysql.json'",
+    "$'examples/openstack/repository.json'",
+    "$'examples/openstack/rabbitmq.json'"
+  ]
+}

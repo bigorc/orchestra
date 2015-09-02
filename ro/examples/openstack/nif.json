@@ -1,5 +1,4 @@
 {
-  "$parent": "openstack/nodes.json",
   "stateMachine": "nif",
   "sm_state": "up",
   "NIF_PERSISTENT": "yes",

@@ -14,7 +14,7 @@
       "contain_properties": [
         {
           "name": "server",
-          "value": "1.cn.pool.ntp.org iburst"
+          "value": "controller"
         }
       ]
     },

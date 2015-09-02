@@ -1,14 +1,6 @@
 {
   "type": "container",
   "resources": [
-	{
-	  "$parent": "openstack/nif.json",
-	  "sm_args": "$controller.nif.management",
-	},
-	{
-	  "$parent": "openstack/nif.json",
-	  "sm_args": "$controller.nif.tunnel",
-	  "NIF_MODE": "static",
-	  "NIF_IP": "$controller.ip.tunnel"
-    }]
+    ""
+	]
 }
