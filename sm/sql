@@ -1,6 +1,7 @@
 #!/bin/bash
 
 run_mysql() {
+	echo $SQL
 	mysql -u$DB_USERNAME -p$DB_PASSWORD $DATABASE -e "$SQL" 
 }
 

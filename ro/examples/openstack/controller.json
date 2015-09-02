@@ -6,5 +6,10 @@
     "$'examples/openstack/mysql.json'",
     "$'examples/openstack/repository.json'",
     "$'examples/openstack/rabbitmq.json'"
+    "$'examples/openstack/keystone.json'",
+    "$'examples/openstack/glance.json'",
+    "$'examples/openstack/neutron.json'",
+    "$'examples/openstack/ceilometer.json'",
+    "$'examples/openstack/horizon.json'"
   ]
 }

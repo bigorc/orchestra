@@ -3,12 +3,11 @@
   "resources": [
     {
       "stateMachine": "cmd",
-      "sm_args": "sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password password' && \
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password password'"
+      "sm_args": "sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password password' && sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password password'"
     },
     {
       "stateMachine": "package",
-      "sm_args": "python-mysqldb",
+      "sm_args": "python-mysqldb mysql-server",
       "sm_state": "installed"
     },
     {

@@ -9,10 +9,6 @@
     {
       "stateMachine": "cmd",
       "sm_args": "rabbitmqctl add_user guest password"
-    },
-    {
-      "stateMachine": "cmd",
-      "sm_args": "rabbitmqctl set_permissions openstack \".*\" \".*\" \".*\""
     }
   ]
 }
