@@ -2,7 +2,8 @@
 
 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 CLASSPATH=target/classes
-LOG=logs/orchestra.log
+STDOUT=logs/stdout.log
+STDERR=logs/stderr.log
 
 for i in lib/*.jar
 do
@@ -11,12 +12,12 @@ done
 CLASSPATH=examples/:$CLASSPATH
 
 start() {
-	jsvc -home $JAVA_HOME -cp $CLASSPATH org.oc.orchestra.client.Client 
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR org.oc.orchestra.client.Client 
 	exit 0
 }
 
 stop() {
-	jsvc -home $JAVA_HOME -cp $CLASSPATH -stop org.oc.orchestra.client.Client 
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR -stop org.oc.orchestra.client.Client 
 	exit 0
 }
 case $1 in

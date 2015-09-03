@@ -3,7 +3,8 @@
   <!-- Sets variables which can later be used. -->
   <!-- The value of a property is accessed via ${} -->
   <property name="antlr.src.dir" location="target/generated-sources/antlr4" />
-  <property name="src.dir" location="src/main/java;src/main/antlr4;target/generated-sources/antlr4" />
+  <property name="main.src.dir" location="src/main/java" />
+  <property name="src.dir" location="${main.src.dir};src/main/antlr4;${antlr.src.dir}" />
   <property name="build.dir" location="target/classes" />
   <property name="dist.dir" location="dist" />
   <property name="docs.dir" location="docs" />
@@ -35,8 +36,13 @@
     <mkdir dir="${antlr.src.dir}" />
   </target>
 
+  <target name="resource">
+    <copy todir="${build.dir}">
+      <fileset dir="${main.src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
   <!-- Compiles the java code (including the usage of library for JUnit -->
-  <target name="compile" depends="clean, makedir, parser">
+  <target name="compile" depends="clean, makedir, parser, resource">
     <javac nowarn="on" srcdir="${src.dir}" destdir="${build.dir}">
       <classpath>
       	<path refid="classpath"/>
