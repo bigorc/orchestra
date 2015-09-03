@@ -1,0 +1,25 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "$parent": "examples/openstack/nif.json",
+      "sm_args": "eth0"
+    },
+    {
+      "$parent": "examples/openstack/nif.json",
+      "NIF_MODE": "static",
+      "sm_args": "eth1",
+    },
+    {
+      "$parent": "examples/openstack/nif.json",
+      "sm_args": "eth2",
+      "NIF_MODE": "manual",
+      "NIF_UP": "ip link set dev $IFACE up",
+      "NIF_DOWN": "ip link set dev $IFACE down",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "/etc/init.d/networking restart"
+    }
+  ]
+}

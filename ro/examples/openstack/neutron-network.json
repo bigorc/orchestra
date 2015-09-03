@@ -55,12 +55,12 @@
 				  {
 					  "section": "keystone_authtoken",
 					  "name": "auth_uri",
-					  "value": "http://orchestra:5000"
+					  "value": "http://controller:5000"
 				  },
 				  {
 					  "section": "keystone_authtoken",
 					  "name": "auth_host",
-					  "value": "orchestra"
+					  "value": "controller"
 				  },
 				  {
 					  "section": "keystone_authtoken",
@@ -95,7 +95,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "rabbit_host",
-					  "value": "orchestra"
+					  "value": "controller"
 				  },
 				  {
 					  "section": "DEFAULT",
@@ -166,7 +166,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "auth_url",
-					  "value": "http://orchestra:5000/v2.0"
+					  "value": "http://controller:5000/v2.0"
 				  },
 				  {
 					  "section": "DEFAULT",
@@ -191,7 +191,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "nova_metadata_ip",
-					  "value": "orchestra"
+					  "value": "controller"
 				  },
 				  {
 					  "section": "DEFAULT",

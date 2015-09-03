@@ -8,7 +8,7 @@
     },
     {
       "stateMachine": "cmd",
-      "sm_args": "rabbitmqctl add_user guest password"
+      "sm_args": "rabbitmqctl change_password guest password"
     }
   ]
 }

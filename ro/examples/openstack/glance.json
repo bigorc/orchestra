@@ -62,7 +62,17 @@
           "section": "paste_deploy",
           "name": "flavor",
           "value": "keystone"
-        }
+        },
+		{
+		  ": "DEFAULT",
+		  ": "rabbit_host",
+		  ": "controller"
+		},
+		{
+		  "section": "DEFAULT",
+		  ": "rabbit_password",
+		  ": "password"
+		}
       ],
       "not_contain_properties": [
         {

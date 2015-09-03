@@ -8,6 +8,7 @@
     "$'examples/openstack/rabbitmq.json'"
     "$'examples/openstack/keystone.json'",
     "$'examples/openstack/glance.json'",
+    "$'examples/openstack/nova.json'",
     "$'examples/openstack/neutron.json'",
     "$'examples/openstack/ceilometer.json'",
     "$'examples/openstack/horizon.json'"
