@@ -26,6 +26,7 @@ nif_down() {
 nif_persist() {
 	if [[ $NIF_MODE == "static" ]] && [[ $NIF_IP == "" ]]; then
 		echo "NIF_IP must be set when NIF_MODE is static"
+		exit 1
 	fi
 	echo "Persisting nif $1"
 	add_source

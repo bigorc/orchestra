@@ -9,6 +9,7 @@
       "$parent": "examples/openstack/nif.json",
       "NIF_MODE": "static",
       "sm_args": "eth1",
+      "NIF_IP": "192.168.131.171/24"
     },
     {
       "$parent": "examples/openstack/nif.json",
