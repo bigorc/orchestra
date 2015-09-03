@@ -10,8 +10,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.oc.orchestra.client.Client;
 import org.oc.orchestra.resource.Ini.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Option extends Configuration {
+	private final Logger logger = LoggerFactory.getLogger(Option.class);
 	private Options option;
 	private String filename;
 	private String operator;
@@ -135,6 +138,7 @@ public class Option extends Configuration {
 
 	@Override
 	public void realize() {
+		logger.info("Realizing ini resource " + filename);
 		init();
 		if(client == null || client.equals(Client.getName())) {
 			for(Property p : contain_properties) {

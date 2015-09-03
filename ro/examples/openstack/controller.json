@@ -11,6 +11,7 @@
     "$'examples/openstack/nova.json'",
     "$'examples/openstack/neutron.json'",
     "$'examples/openstack/ceilometer.json'",
-    "$'examples/openstack/horizon.json'"
+    "$'examples/openstack/horizon.json'",
+    "$'examples/openstack/initial-networks.json'"
   ]
 }

@@ -7,8 +7,12 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.oc.orchestra.client.Client;
+import org.oc.orchestra.rest.AuthFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Container extends Resource {
+	private final Logger logger = LoggerFactory.getLogger(Container.class);
 	private String state = "all_ready";
 	private List<Resource> resources;
 	
@@ -43,6 +47,7 @@ public class Container extends Resource {
 
 	@Override
 	public void realize() {
+		logger.info("Realizing container resource");
 		if(client == null || client.equals(Client.getName())) {
 			for(Resource r : resources) {
 				r.realize();

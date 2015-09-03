@@ -202,27 +202,6 @@
 		 },
 		 {
 			 "type": "ini",
-			 "file": "/etc/nova/nova.conf",
-			 "contain_properties":
-				 [
-				  {
-					  "section": "DEFAULT",
-					  "name": "service_neutron_metadata_proxy",
-					  "value": "true"
-				  },
-				  {
-					  "section": "DEFAULT",
-					  "name": "neutron_metadata_proxy_shared_secret",
-					  "value": "secret"
-				  }
-				 ]
-		 },
-		 {
-			 "stateMachine": "cmd",
-			 "sm_args": "service nova-api restart"
-		 },
-		 {
-			 "type": "ini",
 			 "file": "/etc/neutron/plugins/ml2/ml2_conf.ini",
 			 "contain_properties": 
 				 [

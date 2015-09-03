@@ -51,6 +51,16 @@
           "value": "keystone"
         },
         {
+          "section": "DEFAULT",
+          "name": "service_neutron_metadata_proxy",
+          "value": "true"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "neutron_metadata_proxy_shared_secret",
+          "value": "secret"
+        },
+        {
           "section": "keystone_authtoken",
           "name": "auth_host",
           "value": "controller"

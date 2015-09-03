@@ -19,7 +19,7 @@ neutron router-gateway-set router1 ext-net"
 			 "OS_USERNAME": "admin",
 			 "OS_PASSWORD": "password",
 			 "OS_TENANT_NAME": "admin",
-			 "OS_AUTH_URL": "http://orchestra:35357/v2.0"
+			 "OS_AUTH_URL": "http://controller:35357/v2.0"
 		 }
 		]
 }
