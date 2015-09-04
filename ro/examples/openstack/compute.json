@@ -1,0 +1,12 @@
+{
+  "type": "container",
+  "client": "compute1",
+  "resources": [
+    "$'examples/openstack/nifs-compute.json'",
+    "$'examples/openstack/mysql-client.json'",
+    "$'examples/openstack/ntp-client.json'",
+    "$'examples/openstack/hosts.json'",
+    "$'examples/openstack/nova-compute.json'",
+    "$'examples/openstack/neutron-compute.json'",
+  ]
+}

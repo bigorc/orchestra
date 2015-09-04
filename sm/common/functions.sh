@@ -50,6 +50,16 @@ add_source() {
 	fi
 }
 
+#$1 file $2:line
+line_in_file() {
+	while IFS='' read -r line || [[ -n $line ]]; do
+		if [[ $line == $2 ]]; then
+			return 0
+		fi
+	done < "$1"
+	return 1
+}
+
 # Read the file in parameter and fill the array named "array"
 getArray() {
     i=0

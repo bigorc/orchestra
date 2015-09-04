@@ -51,12 +51,12 @@
 				  {
 					  "section": "keystone_authtoken",
 					  "name": "auth_uri",
-					  "value": "http://orchestra:5000"
+					  "value": "http://controller:5000"
 				  },
 				  {
 					  "section": "keystone_authtoken",
 					  "name": "auth_host",
-					  "value": "orchestra"
+					  "value": "controller"
 				  },
 				  {
 					  "section": "keystone_authtoken",
@@ -91,7 +91,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "rabbit_host",
-					  "value": "orchestra"
+					  "value": "controller"
 				  },
 				  {
 					  "section": "DEFAULT",
@@ -192,7 +192,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "neutron_url",
-					  "value": "http://orchestra:9696"
+					  "value": "http://controller:9696"
 				  },
 				  {
 					  "section": "DEFAULT",
@@ -217,7 +217,7 @@
 				  {
 					  "section": "DEFAULT",
 					  "name": "neutron_admin_auth_url",
-					  "value": "http://orchestra:35357/v2.0"
+					  "value": "http://controller:35357/v2.0"
 				  },
 				  {
 					  "section": "DEFAULT",
@@ -239,6 +239,10 @@
 		 {
 			 "stateMachine": "cmd",
 			 "sm_args": "service nova-compute restart",
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "service neutron-plugin-openvswitch-agent restart",
 		 }
 		]
 }

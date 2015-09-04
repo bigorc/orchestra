@@ -5,16 +5,8 @@
 #./line Hello test.txt uri
 #./line Hello test.txt existent
 
+source common/functions.sh
 TMP=${TMP:-/tmp}
-
-line_in_file() {
-	while IFS='' read -r line || [[ -n $line ]]; do
-		if [[ $line == $LINE ]]; then
-			return 0
-		fi
-	done < "$1"
-	return 1
-}
 
 line_add() {
 	file=$1
@@ -28,7 +20,7 @@ line_add() {
 		sudo awk "/$AFTER_LINE/ { print; print \"$LINE\"; next }1" $file > $TMPFILE
 		sudo mv $TMPFILE $file
 	else
-		line_in_file $file
+		line_in_file $file $LINE
 		if [ $? -eq 0 ]; then
 			echo "Line $LINE already exists in file $file"
 		else
@@ -60,7 +52,7 @@ line_like() {
 }
 
 status() {
-	line_in_file $1
+	line_in_file $1 $LINE
 	if [ $? -eq 0 ]; then
 		echo "existent"
 	else

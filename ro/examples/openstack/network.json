@@ -6,6 +6,7 @@
     "$'examples/openstack/mysql-client.json'",
     "$'examples/openstack/nifs-network.json'",
     "$'examples/openstack/ntp-client.json'",
-    "$'examples/openstack/neutron-network.json'"
+    "$'examples/openstack/neutron-network.json'",
+    "$'examples/openstack/hosts.json'"
   ]
 }

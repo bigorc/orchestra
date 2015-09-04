@@ -1,0 +1,34 @@
+#!/bin/bash
+#examples
+FILE=/etc/hosts
+
+add_host() {
+	export LINE="$1 $2"
+	./line $FILE existent
+}
+
+remove_host() {
+	export LINE_PATTERN="$1\s+$2"
+	./line $FILE non_existent
+}
+
+status() {
+	export LINE_PATTERN="$1\s+$2"
+	./line $FILE like
+	if [ $? -eq 0 ]; then
+		echo "existent"
+	else
+		echo "non_existent"
+	fi
+}
+
+uri() {
+	echo -n hosts_$2
+}
+
+case $3 in
+existent) add_host $1 $2;;
+non_existent) remove_host $1 $2;;
+status) status $1 $2;;
+uri) uri $1 $2;;
+esac
