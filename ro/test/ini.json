@@ -1,0 +1,25 @@
+{
+  "type": "ini",
+  "file": "test/test2.ini",
+  "contain_properties": [
+    {
+      "name": "key1",
+      "value": "value1"
+    },
+    {
+      "section": "section1",
+      "name": "key2",
+      "value": "value2"
+    }],
+  "not_contain_properties": [
+    {
+      "name": "key3",
+      "value": "value3"
+    },
+    {
+      "section": "section1",
+      "name": "key4",
+      "value": "value4"
+    }
+  ]
+}

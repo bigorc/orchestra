@@ -1,0 +1,6 @@
+{
+  "$parent": "test/dparent.json",
+  "$parents": ["test/dparent2.json"],
+  "dkey": "dvalue",
+  "drkey": "$'test/dref.json'.drkey"
+}

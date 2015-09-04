@@ -1,0 +1,7 @@
+{
+  "stateMachine": "dummy",
+  "sm_args": "args",
+  "sm_state": "state1",
+  "key": "value",
+  "ORCP_STATE": "state3"
+}

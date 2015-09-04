@@ -1,0 +1,5 @@
+{
+  "$parent": "cluster.json",
+  "server": "",
+  "clients": []
+}

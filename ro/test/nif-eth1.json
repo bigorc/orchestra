@@ -1,0 +1,8 @@
+{
+  "stateMachine": "nif",
+  "sm_state": "up",
+  "sm_args": "eth1",
+  "ORCP_IS_NIF_PERSISTENT": "yes",
+  "ORCP_NIF_MODE": "static",
+  "ORCP_IP": "192.168.131.144/24"
+}

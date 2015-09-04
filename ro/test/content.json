@@ -1,0 +1,6 @@
+{
+  "stateMachine": "content",
+  "sm_args": "test.txt",
+  "sm_state": "",
+  "ORCP_CONTENT": "Hello World\n Heloo Everyone."
+}
