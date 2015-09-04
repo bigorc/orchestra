@@ -59,9 +59,9 @@ public class TaskWatcher implements CuratorWatcher {
 			} catch(NoNodeException | NodeExistsException e) {
 				//
 			} catch (Exception e) {
-				String errmsg = null;
+				String errmsg = "";
 				for( StackTraceElement stack : e.getStackTrace()) {
-					errmsg = stack.toString() + "\n";
+					errmsg += stack.toString() + "\n";
 				}
 				logger.error(errmsg);
 				try {
