@@ -1,9 +1,0 @@
-{
-  "type": "property",
-  "name": "property1",
-  "value": "value1",
-  "configuration": {
-    "type": "ini",
-    "file": "test.ini"
-  }
-}

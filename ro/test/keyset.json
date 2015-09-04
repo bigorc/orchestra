@@ -1,5 +1,0 @@
-{
-  "$parent": "test/parentKeyset.json",
-  "$parents": ["test/parent.json"],
-  "localkey": "localvalue"
-}

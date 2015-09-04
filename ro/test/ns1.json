@@ -1,8 +1,0 @@
-{
-	"$parent": "test/parent.json",
-	"key": "value",
-	"key1": "$key",
-	"e": "ns1evalue",
-	"file": "$'test/ns2.json'",
-	"ns2key": "$'test/ns2.json'.e"
-}
