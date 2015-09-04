@@ -8,5 +8,6 @@
     "$'examples/openstack/hosts.json'",
     "$'examples/openstack/nova-compute.json'",
     "$'examples/openstack/neutron-compute.json'",
+    "$'examples/openstack/ceilometer-agent.json'",
   ]
 }

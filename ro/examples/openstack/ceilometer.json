@@ -166,6 +166,40 @@ keystone endpoint-create --service-id=$(keystone service-list | awk '/ metering 
     {
     	"stateMachine": "cmd",
     	"sm_args": "service ceilometer-alarm-notifier restart"
+    },
+    {
+    	"type": "ini",
+    	"file": "/etc/glance/glance-api.conf",
+    	"contain_properties": [
+    		{
+    			"section": "DEFAULT",
+    			"name": "notification_driver",
+    			"value": "messaging"
+    		},
+    		{
+    			"section": "DEFAULT",
+    			"name": "rpc_backend",
+    			"value": "rabbit"
+    		},
+    		{
+    			"section": "DEFAULT",
+    			"name": "rabbit_host",
+    			"value": "controller"
+    		},
+    		{
+    			"section": "DEFAULT",
+    			"name": "rabbit_password",
+    			"value": "password"
+    		}
+    	]
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service glance-registry restart"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service glance-api restart"
     }
   ]
 }
