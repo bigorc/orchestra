@@ -2,6 +2,7 @@ package org.oc.orchestra.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -69,5 +70,13 @@ public class RoleDaoImpl extends JdbcDaoSupport implements RoleDao {
 		}
 
 		
+	}
+	@Override
+	public List<Role> findAll() {
+		List<Role> roles = getJdbcTemplate().
+			      query("SELECT * FROM roles",
+			      new RoleMapper()
+			      );
+		return roles;
 	}
 }

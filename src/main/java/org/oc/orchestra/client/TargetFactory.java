@@ -18,6 +18,8 @@ public class TargetFactory {
 			target = new UserTarget(builder);
 		} else if(targetName.equals("ro")) {
 			target = new RoTarget(builder);
+		} else if(targetName.equals("role")) {
+			target = new RoleTarget(builder);
 		}
 		return target;
 	}
