@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package org.oc.orchestra.coordinate;
+package org.oc.orchestra.provider;
 
 import java.nio.charset.StandardCharsets;
 
@@ -28,8 +28,8 @@ import org.oc.orchestra.client.HttpCommandBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CustomUserAuthenticationProvider implements AuthenticationProvider {
-	private final Logger logger = LoggerFactory.getLogger(CustomUserAuthenticationProvider.class);
+public class RoleAuthenticationProvider implements AuthenticationProvider {
+	private final Logger logger = LoggerFactory.getLogger(RoleAuthenticationProvider.class);
 	private String host = "orchestra";
 	private int port = 8183;
  
@@ -49,8 +49,8 @@ public class CustomUserAuthenticationProvider implements AuthenticationProvider 
 			.setScheme("https")
 			.setPort(port)
 			.setAction("read")
-			.setTarget("apikey")
-			.addPathParameter(username)
+			.setTarget("zkauth")
+			.setNeedAuthHeader(true)
 			.build();
 	    HttpResponse response = cmd.execute();
 	    if(200 == response.getStatusLine().getStatusCode()) {
@@ -72,12 +72,12 @@ public class CustomUserAuthenticationProvider implements AuthenticationProvider 
 			.setScheme("https")
 			.setPort(port)
 			.setAction("read")
-			.setTarget("userrole")
-			.addPathParameter(username)
+			.setTarget("zkauth")
 			.addPathParameter(role)
+			.setNeedAuthHeader(true)
 			.build();
 	    HttpResponse response = cmd.execute();
-	    if(response.getStatusLine().getStatusCode() == 204) return true;
+	    if(response.getStatusLine().getStatusCode() == 200) return true;
 	    return false;
 	}
 

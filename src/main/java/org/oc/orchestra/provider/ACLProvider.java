@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package org.oc.orchestra.coordinate;
+package org.oc.orchestra.provider;
 
 import java.util.ArrayList;
 import java.util.Collections;

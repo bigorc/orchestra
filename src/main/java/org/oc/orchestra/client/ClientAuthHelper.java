@@ -39,7 +39,7 @@ public class ClientAuthHelper {
 	private static Map<String, String> cache = new HashMap<String, String>();
 	private static String host = "orchestra";
 	private static int port = 8183;
-	private static BasicDBObject matcher;
+//	private static BasicDBObject matcher;
 	private String username;
 	private String password;
 	private String filename;
@@ -148,14 +148,14 @@ public class ClientAuthHelper {
 		byte[] kSigning = CipherUtil.sign(nonce  , kDate);
 		byte[] signature = CipherUtil.sign(stringToSign, kSigning);
 		String signatureHex = CipherUtil.toHex(signature);
-		matcher.put("secret", secret);
-		matcher.put("stringToSign", stringToSign);
-		matcher.put("kDate", new String(kDate, StandardCharsets.UTF_8));
-		matcher.put("kSigning", kSigning.toString());
-		matcher.put("signature", signatureHex);
-		DBCollection coll = ServerAuthHelper.getDB().getCollection("debug");
-		coll.remove(new BasicDBObject());
-		coll.insert(matcher);
+//		matcher.put("secret", secret);
+//		matcher.put("stringToSign", stringToSign);
+//		matcher.put("kDate", new String(kDate, StandardCharsets.UTF_8));
+//		matcher.put("kSigning", kSigning.toString());
+//		matcher.put("signature", signatureHex);
+//		DBCollection coll = ServerAuthHelper.getDB().getCollection("debug");
+//		coll.remove(new BasicDBObject());
+//		coll.insert(matcher);
 		System.out.println(signatureHex);
 		return signatureHex;
 	}
@@ -169,11 +169,11 @@ public class ClientAuthHelper {
 //		String requestPayloadHashHex = CipherUtil.toHex(
 //				CipherUtil.hash(getRequestPayload(request)));
 		
-		matcher = new BasicDBObject();
-		matcher.put("uri", canonicalURI);
-		matcher.put("query", canonicalQueryString);
-		matcher.put("cheader", canonicalHeadersString);
-		matcher.put("sheader", signedHeadersString);
+//		matcher = new BasicDBObject();
+//		matcher.put("uri", canonicalURI);
+//		matcher.put("query", canonicalQueryString);
+//		matcher.put("cheader", canonicalHeadersString);
+//		matcher.put("sheader", signedHeadersString);
 //		matcher.put("payload", requestPayloadHashHex);
 		
 		String canonicalRequest =

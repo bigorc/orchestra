@@ -36,6 +36,20 @@
     <mkdir dir="${antlr.src.dir}" />
   </target>
 
+  <target name="jar">
+    <jar destfile="${dist.dir}/lib/RoleAuthProvider.jar"
+        basedir="${build.dir}"
+        includes="org/oc/orchestra/provider/**"
+    />
+  </target>
+
+  <target name="client-jar">
+    <jar destfile="${dist.dir}/lib/orchestra-client.jar"
+        basedir="${build.dir}"
+        includes="org/oc/orchestra/client/**"
+    />
+  </target>
+
   <target name="resource">
     <copy todir="${build.dir}">
       <fileset dir="${main.src.dir}" excludes="**/*.java"/>
@@ -61,13 +75,6 @@
   </target>
 
   <!--Creates the deployable jar file  -->
-  <target name="jar" depends="compile">
-    <jar destfile="${dist.dir}\de.vogella.build.test.ant.jar" basedir="${build.dir}">
-      <manifest>
-        <attribute name="Main-Class" value="test.Main" />
-      </manifest>
-    </jar>
-  </target>
 
   <target name="main" depends="compile, jar, docs">
     <description>Main target</description>

@@ -12,23 +12,28 @@
   <tx:annotation-driven />
   <context:component-scan 
       base-package="org.oc.orchestra.dao" />
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+        <value>classpath:server.conf</value>
+    </property>
+  </bean>
   <bean id="securityManager" class="org.apache.shiro.config.IniSecurityManagerFactory">
   	<constructor-arg value="shiro.ini"/>
   </bean>
   <bean id="mongoClient" class="com.mongodb.MongoClient">
   	<constructor-arg index="0">
-  		<value>localhost</value>
+  		<value>${mongodb.host}</value>
   	</constructor-arg>
   	<constructor-arg index="1">
-  		<value>27017</value>
+  		<value>${mongodb.port}</value>
   	</constructor-arg>
   </bean>
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
     destroy-method="close">
     <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-    <property name="url" value="jdbc:mysql://localhost:3306/orchestra" />
-    <property name="username" value="orchestra" />
-    <property name="password" value="password" />
+    <property name="url" value="${mysql.url}" />
+    <property name="username" value="${mysql.username}" />
+    <property name="password" value="${mysql.password}" />
   </bean>
   <bean id="transactionManager"
   	  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

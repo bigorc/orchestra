@@ -87,17 +87,17 @@ public class ServerAuthHelper {
 		byte[] kSigning = CipherUtil.sign(nonce  , kDate);
 		byte[] signature = CipherUtil.sign(stringToSign, kSigning);
 		String signatureHex = CipherUtil.toHex(signature);
-		DBObject matcher = debugColl.findOne();
-		System.out.println(matcher.get("secret") + "|" + secret);
-		System.out.println("Does the secret match?" + matcher.get("secret").equals(secret));
-		System.out.println(matcher.get("stringToSign") + "|" + stringToSign);
-		System.out.println("Does the stringToSign match?" + matcher.get("stringToSign").equals(stringToSign));
-		System.out.println(matcher.get("kDate") + "|" + new String(kDate, StandardCharsets.UTF_8));
-		System.out.println("Does the kDate match?" + matcher.get("kDate").equals(kDate.toString()));
-		System.out.println(matcher.get("kSigning") + "|" + kSigning);
-		System.out.println("Does the kSigning match?" + matcher.get("kSigning").equals(kSigning.toString()));
-		System.out.println(matcher.get("signature") + "|" + signature);
-		System.out.println("Does the signature match?" + matcher.get("signature").equals(signatureHex));
+//		DBObject matcher = debugColl.findOne();
+//		System.out.println(matcher.get("secret") + "|" + secret);
+//		System.out.println("Does the secret match?" + matcher.get("secret").equals(secret));
+//		System.out.println(matcher.get("stringToSign") + "|" + stringToSign);
+//		System.out.println("Does the stringToSign match?" + matcher.get("stringToSign").equals(stringToSign));
+//		System.out.println(matcher.get("kDate") + "|" + new String(kDate, StandardCharsets.UTF_8));
+//		System.out.println("Does the kDate match?" + matcher.get("kDate").equals(kDate.toString()));
+//		System.out.println(matcher.get("kSigning") + "|" + kSigning);
+//		System.out.println("Does the kSigning match?" + matcher.get("kSigning").equals(kSigning.toString()));
+//		System.out.println(matcher.get("signature") + "|" + signature);
+//		System.out.println("Does the signature match?" + matcher.get("signature").equals(signatureHex));
 		
 		System.out.println(signatureHex);
 		
@@ -210,16 +210,16 @@ public class ServerAuthHelper {
 				signedHeadersString;
 //				+ Constants.NEW_LINE + requestPayloadHashHex;
 		
-		debugColl = db.getCollection("debug");
-		DBObject matcher = debugColl.findOne();
-		System.out.println(matcher.get("uri") + "|" + canonicalURI);
-		System.out.println("Does the uri match?" + matcher.get("uri").equals(canonicalURI));
-		System.out.println(matcher.get("query") + "|" + canonicalQueryString);
-		System.out.println("Does the query string match?" + matcher.get("query").equals(canonicalQueryString));
-		System.out.println(matcher.get("cheader") + "|" + canonicalHeadersString);
-		System.out.println("Does the canonical header match?" + matcher.get("cheader").equals(canonicalHeadersString));
-		System.out.println(matcher.get("sheader") + "|" + signedHeadersString);
-		System.out.println("Does the signed header match?" + matcher.get("sheader").equals(signedHeadersString));
+//		debugColl = db.getCollection("debug");
+//		DBObject matcher = debugColl.findOne();
+//		System.out.println(matcher.get("uri") + "|" + canonicalURI);
+//		System.out.println("Does the uri match?" + matcher.get("uri").equals(canonicalURI));
+//		System.out.println(matcher.get("query") + "|" + canonicalQueryString);
+//		System.out.println("Does the query string match?" + matcher.get("query").equals(canonicalQueryString));
+//		System.out.println(matcher.get("cheader") + "|" + canonicalHeadersString);
+//		System.out.println("Does the canonical header match?" + matcher.get("cheader").equals(canonicalHeadersString));
+//		System.out.println(matcher.get("sheader") + "|" + signedHeadersString);
+//		System.out.println("Does the signed header match?" + matcher.get("sheader").equals(signedHeadersString));
 //		System.out.println(matcher.get("payload") + "|" + requestPayloadHashHex);
 //		System.out.println("Does the payload match?" + matcher.get("payload").equals(requestPayloadHashHex));
 		
