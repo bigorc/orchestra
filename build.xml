@@ -44,10 +44,14 @@
   </target>
 
   <target name="client-jar">
-    <jar destfile="${dist.dir}/lib/orchestra-client.jar"
-        basedir="${build.dir}"
-        includes="org/oc/orchestra/client/**"
-    />
+    <jar destfile="${dist.dir}/lib/orchestra-client.jar">
+      <fileset dir="${build.dir}">
+        <filename name="org/oc/orchestra/client/**"/>
+      </fileset>
+      <fileset dir="${build.dir}">
+        <filename name="org/oc/orchestra/auth/KeystoreHelper.class"/>
+      </fileset>
+    </jar>
   </target>
 
   <target name="resource">

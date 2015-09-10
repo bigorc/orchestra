@@ -4,7 +4,7 @@ JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 CLASSPATH=target/classes:conf/
 STDOUT=logs/stdout.log
 STDERR=logs/stderr.log
-
+JVMFLAGS="-Djavax.net.ssl.keyStore=keystore/clientKey.jks -Djavax.net.ssl.trustStore=keystore/clientTrust.jks -Djavax.net.ssl.keyStorePassword=password -Djavax.net.ssl.trustStorePassword=password"
 for i in lib/*.jar
 do
 	CLASSPATH="$i:$CLASSPATH"
@@ -31,6 +31,6 @@ start-daemons) start;;
 stop-daemons) stop;;
 restart-daemons) restart;;
 esac
-java -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
+java $JVMFLAGS -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
 
 

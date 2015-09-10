@@ -28,15 +28,16 @@ public class KeystoreHelper {
 	private String keystorename;
 	private KeyStore keystore;
 	private String password;
-
+	FileInputStream input;
+	
 	public KeyStore getKeystore() {
 		return keystore;
 	}
-
+	
 	public KeystoreHelper(String keystorename, String password) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		this.keystorename = keystorename;
 		this.password = password;
-		if(keystore == null) keystore = KeyStore.getInstance("JKS");
+		if(keystore == null) keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 		keystore.load( null , password.toCharArray());
 		if(!new File(keystorename).exists()) {
 			store();
@@ -69,7 +70,9 @@ public class KeystoreHelper {
 	
 	private void store() throws FileNotFoundException, KeyStoreException,
 			IOException, NoSuchAlgorithmException, CertificateException {
-		FileOutputStream output = new FileOutputStream(keystorename);
+		File file = new File(keystorename);
+		if(file.getParentFile() != null) file.getParentFile().mkdirs();
+		FileOutputStream output = new FileOutputStream(file);
 	    keystore.store(output, password.toCharArray());
 	    output.close();
 	}

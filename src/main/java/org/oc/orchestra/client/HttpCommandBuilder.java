@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -21,12 +20,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
 import org.apache.shiro.codec.Base64;
 import org.joda.time.DateTime;
 import org.oc.orchestra.auth.Constants;
-import org.oc.util.HttpUtil;
-import org.restlet.Request;
 
 public class HttpCommandBuilder {
 	private String username;

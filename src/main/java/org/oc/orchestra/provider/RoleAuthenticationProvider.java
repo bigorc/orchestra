@@ -1,22 +1,8 @@
-/*
- * Copyright 2012 Michael Morello
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-
 package org.oc.orchestra.provider;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 import org.apache.http.HttpResponse;
 import org.apache.zookeeper.KeeperException.Code;
@@ -38,6 +24,7 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	public Code handleAuthentication(ServerCnxn cnxn, byte[] authData) {
+		loadConfig();
 		final String id = new String(authData, StandardCharsets.UTF_8);
 	    // A non null or empty user name must be provided
 	    logger.info(id);
@@ -60,8 +47,20 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
 	    return Code.AUTHFAILED;
 	}
  
+	private void loadConfig() {
+		Properties conf = new Properties();
+		try {
+			conf.load(RoleAuthenticationProvider.class.getResourceAsStream("zoo.cfg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		host = conf.containsKey("orchestra.server") ? conf.getProperty("orchestra.server") : host;
+		port = conf.containsKey("orchestra.port") ? Integer.valueOf(conf.getProperty("orchestra.port")) : port;
+	}
+
 	public boolean matches(String id, String aclExpr) {
-	    logger.info("id:" + id + ";" + "acl:" + aclExpr);
+		loadConfig();
+	    System.out.println("id:" + id + ";" + "acl:" + aclExpr);
 	    String[] idarr = id.split(":");
 	    String username = idarr[0];
 	    String password = idarr[1];
@@ -86,7 +85,6 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	public boolean isValid(String id) {
-		// A valid user name is at least 1 char length
 		return true;
 	}
 }
