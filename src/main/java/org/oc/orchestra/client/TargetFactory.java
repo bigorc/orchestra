@@ -20,6 +20,8 @@ public class TargetFactory {
 			target = new RoTarget(builder);
 		} else if(targetName.equals("role")) {
 			target = new RoleTarget(builder);
+		} else if(targetName.equals("userrole")) {
+			target = new UserRoleTarget(builder);
 		}
 		return target;
 	}

@@ -35,4 +35,21 @@ public class UserRoleRelationDaoImpl extends JdbcDaoSupport  implements UserRole
 	    
 	  }
 
+	@Override
+	public void addUserRole(String username, String rolename) {
+		getJdbcTemplate().update(
+			      "INSERT INTO user_roles (USERNAME, ROLE_NAME) VALUES (?, ?)",
+			        new Object[] {
+			        username,
+			        rolename
+			      }
+			    );
+	}
+
+	@Override
+	public void removeUserRole(String username, String rolename) {
+		getJdbcTemplate().update("DELETE FROM user_roles WHERE USERNAME = ? AND role_name = ?",
+				new Object[] { username, rolename });
+	}
+
 }

@@ -1,9 +1,7 @@
 package org.oc.orchestra.rest;
 
-import org.apache.commons.lang.CharSet;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
-import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.mgt.RealmSecurityManager;
@@ -20,10 +18,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-
-import com.google.common.base.Charsets;
 
 public class User extends ServerResource {
 	@Override
