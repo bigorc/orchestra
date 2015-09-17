@@ -1,6 +1,7 @@
 package org.oc.orchestra.provider;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -50,7 +51,9 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
 	private void loadConfig() {
 		Properties conf = new Properties();
 		try {
-			conf.load(RoleAuthenticationProvider.class.getResourceAsStream("zoo.cfg"));
+			this.getClass().getClassLoader();
+			InputStream resourceAsStream = ClassLoader.getSystemResourceAsStream("zoo.cfg");
+			conf.load(resourceAsStream);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

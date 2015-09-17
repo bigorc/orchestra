@@ -1,10 +1,8 @@
 package org.oc.orchestra.client;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,19 +14,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONValue;
 import org.oc.orchestra.constraint.Constraint;
 import org.oc.orchestra.parser.ConstraintParser;
 
@@ -155,6 +141,11 @@ public class ArgsHelper {
                 .withDescription("Recursive")
                 .withLongOpt("recursive")
                 .create('r');
+		Option permission = OptionBuilder.withArgName("Permission")
+				.withDescription("Permission")
+				.withLongOpt("permission")
+				.create("perm");
+		permission.setArgs(10);
 		
 		options.addOption(user);
 		options.addOption(password);
@@ -167,6 +158,7 @@ public class ArgsHelper {
 		options.addOption(user_pass);
 		options.addOption(path);
 		options.addOption(recursive);
+		options.addOption(permission);
 		return options;
 	}
 

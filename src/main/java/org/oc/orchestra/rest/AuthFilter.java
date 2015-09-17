@@ -69,7 +69,7 @@ public class AuthFilter extends Filter {
 			ShiroAuth shiro = new ShiroAuth(request);
 			if(!request.getClientInfo().isAuthenticated()) {
 				logger.info("Unauthorized client");
-				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
+				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized client");
 			}
 			
 			if(!shiro.isAuthenticated()) {

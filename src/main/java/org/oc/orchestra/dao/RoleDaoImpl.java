@@ -79,4 +79,5 @@ public class RoleDaoImpl extends JdbcDaoSupport implements RoleDao {
 			      );
 		return roles;
 	}
+
 }

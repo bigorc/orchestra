@@ -4,13 +4,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.stereotype.Service;
 
-
+@Service("userRoleRelationDao")
 public class UserRoleRelationDaoImpl extends JdbcDaoSupport  implements UserRoleRelationDao {
 
-
+	@Autowired
+	public UserRoleRelationDaoImpl(DataSource dataSource) {
+		setDataSource(dataSource);
+	}
+	
 	@Override
 	public boolean hasUserRole(String username, String rolename) {
 		List<UserRole> userRoles = getJdbcTemplate().

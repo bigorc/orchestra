@@ -35,15 +35,18 @@ public class ACLProvider implements
 
   public List<ACL> getAclForPath(String path) {
     // The first letter of the path is the ACL id
-    final String firstLetter = "admin";
-    final Id FIRST_USER_LETTER = new Id("role", firstLetter);
+    final String role1 = "openstack";
+    String role2 = "admin";
+    final Id roleId1 = new Id("role", role1);
+    Id roleId2 = new Id("role", role2);
     // Create a new ACL with the first letter of the path as an ID and give all
     // permissions for users
-    ACL acl1 = new ACL(Perms.ALL, FIRST_USER_LETTER);
-    ACL acl2 = new ACL(Perms.ALL, new Id("digest", "u1:fpT/y03U+EjItKZOSLGvjnJlyng="));
+    ACL acl1 = new ACL(Perms.ALL, roleId1);
+    ACL acl2 = new ACL(Perms.DELETE, roleId2);
     List<ACL> aclList = new ArrayList<ACL>();
-    aclList.add(acl2);
+    
     aclList.add(acl1);
+    aclList.add(acl2);
     return aclList;
   }
 

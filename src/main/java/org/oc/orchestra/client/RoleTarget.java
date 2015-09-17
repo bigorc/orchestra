@@ -24,6 +24,20 @@ public class RoleTarget extends Target {
 			builder.setMethod("get");
 		} else if(method.equals("create")) {
 			builder.setMethod("post");
+			if(cmd.hasOption("permission")) {
+				String[] permissions = cmd.getOptionValues("perm");
+				for(String p : permissions) {
+					builder.addParameter("permission", p);
+				}
+			}
+		} else if(method.equals("update")) {
+			builder.setMethod("put");
+			if(cmd.hasOption("permission")) {
+				String[] permissions = cmd.getOptionValues("perm");
+				for(String p : permissions) {
+					builder.addParameter("permission", p);
+				}
+			}
 		}
 		HttpCommand command = builder.build();
 		HttpResponse response = command.execute();
