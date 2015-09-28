@@ -16,38 +16,41 @@
 
 package org.oc.orchestra.provider;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
+import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.ZooDefs.Perms;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.oc.orchestra.client.Client;
+import org.oc.orchestra.client.HttpCommand;
+import org.oc.orchestra.client.HttpCommandBuilder;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class ACLProvider implements
-    org.apache.curator.framework.api.ACLProvider {
+org.apache.curator.framework.api.ACLProvider {
 
-  public List<ACL> getDefaultAcl() {
-    throw new NotImplementedException();
-  }
+	
+	public List<ACL> getDefaultAcl() {
+		throw new NotImplementedException();
+	}
 
-  public List<ACL> getAclForPath(String path) {
-    // The first letter of the path is the ACL id
-    final String role1 = "openstack";
-    String role2 = "admin";
-    final Id roleId1 = new Id("role", role1);
-    Id roleId2 = new Id("role", role2);
-    // Create a new ACL with the first letter of the path as an ID and give all
-    // permissions for users
-    ACL acl1 = new ACL(Perms.ALL, roleId1);
-    ACL acl2 = new ACL(Perms.DELETE, roleId2);
-    List<ACL> aclList = new ArrayList<ACL>();
-    
-    aclList.add(acl1);
-    aclList.add(acl2);
-    return aclList;
-  }
+	public List<ACL> getAclForPath(String path) {
+		String clientname = path.substring(path.lastIndexOf('/') + 1);
+		Client client = new Client();
+		return client.getAclList(clientname);
+	}
 
 }

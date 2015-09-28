@@ -22,6 +22,7 @@ import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.retry.RetryOneTime;
 import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
@@ -76,8 +78,12 @@ import org.apache.http.util.EntityUtils;
 import org.apache.shiro.codec.Base64;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs.Perms;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
 import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.oc.orchestra.ResourceFactory;
@@ -91,6 +97,7 @@ import org.oc.orchestra.parser.ConstraintParser;
 import org.oc.orchestra.parser.ConstraintsVisitor;
 import org.oc.orchestra.parser.RulesLexer;
 import org.oc.orchestra.parser.RulesParser;
+import org.oc.orchestra.provider.ACLProvider;
 import org.oc.orchestra.resource.Resource;
 import org.oc.util.CipherUtil;
 import org.oc.util.HttpUtil;
@@ -101,9 +108,20 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 
 public class Client implements Daemon{
-	private int resource_check_period = 60000;
-	private int task_check_period = 60000;
-	
+	private static int resource_check_period = 60000;
+	private static int task_check_period = 60000;
+	static String resourcePath = "/orchestra/resources";
+	static String taskPath = "/orchestra/tasks";
+	private static String name = getName();
+	protected static String resourceClientPath = resourcePath + "/" + name;
+	protected static String taskClientPath = taskPath + "/" + name;
+
+	private static final String keystore_pass = "password";
+
+	private static String connectString;
+	private CuratorFramework curator;
+	private static String username;
+
 	private static final transient Logger logger = LoggerFactory.getLogger(Client.class);
 	
 	static String server = "orchestra";
@@ -125,16 +143,7 @@ public class Client implements Daemon{
 		Client.server_port = server_port;
 	}
 
-	private static String name;
-	protected static String zkClientResourcePath;
-	protected static String zkTaskClientPath;
-
-	private static final String keystore_pass = "password";
-
-	private static String connectString;
-	private CuratorFramework curator;
-	private static String username;
-	
+		
 	public static String getConnectString() {
 		return connectString;
 	}
@@ -171,12 +180,12 @@ public class Client implements Daemon{
 	private Timer resourceTimer;
 
 	public Client() {
-		
+		if(username == null) config();
 	}
+	
 	public Client(String connectString) {
 		this.connectString = connectString;
-		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
-		curator = CuratorFrameworkFactory.newClient(connectString, retryPolicy );
+		curator = getClientBuilder(false).build();
 		curator.start();
 		
 	}
@@ -205,14 +214,14 @@ public class Client implements Daemon{
 	}
 
 	protected static String getZkTaskClientPath() {
-		if(zkTaskClientPath == null) {
-			zkTaskClientPath = "/orchestra/tasks/" + getName();
+		if(taskClientPath == null) {
+			taskClientPath = taskPath + "/" + getName();
 		}
-		return zkTaskClientPath;
+		return taskClientPath;
 	}
 
 	protected static void setZkTaskClientPath(String zkTaskClientPath) {
-		Client.zkTaskClientPath = zkTaskClientPath;
+		Client.taskClientPath = zkTaskClientPath;
 	}
 	
 	void startResourcesWatcher() {
@@ -221,31 +230,45 @@ public class Client implements Daemon{
 	}
 
 	public static String getZkClientResourcePath() throws UnknownHostException {
-		if(zkClientResourcePath == null) {
-			zkClientResourcePath = "/orchestra/resources/" + getName();
+		if(resourceClientPath == null) {
+			resourceClientPath = resourcePath + "/" + getName();
 		}
-		return zkClientResourcePath;
+		return resourceClientPath;
 	}
 
 	public static void setZkClientResourcePath(String zkClientResourcePath) {
-		Client.zkClientResourcePath = zkClientResourcePath;
+		Client.resourceClientPath = zkClientResourcePath;
 	}
 
 	public void createParents() {
-		
-		String resourcePath = null;
-		String taskPath = null;
+		//create the orchestra task and resource path
+		CuratorFramework cf = getClientBuilder(false).build();
+		cf.start();
 		try {
-			resourcePath = getZkClientResourcePath();
-			taskPath = getZkTaskClientPath();
-		} catch (UnknownHostException e1) {
+			List<ACL> aclList = new ArrayList<ACL>();
+			Id roleId = new Id("role", "admin");
+	    	ACL acl = new ACL(Perms.ALL, roleId);
+	    	aclList.add(acl);
+			if(cf.checkExists().forPath(resourcePath) == null) {
+				cf.create().creatingParentsIfNeeded().withACL(aclList).forPath(resourcePath);
+			}
+			if(cf.checkExists().forPath(taskPath) == null) {
+				cf.create().forPath(taskPath);
+			}
+		} catch (Exception e1) {
 			e1.printStackTrace();
-			logger.error("Unable to get client name");
-			System.exit(1);
 		}
+		cf.close();
+		
+		cf = getClientBuilder(true).build();
+		cf.start();
 		try {
-			curator.create().creatingParentsIfNeeded().forPath(resourcePath);
-			curator.create().creatingParentsIfNeeded().forPath(taskPath);
+			if(cf.checkExists().forPath(getZkClientResourcePath()) == null) {
+				cf.create().forPath(getZkClientResourcePath());
+			}
+			if(cf.checkExists().forPath(getZkTaskClientPath()) == null) {
+				cf.create().forPath(getZkTaskClientPath());
+			}
 		} catch(KeeperException.NodeExistsException e) {
 			logger.warn("Client resource or task path already exists.");
 		} catch (KeeperException.ConnectionLossException e) {
@@ -253,6 +276,52 @@ public class Client implements Daemon{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		cf.close();
+	}
+
+	public void resetAcl(String clientname) {
+		CuratorFramework cf = getClientBuilder(true).build();
+		cf.start();
+		List<ACL> aclList = getAclList(clientname);
+		try {
+			cf.setACL().withACL(aclList).forPath(resourcePath + "/" + clientname);
+			cf.setACL().withACL(aclList).forPath(taskPath + "/" + clientname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		cf.close();
+	}
+	
+
+	public List<ACL> getAclList(String clientname) {
+		HttpCommand cmd = new HttpCommandBuilder(username , password )
+			.setHost(server)
+			.setScheme("https")
+			.setPort(server_port)
+			.setAction("read")
+			.setTarget("zkacl")
+			.addPathParameter(clientname)
+			.build();
+		JSONObject json = null;
+		HttpResponse response = cmd.execute();
+	    if(200 == response.getStatusLine().getStatusCode()) {
+	    	try {
+				String str = EntityUtils.toString(response.getEntity());
+				json = (JSONObject) JSONValue.parse(str);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    	
+	    }
+	    JSONArray jarr = (JSONArray) json.get("roles");
+	    List<ACL> aclList = new ArrayList<ACL>();
+	    for(Object obj : jarr) {
+	    	String role = (String) ((JSONObject)obj).get("name");
+	    	Id roleId = new Id("role", role);
+	    	ACL acl = new ACL(Perms.ALL, roleId);
+	    	aclList.add(acl);
+	    }
+		return aclList;
 	}
 
 	public static void setName(String name) {
@@ -286,7 +355,6 @@ public class Client implements Daemon{
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -294,9 +362,11 @@ public class Client implements Daemon{
 	public void init(DaemonContext arg0) throws DaemonInitException, Exception {
 		System.out.println("orchestra client daemon started.");
 		config();
+		curator = getClientBuilder(true).build();
+		curator.start();
 	}
 
-	private void config() {
+	public void config() {
 		Properties conf = new Properties();
         InputStream is;
 		try {
@@ -316,15 +386,22 @@ public class Client implements Daemon{
 		task_check_period = conf.containsKey("task_check_period") ? 
 			Integer.valueOf(conf.getProperty("task_check_period")) : 
 			task_check_period;
-
-		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(1000 , 3);
-		curator = CuratorFrameworkFactory.newClient(connectString, retryPolicy );
-		curator.start();
 	}
-
+	
+	protected static CuratorFrameworkFactory.Builder getClientBuilder(boolean withAclProvider) {
+		// Create a client builder
+		CuratorFrameworkFactory.Builder clientBuilder = CuratorFrameworkFactory
+				.builder().connectString(connectString)
+				.retryPolicy(new ExponentialBackoffRetry(1000, 3));
+		if(withAclProvider) {
+			clientBuilder.aclProvider(new ACLProvider());
+		}
+		clientBuilder.authorization("role", (username + ":" + password).getBytes());
+		return clientBuilder;
+	}
+	
 	@Override
 	public void start() {
-		createParents();
 		startResourcesWatcher();
 		startTaskWatcher();
 	}
@@ -334,5 +411,9 @@ public class Client implements Daemon{
 		System.out.println("orchestra client daemon stopped.");
 		taskTimer.cancel();
 		resourceTimer.cancel();
+	}
+
+	public void update() {
+		resetAcl(getName());
 	}
 }

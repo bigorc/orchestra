@@ -32,10 +32,10 @@ public class ClientTarget extends Target {
 			if(method.equals("install") || method.equals("uninstall")) {
 				//client name should be hostname when install or uninstall
 				name = Client.getName();
-				keystorename = cmd.hasOption("keystore") ? 
-						cmd.getOptionValue("keystore") : "keystore/clientKey.jks";
-				keystore_password = cmd.hasOption("keystore_password") ? 
-						cmd.getOptionValue("keystore_password") : "password";
+				keystorename = System.getProperty("javax.net.ssl.keyStore");
+				if(keystorename == null) keystorename = "keystore/clientKey.jks";
+				keystore_password =  System.getProperty("javax.net.ssl.keyStorePassword");
+				if(keystore_password == null) keystore_password = "password";
 			}
 			if(name == null) ArgsHelper.usage();
 		}
@@ -50,7 +50,8 @@ public class ClientTarget extends Target {
 		} else if(method.equals("create")) {
 			builder.setMethod("post");
 		} else if(method.equals("update")) {
-			builder.setMethod("put");
+			new Client().update();
+			return;
 		} else if(method.equals("install")) {
 			builder.setMethod("post");
 		} else if(method.equals("uninstall")) {
@@ -61,7 +62,7 @@ public class ClientTarget extends Target {
 		HttpResponse response = command.execute();
 		if(method.equals("install")) {
 			if(response.getStatusLine().getStatusCode() == 409) {
-				throw new RuntimeException("Client already exists.");
+				System.out.println("Client already exists.");
 			} else if(response.getStatusLine().getStatusCode() == 201) {
 				JSONObject json = null;
 				try {
@@ -86,6 +87,7 @@ public class ClientTarget extends Target {
 					e.printStackTrace();
 				}
 			}
+			new Client().createParents();
 			return;
 		}
 		if(method.equals("delete")) {

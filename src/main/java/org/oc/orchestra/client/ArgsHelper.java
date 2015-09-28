@@ -112,16 +112,6 @@ public class ArgsHelper {
                 .withDescription("Zookeeper Connection String")
                 .withLongOpt("zk_connect_string")
                 .create('z');
-		Option keystore = OptionBuilder.withArgName( "keystore" )
-                .hasArg()
-                .withDescription("Keystore Name")
-                .withLongOpt("keystore")
-                .create('k');
-		Option keystore_password = OptionBuilder.withArgName( "keystore_password" )
-                .hasArg()
-                .withDescription("Keystore Password")
-                .withLongOpt("keystore_password")
-                .create("kp");
 		Option name = OptionBuilder.withArgName( "name" )
                 .hasArg()
                 .withDescription("name")
@@ -152,8 +142,6 @@ public class ArgsHelper {
 		options.addOption(server);
 		options.addOption(port);
 		options.addOption(zookeeper);
-		options.addOption(keystore);
-		options.addOption(keystore_password);
 		options.addOption(name);
 		options.addOption(user_pass);
 		options.addOption(path);

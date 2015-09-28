@@ -37,9 +37,9 @@ public class Roles extends ServerResource {
 			String rpStr = "";
 			
 			String rolename = role.getName();
-			List<RolePermission> rps = rpDao.getRolePermission(rolename);
-			for(RolePermission rp : rps) {
-				rpStr += rp.getPermission() + ";";
+			List<String> rps = rpDao.getPermissionsByRole(rolename);
+			for(String rp : rps) {
+				rpStr += rp + ";";
 			}
 			if(rpStr.length() > 0) rpStr = rpStr.substring(0, rpStr.length() - 1);
 			

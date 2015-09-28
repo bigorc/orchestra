@@ -35,10 +35,10 @@ public class Role extends ServerResource {
 			return null;
 		}
 		RolePermissionRelationDao rpDao = (RolePermissionRelationDao) SpringUtil.getBean("rolePermissionDao");
-		List<RolePermission> rps = rpDao.getRolePermission(rolename);
+		List<String> rps = rpDao.getPermissionsByRole(rolename);
 		String rpStr = "";
-		for(RolePermission rp : rps) {
-			rpStr += rp.getPermission() + ";";
+		for(String rp : rps) {
+			rpStr += rp + ";";
 		}
 		if(rpStr.length() > 0) rpStr = rpStr.substring(0, rpStr.length() - 1);
 		JSONObject json = new org.json.JSONObject();
@@ -68,10 +68,10 @@ public class Role extends ServerResource {
 					rpDao.addRolePermission(rolename, p);
 				}
 			}
-			List<RolePermission> rps = rpDao.getRolePermission(rolename);
+			List<String> rps = rpDao.getPermissionsByRole(rolename);
 			String rpStr = "";
-			for(RolePermission rp : rps) {
-				rpStr += rp.getPermission() + ";";
+			for(String rp : rps) {
+				rpStr += rp + ";";
 			}
 			if(rpStr.length() > 0) rpStr = rpStr.substring(0, rpStr.length() - 1);
 			JSONObject json = new org.json.JSONObject();
@@ -105,10 +105,10 @@ public class Role extends ServerResource {
 					rpDao.addRolePermission(rolename, p);
 				}
 			}
-			List<RolePermission> rps = rpDao.getRolePermission(rolename);
+			List<String> rps = rpDao.getPermissionsByRole(rolename);
 			String rpStr = "";
-			for(RolePermission rp : rps) {
-				rpStr += rp.getPermission() + ";";
+			for(String rp : rps) {
+				rpStr += rp + ";";
 			}
 			if(rpStr.length() > 0) rpStr = rpStr.substring(0, rpStr.length() - 1);
 			JSONObject json = new org.json.JSONObject();

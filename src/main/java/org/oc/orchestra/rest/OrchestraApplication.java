@@ -17,6 +17,7 @@ public class OrchestraApplication extends Application {
 		router.attach("/roles", Roles.class);
 		router.attach("/zkauth", ZkAuth.class);
 		router.attach("/zkauth/{rolename}", ZkAuth.class);
+		router.attach("/zkacl/{clientname}", ZkAcl.class);
 		router.attach("/userrole/{username}/{rolename}", UserRole.class);
 		router.attach("/apikey/{username}/{clientname}", Apikey.class);
 		router.attach("/client/{clientname}", Client.class);

@@ -25,7 +25,7 @@ public class ZkAuth extends ServerResource {
 			if(!ur.hasUserRole(username, rolename)) {
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "User hasn't the role.");
 				return new StringRepresentation("Unauthenticated.");
-			}			
+			}
 		}
 		logger.info("Authenticated zookeeper user");
 		return new StringRepresentation("Authenticated");
