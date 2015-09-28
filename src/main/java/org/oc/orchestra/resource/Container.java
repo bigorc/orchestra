@@ -53,7 +53,11 @@ public class Container extends Resource {
 				r.realize();
 			}
 		} else {
-			Client.getCoordinator(client).asyncAssignResourceTask(this);
+			if(block) {
+				Client.getCoordinator(client).assignResourceTask(this);
+			} else {
+				Client.getCoordinator(client).asyncAssignResourceTask(this);
+			}
 		}
 	}
 

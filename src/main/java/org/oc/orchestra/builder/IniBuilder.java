@@ -27,6 +27,7 @@ public class IniBuilder implements Builder {
 		String operator = (String) json.get("operator");
 		String comment = (String) json.get("comment");
 		ini = new Ini(filename, multiValue, operator, comment);
+		if("true".equalsIgnoreCase((String) json.get("block"))) ini.setBlock(true);
 		ini.setClient((String) json.get("client"));
 		if(json.get("contain_properties") != null) {
 			JSONArray array = (JSONArray) json.get("contain_properties");

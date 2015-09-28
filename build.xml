@@ -37,7 +37,7 @@
   </target>
 
   <target name="jar">
-    <jar destfile="${dist.dir}/lib/RoleAuthProvider.jar"
+    <jar destfile="${dist.dir}/lib/roleAuthProvider.jar"
         basedir="${build.dir}"
         includes="org/oc/orchestra/provider/**"
     />

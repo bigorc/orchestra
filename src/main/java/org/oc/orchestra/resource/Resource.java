@@ -8,8 +8,17 @@ import org.oc.orchestra.sm.AbstractStateMachine;
 public abstract class Resource extends AbstractStateMachine {
 	protected String default_state;
 	protected String client;
+	protected boolean block;
 	private String uri;
 	protected Coordinator coordinator;
+
+	public boolean isBlock() {
+		return block;
+	}
+
+	public void setBlock(boolean block) {
+		this.block = block;
+	}
 
 	public Coordinator getCoordinator() {
 		return coordinator;

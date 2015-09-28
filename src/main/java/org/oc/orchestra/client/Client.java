@@ -343,13 +343,13 @@ public class Client implements Daemon{
 
 	public static Coordinator getCoordinator() {
 		if(coordinator == null) {
-			coordinator = new Curator(connectString);
+			coordinator = new Curator();
 		}
 		return coordinator;
 	}
 	
 	public static Coordinator getCoordinator(String client) {
-		coordinator = new Curator(connectString, client);
+		coordinator = new Curator(client);
 		return coordinator;
 	}
 
@@ -366,7 +366,7 @@ public class Client implements Daemon{
 		curator.start();
 	}
 
-	public void config() {
+	public static void config() {
 		Properties conf = new Properties();
         InputStream is;
 		try {
@@ -388,8 +388,9 @@ public class Client implements Daemon{
 			task_check_period;
 	}
 	
-	protected static CuratorFrameworkFactory.Builder getClientBuilder(boolean withAclProvider) {
+	public static CuratorFrameworkFactory.Builder getClientBuilder(boolean withAclProvider) {
 		// Create a client builder
+		if(connectString == null) config();
 		CuratorFrameworkFactory.Builder clientBuilder = CuratorFrameworkFactory
 				.builder().connectString(connectString)
 				.retryPolicy(new ExponentialBackoffRetry(1000, 3));

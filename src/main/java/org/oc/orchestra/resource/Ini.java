@@ -221,7 +221,11 @@ public class Ini extends Configuration {
 				remove(p.section, p.name, p.value);
 			}
 		} else {
-			Client.getCoordinator(client).asyncAssignResourceTask(this);
+			if(block) {
+				Client.getCoordinator(client).assignResourceTask(this);
+			} else {
+				Client.getCoordinator(client).asyncAssignResourceTask(this);
+			}
 		}
 	}
 

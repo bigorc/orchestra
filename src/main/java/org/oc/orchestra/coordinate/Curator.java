@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 
 public class Curator implements Coordinator {
+	private static final int sleep_interval = 1000;
 	private static final transient Logger logger = LoggerFactory.getLogger(Curator.class); 
-	protected static String connectString = "localhost:2181";
 	public static int baseSleepTimeMs = 1000;
 	public static int maxRetries = 3;
 	public static String basePath = "/orchestra";
@@ -54,16 +54,8 @@ public class Curator implements Coordinator {
 	static Map<String, Timer> timers = new HashMap<String, Timer>();
 	private long read_state_period = 60000;
 	
-	public static Curator getInstance() {
-		if(instance == null) {
-			instance = new Curator(connectString);
-		}
-		return instance;
-	}
-	
-	public Curator(String connectString) {
-		RetryPolicy retryPolicy =  new ExponentialBackoffRetry(baseSleepTimeMs , maxRetries );
-		curator = CuratorFrameworkFactory.newClient(connectString , retryPolicy );
+	public Curator() {
+		curator = Client.getClientBuilder(false).build();
 		curator.start();
 		
 		try {
@@ -81,8 +73,8 @@ public class Curator implements Coordinator {
 		}
 	}
 
-	public Curator(String connectString, String client) {
-		this(connectString);
+	public Curator(String client) {
+		this();
 		this.client = client;
 		this.clientResourcePath = baseResourcePath + "/" + client;
 		this.clientTaskPath = baseTaskPath + "/" + client;
@@ -232,7 +224,7 @@ public class Curator implements Coordinator {
 			String taskPath = clientTaskPath + "/" + task;
 			String statusPath = taskPath + "/taskStatus";
 			while(curator.checkExists().forPath(statusPath) == null) {
-				Thread.sleep(5);
+				Thread.sleep(sleep_interval);
 			}
 			byte[] data = curator.getData().forPath(statusPath);
 			result = new String(data);
@@ -313,14 +305,6 @@ public class Curator implements Coordinator {
 		this.client = client;
 		this.clientResourcePath = baseResourcePath + "/" + client;
 		this.clientTaskPath = baseTaskPath + "/" + client;
-	}
-
-	public static String getConnectString() {
-		return connectString;
-	}
-
-	public static void setConnectString(String connectString) {
-		Curator.connectString = connectString;
 	}
 
 }

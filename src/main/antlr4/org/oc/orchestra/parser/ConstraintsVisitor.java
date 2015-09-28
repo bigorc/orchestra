@@ -97,7 +97,7 @@ public class ConstraintsVisitor extends RulesBaseVisitor<Constraint>{
 				cons = new AsyncRemoteResourceObjectConstraint();
 			}
 		}
-		cons.setCoordinator(Curator.getInstance());
+		cons.setCoordinator(new Curator());
 		cons.setClient(ctx.WORD().getText());
 		return cons;
 	}

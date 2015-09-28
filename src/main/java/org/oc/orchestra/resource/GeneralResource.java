@@ -15,6 +15,7 @@ import org.oc.orchestra.sm.StateMachine;
 import org.oc.orchestra.state.StateException;
 
 public class GeneralResource extends Resource {
+	private static final int sleep_interval = 1000;
 	Map<String, String> properties = new HashMap<String, String>();
 	String stateMachine;
 	String args;
@@ -45,8 +46,34 @@ public class GeneralResource extends Resource {
 	public void realize() {
 		if(client == null || client.equals(Client.getName())) {
 			run(state);
+			if(block) {
+				long timeout = 0;
+				long timeSlept = 0;
+				if(timeout  > 0) {
+					while((timeSlept < timeout) && !getCurrentState().equals(getState())) {
+						try {
+							Thread.sleep(sleep_interval);
+							timeSlept += sleep_interval;
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				} else {
+					while(!getCurrentState().equals(getState())) {
+						try {
+							Thread.sleep(sleep_interval);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
 		} else {
-			Client.getCoordinator(client).asyncAssignResourceTask(this);
+			if(block) {
+				Client.getCoordinator(client).asyncAssignResourceTask(this);
+			} else {
+				Client.getCoordinator(client).assignResourceTask(this);
+			}
 		}
 	}
 
