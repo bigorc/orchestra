@@ -10,7 +10,7 @@ service_stop() {
 }
 
 service_status() {
-	sudo service --status-all | grep -q "\[ + \]  $1"
+	sudo initctl list | grep $1 | grep -q start/running
 	if [ $? == 0 ]; then
 		echo "running"
 	else

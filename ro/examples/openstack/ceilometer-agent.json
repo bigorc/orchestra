@@ -43,6 +43,12 @@
     	"sm_args": "service nova-compute restart"
     },
     {
+    	"stateMachine": "service",
+    	"sm_args": "nova-compute",
+    	"sm_state": "running",
+    	"block": "true"
+    },
+    {
       "type": "ini",
       "file": "/etc/ceilometer/ceilometer.conf",
       "contain_properties": [
