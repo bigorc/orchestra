@@ -25,8 +25,15 @@
     		]
     },
     {
-    	"stateMachine": "cmd",
-    	"sm_args": "service mongodb restart"
+    	"stateMachine": "service",
+    	"sm_args": "mongodb",
+    	"sm_state": "stopped"
+    },
+    {
+    	"stateMachine": "service",
+    	"sm_args": "mongodb",
+    	"sm_state": "running",
+    	"block": "true"
     },
     {
     	"stateMachine": "cmd",
@@ -145,27 +152,12 @@ keystone endpoint-create --service-id=$(keystone service-list | awk '/ metering 
     },
     {
       "stateMachine": "cmd",
-      "sm_args": "service ceilometer-agent-central restart",
-    },
-    {
-      "stateMachine": "cmd",
-      "sm_args": "service ceilometer-agent-notification restart"
-    },
-    {
-    	"stateMachine": "cmd",
-    	"sm_args": "service ceilometer-api restart"
-    },
-    {
-    	"stateMachine": "cmd",
-    	"sm_args": "service ceilometer-collector restart"
-    },
-    {
-    	"stateMachine": "cmd",
-    	"sm_args": "service ceilometer-alarm-evaluator restart"
-    },
-    {
-    	"stateMachine": "cmd",
-    	"sm_args": "service ceilometer-alarm-notifier restart"
+      "sm_args": "service ceilometer-agent-central restart;
+      service ceilometer-agent-notification restart;
+      service ceilometer-api restart;
+      service ceilometer-collector restart;
+      service ceilometer-alarm-evaluator restart;
+      service ceilometer-alarm-notifier restart",
     },
     {
     	"type": "ini",
