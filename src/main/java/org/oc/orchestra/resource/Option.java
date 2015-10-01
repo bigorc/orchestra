@@ -138,7 +138,7 @@ public class Option extends Configuration {
 
 	@Override
 	public void realize() {
-		logger.info("Realizing ini resource " + filename);
+		logger.info("Realizing option resource " + filename);
 		init();
 		if(client == null || client.equals(Client.getName())) {
 			for(Property p : contain_properties) {

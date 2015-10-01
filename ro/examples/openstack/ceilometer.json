@@ -20,7 +20,8 @@
     	"contain_properties":
     		[
     		 {
-    			 "bind_ip": "0.0.0.0"
+    			 "name":"bind_ip",
+    			 "value": "0.0.0.0"
     		 }
     		]
     },
