@@ -98,56 +98,57 @@ public class GeneralResource extends Resource {
 	public List<String> getArgsAsList() {
 		if(argList != null) return argList;
 		List<String> ol = new ArrayList<String>(Arrays.asList(args.split(" ")));
-		List<String> aList = new ArrayList<String>(); 
-		if(args == null) {
-			return aList;
-		} else {
-			for(int i=0;i < ol.size();i++) {
-				//two kinds of double quoted arguments
-				//1. echo -e "hello world", etc.
-				//2. somecommand -name="John Smith" etc.
-				if(!ol.get(i).startsWith("\"") && !ol.get(i).contains("=\\\"")) {
-					if(i < aList.size()) {
-						aList.set(i, ol.get(i));
-					} else {
-						aList.add(ol.get(i));
-					}
-				} else {
-					StringBuffer str = new StringBuffer(ol.get(i));
-					for(int j=i + 1;j < ol.size();j++) {
-						if(ol.get(j).endsWith("\"")) {
-							for(int k=i + 1;k <= j;k++) {
-								str.append(' ');
-								str.append(ol.get(k));
-							}
-							for(int k=i + 1;k <= j;k++) {
-								ol.remove(i + 1);
-							}
-							String unquoted;
-							if(str.toString().startsWith("\"")) {
-								unquoted = str.toString().substring(1, str.length() - 1);
-							} else {
-								unquoted = str.toString();
-							}
-							if(i < aList.size()) {
-								aList.set(i, unquoted);
-							} else {
-								aList.add(unquoted);
-							}
-							break;
-						} else {
-							if(i < aList.size()) {
-								aList.set(i, ol.get(i));
-							} else {
-								aList.add(ol.get(i));
-							}
-						}
-					}
-				}
-				
-			}
-		}
-		return aList;
+		return ol;
+//		List<String> aList = new ArrayList<String>(); 
+//		if(args == null) {
+//			return aList;
+//		} else {
+//			for(int i=0;i < ol.size();i++) {
+//				//two kinds of double quoted arguments
+//				//1. echo -e "hello world", etc.
+//				//2. somecommand -name="John Smith" etc.
+//				if(!ol.get(i).startsWith("\"") && !ol.get(i).contains("=\\\"")) {
+//					if(i < aList.size()) {
+//						aList.set(i, ol.get(i));
+//					} else {
+//						aList.add(ol.get(i));
+//					}
+//				} else {
+//					StringBuffer str = new StringBuffer(ol.get(i));
+//					for(int j=i + 1;j < ol.size();j++) {
+//						if(ol.get(j).endsWith("\"")) {
+//							for(int k=i + 1;k <= j;k++) {
+//								str.append(' ');
+//								str.append(ol.get(k));
+//							}
+//							for(int k=i + 1;k <= j;k++) {
+//								ol.remove(i + 1);
+//							}
+//							String unquoted;
+//							if(str.toString().startsWith("\"")) {
+//								unquoted = str.toString().substring(1, str.length() - 1);
+//							} else {
+//								unquoted = str.toString();
+//							}
+//							if(i < aList.size()) {
+//								aList.set(i, unquoted);
+//							} else {
+//								aList.add(unquoted);
+//							}
+//							break;
+//						} else {
+//							if(i < aList.size()) {
+//								aList.set(i, ol.get(i));
+//							} else {
+//								aList.add(ol.get(i));
+//							}
+//						}
+//					}
+//				}
+//				
+//			}
+//		}
+//		return aList;
 	}
 	
 	@Override
