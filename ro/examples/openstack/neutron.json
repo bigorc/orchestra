@@ -118,7 +118,7 @@ keystone endpoint-create --service-id=$(keystone service-list | awk '/ network /
 				  {
 					  "section": "DEFAULT",
 					  "name": "nova_admin_tenant_id",
-					  "value": "dbc81e636ebc4ba2bc22d0e5c08d1dfb"
+					  "value": ""
 				  },
 				  {
 					  "section": "DEFAULT",

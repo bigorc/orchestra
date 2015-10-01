@@ -26,8 +26,15 @@
     		]
     },
     {
-    	"stateMachine": "cmd",
-    	"sm_args": "service mongodb restart"
+    	"stateMachine": "service",
+    	"sm_args": "mongodb",
+	"sm_state": "stopped"
+    },
+    {
+    	"stateMachine": "service",
+    	"sm_args": "mongodb",
+	"sm_state": "running",
+	"block": "true"
     },
     {
     	"stateMachine": "cmd",
