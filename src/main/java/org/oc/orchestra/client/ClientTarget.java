@@ -90,8 +90,10 @@ public class ClientTarget extends Target {
 			new Client().createParents();
 			return;
 		}
-		if(method.equals("delete")) {
+		if(method.equals("uninstall")) {
 			if(response.getStatusLine().getStatusCode() == 204) {
+				new ClientAuthHelper(Client.getUsername(), Client.getPassword())
+					.removeApikeyFile();
 		    	KeystoreHelper helper;
 				try {
 					helper = new KeystoreHelper(keystorename, keystore_password);

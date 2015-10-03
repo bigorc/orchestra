@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 
 import sun.security.x509.AlgorithmId;
 import sun.security.x509.CertificateAlgorithmId;
@@ -160,8 +161,14 @@ public class Client extends ServerResource {
 			return null;
 		}
 		clientDao.delete(clientname);
+		
+		//remove apikeys of the client
+		DBCollection col = Apikey.getStore();
+		col.remove(new BasicDBObject("clientname", clientname));
+		
 		KeystoreHelper helper = new KeystoreHelper(SERVER_TRUSTSTORE , "password" );
 		helper.deleteCertificate(clientname);
+		
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT, "Client is deleted.");
 		return null;
 	}

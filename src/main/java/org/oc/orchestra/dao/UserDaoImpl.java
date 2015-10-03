@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Service("userDao")
 public class UserDaoImpl extends JdbcDaoSupport  implements UserDao {
 	
 	@Autowired

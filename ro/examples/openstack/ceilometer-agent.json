@@ -1,5 +1,6 @@
 {
   "type": "container",
+  "client": "compute1",
   "resources": [
     {
       "stateMachine": "package",
