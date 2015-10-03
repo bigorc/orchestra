@@ -20,21 +20,13 @@
     {
     	"stateMachine": "service",
     	"sm_args": "mongodb",
-	"sm_state": "stopped"
-    },
-    {
-    	"stateMachine": "service",
-    	"sm_args": "mongodb",
-	"sm_state": "running",
-	"block": "true"
-    },
-    {
-	"stateMachine": "cmd",
-	"sm_args": "sleep 3"
+        "sm_state": "stopped"
     },
     {
     	"stateMachine": "cmd",
-    	"sm_args": "mongo --host controller --eval 'db=db.getSiblingDB(\"ceilometer\");db.addUser({user:\"ceilometer\",pwd:\"password\",roles:[\"readWrite\",\"dbAdmin\"]})'"
+    	"sm_args": "mongo --host controller --eval 'db=db.getSiblingDB(\"ceilometer\");db.addUser({user:\"ceilometer\",pwd:\"password\",roles:[\"readWrite\",\"dbAdmin\"]})'",
+    	"sm_state": "successful",
+    	"block": "true"
     },
     {
       "type": "ini",

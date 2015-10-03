@@ -38,7 +38,8 @@ public class GeneralResource extends Resource {
 	}
 
 	public String getState() {
-		if(state == null) return "";
+		//only useful for "cmd"
+		if(state == null) return "successful";
 		return state;
 	}
 	

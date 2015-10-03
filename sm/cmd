@@ -1,12 +1,16 @@
 #!/bin/bash
 run() {
-	echo $#
 	echo $@
 	"$@"
 }
 
 status() {
-	echo ""
+	"$@"
+	if [ $? -eq 0 ]; then
+		echo "successful"
+	else
+		echo "failed"
+	fi
 }
 
 for last; do true; done
