@@ -71,9 +71,9 @@ public class GeneralResource extends Resource {
 			}
 		} else {
 			if(block) {
-				Client.getCoordinator(client).asyncAssignResourceTask(this);
-			} else {
 				Client.getCoordinator(client).assignResourceTask(this);
+			} else {
+				Client.getCoordinator(client).asyncAssignResourceTask(this);
 			}
 		}
 	}

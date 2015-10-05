@@ -31,6 +31,18 @@
     {
       "type": "ini",
       "file": "/etc/ceilometer/ceilometer.conf",
+      "not_contain_properties": [
+        {
+          "section": "DEFAULT",
+          "name": "sqlite_db",
+          "value": "ceilometer.sqlite"
+        },
+        {
+          "section": "database",
+          "name": "backend",
+          "value": "sqlalchemy"
+        }
+      ],
       "contain_properties": [
         {
           "section": "database",
