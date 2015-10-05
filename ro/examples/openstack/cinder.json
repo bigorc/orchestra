@@ -1,5 +1,6 @@
 {
   "type": "container",
+  "client": "controller",
   "resources": [
     {
       "stateMachine": "sql",
@@ -100,10 +101,13 @@
       "sm_state": "set",
       "CONTENT": "keystone user-create --name=cinder --pass=password --email=cinder@example.com\n
 keystone user-role-add --user=cinder --tenant=service --role=admin\n
-keystone service-create --name=cinder --type=volume --description=\"OpenStack Block Storage\"\n
-keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://orchestra:8776/v1/%\(tenant_id\)s --internalurl=http://orchestra:8776/v1/%\(tenant_id\)s --adminurl=http://orchestra:8776/v1/%\(tenant_id\)s\n
-keystone service-create --name=cinderv2 --type=volumev2 --description=\"OpenStack Block Storage V2\"\n
-keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://orchestra:8776/v2/%\(tenant_id\)s --internalurl=http://orchestra:8776/v2/%\(tenant_id\)s --adminurl=http://orchestra:8776/v2/%\(tenant_id\)s\n"
+keystone service-list|grep -q \"OpenStack Block Storage\"
+if [ ! $? -eq 0 ]; then
+	keystone service-create --name=cinder --type=volume --description=\"OpenStack Block Storage\"\n
+	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://orchestra:8776/v1/%\(tenant_id\)s --internalurl=http://orchestra:8776/v1/%\(tenant_id\)s --adminurl=http://orchestra:8776/v1/%\(tenant_id\)s\n
+	keystone service-create --name=cinderv2 --type=volumev2 --description=\"OpenStack Block Storage V2\"\n
+	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://orchestra:8776/v2/%\(tenant_id\)s --internalurl=http://orchestra:8776/v2/%\(tenant_id\)s --adminurl=http://orchestra:8776/v2/%\(tenant_id\)s\n"
+fi
 
     },
     {
