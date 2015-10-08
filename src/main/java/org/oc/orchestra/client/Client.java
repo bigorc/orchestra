@@ -47,6 +47,8 @@ import org.apache.commons.daemon.DaemonInitException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.retry.RetryOneTime;
 import org.apache.http.Consts;
@@ -108,8 +110,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 
 public class Client implements Daemon{
-	private static int resource_check_period = 60000;
-	private static int task_check_period = 60000;
 	static String resourcePath = "/orchestra/resources";
 	static String taskPath = "/orchestra/tasks";
 	private static String name = getName();
@@ -119,6 +119,7 @@ public class Client implements Daemon{
 	private static final String keystore_pass = "password";
 
 	private static String connectString;
+	private static int zk_session_timeout = 60000;
 	private CuratorFramework curator;
 	private static String username;
 
@@ -175,24 +176,30 @@ public class Client implements Daemon{
 	private static String password;
 
 	private static Coordinator coordinator;
+	
 	private String keystorename = "keystore/clientKey.jks";
 	private Timer taskTimer;
 	private Timer resourceTimer;
 
 	public Client() {
 		if(username == null) config();
-	}
-	
-	public Client(String connectString) {
-		this.connectString = connectString;
 		curator = getClientBuilder(false).build();
+		curator.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+			boolean needReregister = false;
+			
+			@Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                logger.info("** STATE CHANGED TO : " + newState);
+                if(newState == ConnectionState.LOST) {
+                	needReregister = true;
+                }
+                if(newState == ConnectionState.RECONNECTED) {
+                	start();
+                }
+            }
+            
+        });
 		curator.start();
-		
-	}
-
-	public Client(String username, String password) {
-		this.username = username;
-		this.password = password;
 	}
 	
 	public static void main(String[] args) throws ParseException, ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, URISyntaxException, SignatureException {
@@ -210,7 +217,7 @@ public class Client implements Daemon{
 	
 	void startTaskWatcher() {
 		taskTimer = new Timer();
-        taskTimer.schedule(new TaskWatcherTimerTask(curator) , 0, task_check_period);
+        taskTimer.schedule(new TaskWatcherTimerTask(curator) , 0, zk_session_timeout);
 	}
 
 	protected static String getZkTaskClientPath() {
@@ -225,8 +232,18 @@ public class Client implements Daemon{
 	}
 	
 	void startResourcesWatcher() {
-		resourceTimer = new Timer();
-        resourceTimer.schedule(new ResourceWatcherTimerTask(curator) , 0, resource_check_period);
+		logger.info("Registering resource watcher");
+		try {
+			String clientResourcePath = Client.getZkClientResourcePath();
+			ResourceWatcher watcher = new ResourceWatcher(curator, clientResourcePath);
+			List<String> children = curator.getChildren().usingWatcher(
+					watcher).forPath(clientResourcePath);
+			//read task children might be added before watchers are registered
+			//that's handled here
+			watcher.handleResources(children);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static String getZkClientResourcePath() throws UnknownHostException {
@@ -379,25 +396,24 @@ public class Client implements Daemon{
 		}
 		username = conf.getProperty("username");
 		password = conf.getProperty("password");
-		connectString = conf.containsKey("zk_connect_string") ? conf.getProperty("zk_connect_string") : connectString;
-		resource_check_period = conf.containsKey("resource_check_period") ? 
-			Integer.valueOf(conf.getProperty("resource_check_period")) : 
-			resource_check_period;
-		task_check_period = conf.containsKey("task_check_period") ? 
-			Integer.valueOf(conf.getProperty("task_check_period")) : 
-			task_check_period;
+		connectString = conf.containsKey("zookeeper.connectString") ? conf.getProperty("zookeeper.connectString") : connectString;
+		zk_session_timeout = conf.containsKey("zookeeper.session.timeout") ? 
+			Integer.valueOf(conf.getProperty("zookeeper.session.timeout")) : 
+				zk_session_timeout;
 	}
 	
 	public static CuratorFrameworkFactory.Builder getClientBuilder(boolean withAclProvider) {
 		// Create a client builder
 		if(connectString == null) config();
 		CuratorFrameworkFactory.Builder clientBuilder = CuratorFrameworkFactory
-				.builder().connectString(connectString)
+				.builder()
+				.connectString(connectString)
+				.sessionTimeoutMs(zk_session_timeout)
 				.retryPolicy(new ExponentialBackoffRetry(1000, 3));
 		if(withAclProvider) {
-			clientBuilder.aclProvider(new ACLProvider());
+//			clientBuilder.aclProvider(new ACLProvider());
 		}
-		clientBuilder.authorization("role", (username + ":" + password).getBytes());
+//		clientBuilder.authorization("role", (username + ":" + password).getBytes());
 		return clientBuilder;
 	}
 	

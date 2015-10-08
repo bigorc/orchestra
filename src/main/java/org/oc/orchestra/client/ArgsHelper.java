@@ -70,14 +70,6 @@ public class ArgsHelper {
 		if(targets.length == 0) {
 			startCli();
 			System.exit(0);
-		} else if(targets.length == 1){
-			
-			if(targets[0].equals("start-daemons")) {
-				Client client = new Client(zk_connect_string);
-				client.createParents();
-				client.startTaskWatcher();
-				client.startResourcesWatcher();
-			}
 		} else {
 			commandBuilder.setScheme("https").setHost(host).setPort(port);
 			new TargetFactory(commandBuilder).getTarget(targets[0]).execute(targets[1], cmd);

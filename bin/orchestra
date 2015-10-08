@@ -12,7 +12,7 @@ done
 CLASSPATH=examples/:$CLASSPATH
 
 start() {
-	jsvc $JVMFLAGS -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR org.oc.orchestra.client.Client 
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR org.oc.orchestra.client.Client 
 	exit 0
 }
 
@@ -24,6 +24,7 @@ stop() {
 restart() {
 	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR -stop org.oc.orchestra.client.Client 
 	start
+	exit 0
 }
 
 case $1 in
