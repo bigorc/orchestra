@@ -64,7 +64,7 @@ public class ArgsHelper {
 		Client.setServer_port(port);
 		
 		zk_connect_string = cmd.hasOption('z') ? cmd.getOptionValue('z') : 
-			conf.containsKey("zk_connect_string") ? conf.getProperty("zk_connect_string") : zk_connect_string;
+			conf.containsKey("zookeeper.connectString") ? conf.getProperty("zookeeper.connectString") : zk_connect_string;
 		Client.setConnectString(zk_connect_string);
 		
 		if(targets.length == 0) {

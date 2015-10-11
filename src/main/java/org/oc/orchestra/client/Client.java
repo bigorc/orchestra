@@ -47,6 +47,7 @@ import org.apache.commons.daemon.DaemonInitException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -199,7 +200,6 @@ public class Client implements Daemon{
             }
             
         });
-		curator.start();
 	}
 	
 	public static void main(String[] args) throws ParseException, ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, URISyntaxException, SignatureException {
@@ -215,11 +215,6 @@ public class Client implements Daemon{
 		}*/
 	}
 	
-	void startTaskWatcher() {
-		taskTimer = new Timer();
-        taskTimer.schedule(new TaskWatcherTimerTask(curator) , 0, zk_session_timeout);
-	}
-
 	protected static String getZkTaskClientPath() {
 		if(taskClientPath == null) {
 			taskClientPath = taskPath + "/" + getName();
@@ -230,14 +225,26 @@ public class Client implements Daemon{
 	protected static void setZkTaskClientPath(String zkTaskClientPath) {
 		Client.taskClientPath = zkTaskClientPath;
 	}
-	
+
+	void startTaskWatcher() {
+		logger.info("Registering task watcher");
+		TaskWatcher watcher = new TaskWatcher(curator, taskClientPath);
+		try {
+			List<String> children = curator.getChildren().usingWatcher(watcher)
+					.forPath(taskClientPath);
+			watcher.handleTasks(children);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	void startResourcesWatcher() {
 		logger.info("Registering resource watcher");
 		try {
-			String clientResourcePath = Client.getZkClientResourcePath();
-			ResourceWatcher watcher = new ResourceWatcher(curator, clientResourcePath);
+			ResourceWatcher watcher = new ResourceWatcher(curator, resourceClientPath);
 			List<String> children = curator.getChildren().usingWatcher(
-					watcher).forPath(clientResourcePath);
+					watcher).forPath(resourceClientPath);
 			//read task children might be added before watchers are registered
 			//that's handled here
 			watcher.handleResources(children);
@@ -411,14 +418,17 @@ public class Client implements Daemon{
 				.sessionTimeoutMs(zk_session_timeout)
 				.retryPolicy(new ExponentialBackoffRetry(1000, 3));
 		if(withAclProvider) {
-//			clientBuilder.aclProvider(new ACLProvider());
+			clientBuilder.aclProvider(new ACLProvider());
 		}
-//		clientBuilder.authorization("role", (username + ":" + password).getBytes());
+		clientBuilder.authorization("role", (username + ":" + password).getBytes());
 		return clientBuilder;
 	}
 	
 	@Override
 	public void start() {
+		if(curator.getState() != CuratorFrameworkState.STARTED) {
+			curator.start();
+		}
 		startResourcesWatcher();
 		startTaskWatcher();
 	}
