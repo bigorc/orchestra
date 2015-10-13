@@ -335,7 +335,8 @@ public class Client implements Daemon{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	    	
+	    } else {
+	    	logger.error(response.getStatusLine().getReasonPhrase());
 	    }
 	    JSONArray jarr = (JSONArray) json.get("roles");
 	    List<ACL> aclList = new ArrayList<ACL>();
