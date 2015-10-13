@@ -387,7 +387,7 @@ public class Client implements Daemon{
 	public void init(DaemonContext arg0) throws DaemonInitException, Exception {
 		System.out.println("orchestra client daemon started.");
 		config();
-		curator = getClientBuilder(true).build();
+		curator = getClientBuilder(false).build();
 		curator.start();
 	}
 
