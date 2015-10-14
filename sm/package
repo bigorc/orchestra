@@ -2,7 +2,7 @@
 
 package_install() {
 	echo "Installing...." $@
-	if [[ $FORCE_YES == "true" ]]; then
+	if [[ $FORCE_YES != "false" ]]; then
 		sudo apt-get install -y --force-yes $@
 	else
 		sudo apt-get install -y $@
