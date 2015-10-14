@@ -35,8 +35,14 @@ public class IniBuilder implements Builder {
 			while(it.hasNext()) {
 				JSONObject obj = (JSONObject) it.next();
 				String section = (String) obj.get("section");
+				if(section != null && section.startsWith("$")) 
+					section = (String) json.get(section.substring(1));
 				String name = (String) obj.get("name");
+				if(name != null && name.startsWith("$")) 
+					name = (String) json.get(name.substring(1));
 				String value = (String) obj.get("value");
+				if(value != null && value.startsWith("$")) 
+					value = (String) json.get(value.substring(1));
 				ini.addContainProperties(section, name, value);
 			}
 		}
@@ -46,8 +52,14 @@ public class IniBuilder implements Builder {
 			while(it.hasNext()) {
 				JSONObject obj = (JSONObject) it.next();
 				String section = (String) obj.get("section");
+				if(section != null && section.startsWith("$")) 
+					section = (String) json.get(section.substring(1));
 				String name = (String) obj.get("name");
+				if(name != null && name.startsWith("$")) 
+					name = (String) json.get(name.substring(1));
 				String value = (String) obj.get("value");
+				if(value != null && value.startsWith("$")) 
+					value = (String) json.get(value.substring(1));
 				ini.addNotContainProperties(section, name, value);
 			}
 		}

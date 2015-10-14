@@ -18,12 +18,14 @@
     },
     {
       "stateMachine": "line",
+      "sm_args": "/etc/lvm/lvm.conf",
       "sm_state": "existent",
       "AFTER_LINE": "filter\s=\s\[\s\"a\\/\.\*\\/\"\s\]",
       "LINE": "filter= [ \"a/sdb/\", \"r/.*/\"]"
     },
     {
       "stateMachine": "line",
+      "sm_args": "/etc/lvm/lvm.conf",
       "sm_state": "non_existent",
       "LINE_PATTERN": "filter\s=\s\[\s\"a\\/\.\*\\/\"\s\]"
     },
