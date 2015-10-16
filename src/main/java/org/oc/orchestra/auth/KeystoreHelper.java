@@ -88,7 +88,7 @@ public class KeystoreHelper {
 	}
 	
 	public void savePrivateKey(String encodedPrivateKey,
-			String alias, String password, 
+			String alias, String key_password, 
 			String encodeCert) throws KeyStoreException, IOException,
 			NoSuchAlgorithmException, CertificateException,
 			FileNotFoundException, InvalidKeySpecException {
@@ -105,6 +105,7 @@ public class KeystoreHelper {
 		Collection clientCerts = cf.generateCertificates(certstream ) ;
         Certificate[] certs = (Certificate[]) clientCerts.toArray(new Certificate[0]);
 
+        if(key_password != null) password = key_password;
         // storing keystore
         keystore.setKeyEntry(alias, privateKey, 
                        password.toCharArray(),
@@ -116,6 +117,7 @@ public class KeystoreHelper {
 
 	public void deleteCertificate(String alias) throws FileNotFoundException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		keystore.deleteEntry(alias);
+		store();
 	}
 
 	public boolean containsCertificate(String alias) throws KeyStoreException {

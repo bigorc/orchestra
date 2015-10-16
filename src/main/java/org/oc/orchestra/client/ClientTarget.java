@@ -13,32 +13,34 @@ import org.json.simple.JSONValue;
 import org.oc.orchestra.auth.KeystoreHelper;
 
 public class ClientTarget extends Target {
-	private static final String PRIVATE_KEY = "privateKey";
-	private static final String CERT = "cert";
+	public static final String PRIVATE_KEY = "privateKey";
+	public static final String CERT = "cert";
 
 	public ClientTarget(HttpCommandBuilder builder) {
 		this.builder = builder;
 	}
 
+	public KeystoreHelper getKeystoreHelper() {
+		String keystorename = System.getProperty("javax.net.ssl.keyStore");
+		if(keystorename == null) keystorename = "keystore/clientKey.jks";
+		String keystore_password = System.getProperty("javax.net.ssl.keyStorePassword");
+		if(keystore_password == null) keystore_password = "password";
+		try {
+			return new KeystoreHelper(keystorename, keystore_password);
+		} catch (KeyStoreException | NoSuchAlgorithmException
+				| CertificateException | IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public void execute(String method, CommandLine cmd) {
 		builder.setNeedAuthHeader(true).setTarget("client");
 		String name = null;
-		String keystorename = null;
-		String keystore_password = null;
 		String[] args = cmd.getArgs();
 		if(args.length > 2) name = args[2];
-		if(!method.equals("list")) {
-			if(method.equals("install") || method.equals("uninstall")) {
-				//client name should be hostname when install or uninstall
-				name = Client.getName();
-				keystorename = System.getProperty("javax.net.ssl.keyStore");
-				if(keystorename == null) keystorename = "keystore/clientKey.jks";
-				keystore_password =  System.getProperty("javax.net.ssl.keyStorePassword");
-				if(keystore_password == null) keystore_password = "password";
-			}
-			if(name == null) ArgsHelper.usage();
-		}
+		KeystoreHelper helper = getKeystoreHelper();
+		if(name == null) name = Client.getName();
 		
 		if(!method.equals("list")) builder.addPathParameter(name);
 		if(method.equals("list")) {
@@ -78,10 +80,8 @@ public class ClientTarget extends Target {
 				String alias = name;
 				String encodeCert = (String) json.get(CERT);
 				
-				KeystoreHelper helper;
 				try {
-					helper = new KeystoreHelper(keystorename, keystore_password);
-					helper.savePrivateKey(encodedPk, alias, keystore_password, encodeCert);
+					helper.savePrivateKey(encodedPk, alias, null, encodeCert);
 				} catch (KeyStoreException | NoSuchAlgorithmException
 						| CertificateException | IOException | InvalidKeySpecException e) {
 					e.printStackTrace();
@@ -94,9 +94,7 @@ public class ClientTarget extends Target {
 			if(response.getStatusLine().getStatusCode() == 204) {
 				new ClientAuthHelper(Client.getUsername(), Client.getPassword())
 					.removeApikeyFile();
-		    	KeystoreHelper helper;
 				try {
-					helper = new KeystoreHelper(keystorename, keystore_password);
 					helper.deleteCertificate(name);
 				} catch (KeyStoreException | NoSuchAlgorithmException
 						| CertificateException | IOException e) {
