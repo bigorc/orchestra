@@ -19,59 +19,51 @@ import org.oc.orchestra.constraint.Constraint;
 import org.oc.orchestra.parser.ConstraintParser;
 
 public class ArgsHelper {
-	String host = "localhost";
-	int port = 8183;
-	private String username;
-	private String password;
-	private String zk_connect_string = "localhost:2181";
+	String host;
+	String port;
 	private CommandLine cmd;
 	private Map<String, String> argValue = new HashMap<String, String>();
+	private Object zk_connect_string;
 	
 	public void handle(String[] args) throws ParseException, IOException, 
 			org.apache.commons.cli.ParseException {
 		Options options = getOptions();
 		CommandLineParser parser = new GnuParser();
 		cmd = parser.parse(options, args);
-        Properties conf = new Properties();
-        InputStream is = new FileInputStream("conf/client.conf");
-		conf.load(is);
-	    if(cmd.hasOption('u')) {
-        	username = cmd.getOptionValue('u');
+		Client.config();
+        if(cmd.hasOption('u')) {
+        	Client.setUsername(cmd.getOptionValue('u'));
+        } else if(Client.getUsername() == null){
+        	Client.setUsername(prompt("username:"));
         } else {
-        	username = conf.containsKey("username") ? 
-        			conf.getProperty("username") : prompt("username:");
+        	usage();
         }
-        Client.setUsername(username);
+        
         
         if(cmd.hasOption('p')) {
-        	password = cmd.getOptionValue('p');
+        	Client.setPassword(cmd.getOptionValue('p'));
+        } else if(Client.getPassword() == null) {
+        	Client.setPassword(prompt("password:"));
         } else {
-        	password = conf.containsKey("password") ?
-        			conf.getProperty("password") : prompt("password:");
+        	usage();
         }
-	    Client.setPassword(password);
 	    
 		String [] targets = cmd.getArgs();
-		HttpCommandBuilder commandBuilder = new HttpCommandBuilder(username, password);
+		HttpCommandBuilder commandBuilder = new HttpCommandBuilder(Client.getUsername(), Client.getPassword());
 		host = cmd.hasOption('s') ? 
-				cmd.getOptionValue('s') : conf.containsKey("server") ? 
-						conf.getProperty("server") : host;
-		Client.setServer(host);
+				cmd.getOptionValue('s') : Client.getProperty("server");
 		
 		port = cmd.hasOption("port") ? 
-				Integer.valueOf(cmd.getOptionValue("port")) : 
-					conf.containsKey("port") ? Integer.valueOf(conf.getProperty("port")) : port;
-		Client.setServer_port(port);
+				cmd.getOptionValue("port") : Client.getProperty("server_port");
 		
-		zk_connect_string = cmd.hasOption('z') ? cmd.getOptionValue('z') : 
-			conf.containsKey("zookeeper.connectString") ? conf.getProperty("zookeeper.connectString") : zk_connect_string;
-		Client.setConnectString(zk_connect_string);
+		zk_connect_string = cmd.hasOption('z') ? 
+				cmd.getOptionValue('z') : Client.getProperty("zookeeper.connectString");
 		
 		if(targets.length == 0) {
 			startCli();
 			System.exit(0);
 		} else {
-			commandBuilder.setScheme("https").setHost(host).setPort(port);
+			commandBuilder.setScheme("https").setHost(host).setPort(Integer.valueOf(port));
 			new TargetFactory(commandBuilder).getTarget(targets[0]).execute(targets[1], cmd);
 		}
 	}

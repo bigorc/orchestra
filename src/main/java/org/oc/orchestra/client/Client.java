@@ -126,34 +126,21 @@ public class Client implements Daemon{
 
 	private static final transient Logger logger = LoggerFactory.getLogger(Client.class);
 	
-	static String server = "orchestra";
-	static int server_port = 8183;
+	static Map<String, String> properties = new HashMap<String, String>();
+	static {
+		properties.put("server", "localhost");
+		properties.put("server_port", "8183");
+		properties.put("connectString", "localhost:2281");
+	}
 	
-	public static String getServer() {
-		return server;
+	public static String getProperty(String key) {
+		return properties.get(key);
 	}
-
-	public static void setServer(String server) {
-		Client.server = server;
+	
+	public static void setProperty(String key, String value) {
+		properties.put(key, value);
 	}
-
-	public static int getServer_port() {
-		return server_port;
-	}
-
-	public static void setServer_port(int server_port) {
-		Client.server_port = server_port;
-	}
-
-		
-	public static String getConnectString() {
-		return connectString;
-	}
-
-	public static void setConnectString(String connectString) {
-		Client.connectString = connectString;
-	}
-
+	
 	public static void setCoordinator(Coordinator coordinator) {
 		Client.coordinator = coordinator;
 	}
@@ -319,9 +306,9 @@ public class Client implements Daemon{
 
 	public List<ACL> getAclList(String clientname) {
 		HttpCommand cmd = new HttpCommandBuilder(username , password )
-			.setHost(server)
+			.setHost(getProperty("server"))
 			.setScheme("https")
-			.setPort(server_port)
+			.setPort(Integer.valueOf(getProperty("server_port")))
 			.setAction("read")
 			.setTarget("zkacl")
 			.addPathParameter(clientname)
@@ -395,7 +382,13 @@ public class Client implements Daemon{
 		Properties conf = new Properties();
         InputStream is;
 		try {
-			is = new FileInputStream("conf/client.conf");
+			if(new File("conf/client.conf").exists()) {
+			 is = new FileInputStream("conf/client.conf");
+			} else if(new File("/etc/orchestra/conf/client.conf").exists()) {
+				is = new FileInputStream("/etc/orchestra/conf/client.conf");
+			} else {
+				return;
+			}
 			conf.load(is);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

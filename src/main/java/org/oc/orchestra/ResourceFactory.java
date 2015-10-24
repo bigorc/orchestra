@@ -27,10 +27,8 @@ public class ResourceFactory {
 	public static final String orchestra_server = "localhost:8111";
 	public static final String rsto_path = "rsto/";
 	
-	public static Resource makeResource(JSONObject obj) {
+	public static Resource jsonToResource(Json json) {
 		Resource resource = null;
-		Json json = new Json(obj);
-		
 		String builderName;
 		String type = WordUtils.capitalize((String) json.get("type")); 
 		if(type == null) {
@@ -110,10 +108,21 @@ public class ResourceFactory {
 				e.printStackTrace();
 			}
 		}
-		
+		resource.setJson(json);
 		return resource;
 	}
 	
+	public static Resource makeResource(JSONObject obj) {
+		Json json = new Json(obj);
+		return jsonToResource(json);
+	}
+
+	private static Resource makeResource(JSONObject obj, Json outerJson) {
+		Json json = new Json(obj);
+		json.setOuterJson(outerJson);
+		return jsonToResource(json);
+	}
+
 	public static List<Resource> makeResources(JSONArray array) {
 		Json json = new Json(array);
 		List<Resource> result = new ArrayList<Resource>();
@@ -131,6 +140,28 @@ public class ResourceFactory {
 				}
 			} else {
 				result.add(makeResource((JSONObject) obj));
+			}
+		}
+		return result;
+	}
+
+	public static List<Resource> makeResources(JSONArray array, Json outerJson) {
+		Json json = new Json(array);
+		List<Resource> result = new ArrayList<Resource>();
+		for(Object obj : array) {
+			if(obj instanceof String) {
+				//add this 
+				String namespace = (String) obj;
+				Object refObj = json.get(namespace);
+				if(refObj instanceof JSONArray) {
+					for(Resource r : makeResources((JSONArray)refObj, outerJson)) {
+						result.add(r);
+					}
+				} else {
+					result.add(makeResource((JSONObject)refObj, outerJson));
+				}
+			} else {
+				result.add(makeResource((JSONObject) obj, outerJson));
 			}
 		}
 		return result;
@@ -154,6 +185,5 @@ public class ResourceFactory {
 		}
 		return result;
 	}
-
 	
 }

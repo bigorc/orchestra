@@ -15,7 +15,7 @@ public class ContainerBuilder implements Builder {
 		Container container = new Container();
 		if("true".equalsIgnoreCase((String) json.get("block"))) container.setBlock(true);
 		container.setClient((String) json.get("client"));
-		List<Resource> resources = ResourceFactory.makeResources((JSONArray) json.get("resources"));
+		List<Resource> resources = ResourceFactory.makeResources((JSONArray) json.get("resources"), json);
 		container.setResources(resources);
 		return container;
 	}

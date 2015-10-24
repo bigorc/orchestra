@@ -7,8 +7,10 @@
   <property name="src.dir" location="${main.src.dir};src/main/antlr4;${antlr.src.dir}" />
   <property name="build.dir" location="target/classes" />
   <property name="dist.dir" location="dist" />
+  <property name="conf.dir" location="conf" />
   <property name="docs.dir" location="docs" />
   <property name="lib.dir" location="lib" />
+  <property name="keystore.dir" location="keystore" />
   <path id="classpath">
 	<fileset dir="${lib.dir}">
 		<include name="*.jar"/>
@@ -37,6 +39,12 @@
   </target>
 
   <target name="jar">
+    <jar destfile="${dist.dir}/lib/orchestra.jar"
+        basedir="${build.dir}"
+        includes="**"
+    />
+  </target>
+  <target name="auth-jar">
     <jar destfile="${dist.dir}/lib/roleAuthProvider.jar"
         basedir="${build.dir}"
         includes="org/oc/orchestra/provider/**"
@@ -78,6 +86,40 @@
     </javadoc>
   </target>
 
+ <target name="package" depends="jar">
+    <taskdef name="deb" classname="org.vafer.jdeb.ant.DebAntTask"/>
+
+    <copy todir="${build.dir}/deb/control">
+      <fileset dir="src/deb/control"/>
+      <filterset begintoken="[[" endtoken="]]">
+        <filter token="version" value="${version}"/>
+        <filter token="description" value="${description}"/>
+        <filter token="name" value="${ant.project.name}"/>
+      </filterset>
+    </copy>
+
+    <deb destfile="${dist.dir}/${ant.project.name}.deb" control="${build.dir}/deb/control" verbose="true">
+
+      <data src="${lib.dir}" type="directory">
+        <mapper type="perm" prefix="/usr/share/orchestra/lib"/>
+      </data>
+      <data src="${dist.dir}/lib/orchestra.jar" type="file">
+        <mapper type="perm" prefix="/usr/share/orchestra/"/>
+      </data>
+      <data src="${conf.dir}/" type="directory" conffile="true">
+        <exclude name="**/*.cfg"/>
+        <mapper type="perm" prefix="/etc/orchestra"/>
+      </data>
+      <data src="${conf.dir}/init/" type="directory" conffile="true">
+        <mapper type="perm" prefix="/etc/init.d"/>
+      </data>
+      <data src="${keystore.dir}/" type="directory">
+        <mapper type="perm" prefix="/var/lib/orchestra/keystore"/>
+      </data>
+
+    </deb>
+
+  </target>
   <!--Creates the deployable jar file  -->
 
   <target name="main" depends="compile, jar, docs">

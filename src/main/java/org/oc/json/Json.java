@@ -47,6 +47,7 @@ public class Json {
 	private JSONArray rootArray;
 	private Set parentKeySet = null;
 	private Set keySet = null;
+	private Json outerJson;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Json.class);
 	
@@ -87,8 +88,8 @@ public class Json {
 	public static InputStream httpInputStream(String filename) throws ClientProtocolException, IOException {
         String username = Client.getUsername();
 		String password = Client.getPassword();
-		String host = Client.getServer();
-		int port = Client.getServer_port();
+		String host = Client.getProperty("server");
+		int port = Integer.valueOf(Client.getProperty("server_port"));
 		
 		HttpCommand cmd = new HttpCommandBuilder(username, password)
 			.setHost(host)
@@ -274,8 +275,21 @@ public class Json {
 					return json.getRoot() == null ? json.getRootArray() : json.getRoot();
 				}
 			}
+		} else if(current.toString().startsWith("$..")) {
+			return getOuterJson().get(current.toString().substring(3));
+		} else if(current.toString().startsWith("$.")) {
+			return get(current.toString().substring(2));
 		}
-		return get(current.toString().substring(1));
+		Json json = getOuterJson();
+		while(json != null) {
+			if(json.getOuterJson() == null) break;
+			json = json.getOuterJson();
+		}
+		if(json != null) {
+			return json.get(current.toString().substring(1));
+		} else {
+			return get(current.toString().substring(1));
+		}
 	}
 
 	public String getParamAsString(String namespace) {
@@ -388,4 +402,11 @@ public class Json {
 		return rootArray;
 	}
 
+	public void setOuterJson(Json json) {
+		this.outerJson = json;
+	}
+
+	public Json getOuterJson() {
+		return outerJson;
+	}
 }

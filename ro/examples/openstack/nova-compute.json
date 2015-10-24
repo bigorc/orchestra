@@ -1,5 +1,6 @@
 {
   "type": "container",
+  "compute_ip": "192.168.178.151",
   "resources": [
     {
       "stateMachine": "package",
@@ -34,7 +35,7 @@
     		 {
        			 "section": "DEFAULT",
        			 "name": "my_ip",
-       			 "value": "192.168.178.151"
+       			 "value": "$compute_ip"
     		 },
     		 {
        			 "section": "DEFAULT",
@@ -49,12 +50,12 @@
     		 {
        			 "section": "DEFAULT",
        			 "name": "vncserver_proxyclient_address",
-       			 "value": "192.168.178.151"
+       			 "value": "$compute_ip"
     		 },
     		 {
        			 "section": "DEFAULT",
        			 "name": "novncproxy_base_url",
-       			 "value": "http://controller:6080/vnc_auto.html"
+       			 "value": "http://192.168.178.145:6080/vnc_auto.html"
     		 },
     		 {
        			 "section": "DEFAULT",

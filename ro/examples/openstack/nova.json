@@ -1,5 +1,6 @@
 {
   "type": "container",
+  "controller_ip": "192.168.178.145",
   "resources": [
     {
       "stateMachine": "package",
@@ -33,17 +34,17 @@
         {
           "section": "DEFAULT",
           "name": "my_ip",
-          "value": "192.168.178.145"
+          "value": "$controller_ip"
         },
         {
           "section": "DEFAULT",
           "name": "vncserver_listen",
-          "value": "192.168.178.145"
+          "value": "$controller_ip"
         },
         {
           "section": "DEFAULT",
           "name": "vncserver_proxyclient_address",
-          "value": "192.168.178.145"
+          "value": "$controller_ip"
         },
         {
           "section": "DEFAULT",

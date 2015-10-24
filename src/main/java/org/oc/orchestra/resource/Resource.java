@@ -1,6 +1,7 @@
 package org.oc.orchestra.resource;
 
 import org.json.simple.JSONObject;
+import org.oc.json.Json;
 import org.oc.orchestra.client.Client;
 import org.oc.orchestra.coordinate.Coordinator;
 import org.oc.orchestra.sm.AbstractStateMachine;
@@ -11,6 +12,15 @@ public abstract class Resource extends AbstractStateMachine {
 	protected boolean block;
 	private String uri;
 	protected Coordinator coordinator;
+	protected Json json;
+
+	public Json getJson() {
+		return json;
+	}
+
+	public void setJson(Json json) {
+		this.json = json;
+	}
 
 	public boolean isBlock() {
 		return block;
