@@ -380,18 +380,9 @@ public class Client implements Daemon{
 
 	public static void config() {
 		Properties conf = new Properties();
-        InputStream is;
+        InputStream is = ClassLoader.getSystemResourceAsStream("client.conf");
 		try {
-			if(new File("conf/client.conf").exists()) {
-			 is = new FileInputStream("conf/client.conf");
-			} else if(new File("/etc/orchestra/client.conf").exists()) {
-				is = new FileInputStream("/etc/orchestra/client.conf");
-			} else {
-				return;
-			}
 			conf.load(is);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

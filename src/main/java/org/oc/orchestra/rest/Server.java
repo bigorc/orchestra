@@ -37,24 +37,14 @@ public class Server implements Daemon {
 		properties.put("key.password", "password");
 		properties.put("truststore.password", "password");
 		Properties conf = new Properties();
-        InputStream is;
-		try {
-			if(new File("conf/server.conf").exists()) {
-			 is = new FileInputStream("conf/server.conf");
-			} else if(new File("/etc/orchestra/server.conf").exists()) {
-				is = new FileInputStream("/etc/orchestra/server.conf");
-			} else {
-				return;
-			}
+        InputStream is = this.getClass().getResourceAsStream("/server.conf");
+        try {
 			conf.load(is);
-			for(String key : conf.stringPropertyNames()) {
-				properties.put(key, conf.getProperty(key));
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			is.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        
 	}
 
 	public void start() throws Exception {
