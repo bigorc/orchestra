@@ -29,6 +29,7 @@ JAVA_HOME="/usr/lib/jvm/java-7-openjdk-amd64/"
 
 # Our classpath including our jar file and the Apache Commons Daemon library
 CLASS_PATH="$FILE_PATH/orchestra.jar"
+CLASS_PATH="$FILE_PATH/orchestra.jar:/etc/$NAME"
 
 for i in $FILE_PATH/lib/*.jar
 do
@@ -78,6 +79,13 @@ case "$1" in
         jsvc_exec "-stop"       
         
         echo "The $DESC has stopped."
+    ;;
+	status)
+        if [ -f "$PID" ]; then
+            echo "$DESC is running"
+        else
+            echo "$DESC is stopped"
+        fi
     ;;
     restart)
         if [ -f "$PID" ]; then

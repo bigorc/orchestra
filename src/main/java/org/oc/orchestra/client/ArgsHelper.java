@@ -35,17 +35,12 @@ public class ArgsHelper {
         	Client.setUsername(cmd.getOptionValue('u'));
         } else if(Client.getUsername() == null){
         	Client.setUsername(prompt("username:"));
-        } else {
-        	usage();
         }
-        
         
         if(cmd.hasOption('p')) {
         	Client.setPassword(cmd.getOptionValue('p'));
         } else if(Client.getPassword() == null) {
         	Client.setPassword(prompt("password:"));
-        } else {
-        	usage();
         }
 	    
 		String [] targets = cmd.getArgs();
@@ -54,7 +49,7 @@ public class ArgsHelper {
 				cmd.getOptionValue('s') : Client.getProperty("server");
 		
 		port = cmd.hasOption("port") ? 
-				cmd.getOptionValue("port") : Client.getProperty("server_port");
+				cmd.getOptionValue("port") : Client.getProperty("port");
 		
 		zk_connect_string = cmd.hasOption('z') ? 
 				cmd.getOptionValue('z') : Client.getProperty("zookeeper.connectString");

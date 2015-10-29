@@ -10,6 +10,7 @@
   <property name="conf.dir" location="conf" />
   <property name="docs.dir" location="docs" />
   <property name="lib.dir" location="lib" />
+  <property name="bin.dir" location="bin" />
   <property name="keystore.dir" location="keystore" />
   <path id="classpath">
 	<fileset dir="${lib.dir}">
@@ -42,6 +43,7 @@
     <jar destfile="${dist.dir}/lib/orchestra.jar"
         basedir="${build.dir}"
         includes="**"
+        excludes="**/*.conf"
     />
   </target>
   <target name="auth-jar">
@@ -86,7 +88,7 @@
     </javadoc>
   </target>
 
- <target name="package" depends="jar">
+ <target name="package" depends="jar, client-jar">
     <taskdef name="deb" classname="org.vafer.jdeb.ant.DebAntTask"/>
 
     <copy todir="${build.dir}/deb/control">
@@ -103,16 +105,18 @@
       <data src="${lib.dir}" type="directory">
         <mapper type="perm" prefix="/usr/share/orchestra/lib"/>
       </data>
-      <data src="${dist.dir}/lib/orchestra.jar" type="file">
+      <data src="${dist.dir}/lib/" type="directory">
         <mapper type="perm" prefix="/usr/share/orchestra/"/>
       </data>
       <data src="${conf.dir}/" type="directory" conffile="true">
         <exclude name="**/*.cfg"/>
+        <exclude name="**/init/**"/>
         <mapper type="perm" prefix="/etc/orchestra"/>
       </data>
-      <data src="${conf.dir}/init/" type="directory" conffile="true">
-        <mapper type="perm" prefix="/etc/init.d"/>
-      </data>
+      <tarfileset dir="${bin.dir}/"  filemode="755" prefix="/usr/bin">
+        <exclude name="**/antlr4"/>
+      </tarfileset>
+      <tarfileset dir="${conf.dir}/init/"  filemode="755" prefix="/etc/init.d/"/>
       <data src="${keystore.dir}/" type="directory">
         <mapper type="perm" prefix="/var/lib/orchestra/keystore"/>
       </data>

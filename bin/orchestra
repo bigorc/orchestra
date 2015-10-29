@@ -1,37 +1,25 @@
 #!/bin/bash
 
+BIN="${BASH_SOURCE-$0}"
+BIN="$(dirname "${BIN}")"
+BINDIR="$(cd "${BIN}"; pwd)"
+echo $BINDIR
+
 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
-CLASSPATH=target/classes:conf/
-STDOUT=logs/stdout.log
-STDERR=logs/stderr.log
-JVMFLAGS="-Djavax.net.ssl.keyStore=keystore/clientKey.jks -Djavax.net.ssl.trustStore=keystore/clientTrust.jks -Djavax.net.ssl.keyStorePassword=password -Djavax.net.ssl.trustStorePassword=password -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty -Dzookeeper.client.secure=true -Dzookeeper.ssl.keyStore.location=/root/zookeeper/ssl/testKeyStore.jks -Dzookeeper.ssl.keyStore.password=testpass -Dzookeeper.ssl.trustStore.location=/root/zookeeper/ssl/testTrustStore.jks -Dzookeeper.ssl.trustStore.password=testpass"
-for i in lib/*.jar
+
+if [ $BINDIR != "/usr/bin" ]; then
+	CLASSPATH=target/classes:conf/
+	LIBDIR=lib/
+else
+	CLASSPATH=/usr/share/orchestra/orchestra.jar/:/etc/orchestra/
+	LIBDIR=/usr/share/orchestra/lib/
+fi
+
+echo $CLASSPATH
+
+for i in $LIBDIR/*.jar
 do
 	CLASSPATH="$i:$CLASSPATH"
 done
-CLASSPATH=examples/:$CLASSPATH
 
-start() {
-	jsvc $JVMFLAGS -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR org.oc.orchestra.client.Client 
-	exit 0
-}
-
-stop() {
-	jsvc $JVMFLAGS -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR -stop org.oc.orchestra.client.Client 
-	exit 0
-}
-
-restart() {
-	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR -stop org.oc.orchestra.client.Client 
-	start
-	exit 0
-}
-
-case $1 in
-start-daemons) start;;
-stop-daemons) stop;;
-restart-daemons) restart;;
-esac
-java $JVMFLAGS -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
-
-
+java -cp $CLASSPATH org.oc.orchestra.client.Client "$@"

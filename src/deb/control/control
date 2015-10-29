@@ -5,4 +5,4 @@ Priority: low
 Architecture: all
 Description: orchestra-server
 Maintainer: bigorc
-Depends: jsvc
+Depends: jsvc,openjdk-7-jre

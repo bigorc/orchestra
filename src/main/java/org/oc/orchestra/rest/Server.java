@@ -7,20 +7,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
+import org.oc.orchestra.client.Client;
 import org.restlet.Component;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.util.Series;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Server implements Daemon {
 	private Component orchestraServer;
 	Map<String, String> properties = new HashMap<String, String>();
-
+	private static final transient Logger logger = LoggerFactory.getLogger(Server.class);
 	public Server() {
 		orchestraServer = new Component();
 	}
@@ -54,9 +58,12 @@ public class Server implements Daemon {
 	}
 
 	public void start() throws Exception {
-		System.out.println("Stopping orchestra server.");
+		System.out.println("Starting orchestra server.");
 		org.restlet.Server server = orchestraServer.getServers().add(Protocol.HTTPS, Integer.valueOf(properties.get("port")));
-		
+		for(Entry<String, String> entry : properties.entrySet()) {
+			logger.info(entry.getKey() + "=" + entry.getValue());
+		}
+			
 		Series<Parameter> parameters = server.getContext().getParameters();
 		parameters.add("keystorePath", properties.get("keystore"));
 		parameters.add("keystorePassword", properties.get("keystore.password"));
