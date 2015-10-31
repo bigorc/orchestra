@@ -47,7 +47,6 @@ import org.restlet.resource.ServerResource;
 import org.restlet.util.Series;
 
 public class RO extends ServerResource {
-	private static String ro_path = "ro/";
 	private String tmp_path = "/tmp";
 	
 	@Get
@@ -56,7 +55,7 @@ public class RO extends ServerResource {
 		String filename = getQuery().getValues("filename");
 		System.out.println("filename is " + filename);
 		
-		File file = new File(ro_path + filename);
+		File file = new File(Server.getProperty("ro.dir") + "/"  + filename);
 		if(!file.exists()) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
@@ -104,10 +103,10 @@ public class RO extends ServerResource {
 
 			File file;
 			if(upload_path == null) {
-				file = new File(ro_path + filename);
+				file = new File(Server.getProperty("ro.dir") + "/"  + filename);
 			} else {
-				file = new File(ro_path + upload_path);
-				file = new File(ro_path + upload_path + "/" + filename);
+				file = new File(Server.getProperty("ro.dir") + "/"  + upload_path);
+				file = new File(Server.getProperty("ro.dir") + "/"  + upload_path + "/" + filename);
 			}
 			file.getParentFile().mkdirs();
 			file.createNewFile();
@@ -124,7 +123,7 @@ public class RO extends ServerResource {
 		for(String filename : filenames) {
 			System.out.println("filename is " + filename);
 
-			File file = new File(ro_path + filename);
+			File file = new File(Server.getProperty("ro.dir") + "/"  + filename);
 			if(file.exists()) {
 				if(recursive) {
 					try {

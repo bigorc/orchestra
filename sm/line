@@ -10,13 +10,12 @@ TMP=${TMP:-/tmp}
 
 line_add() {
 	file=$1
-
-	TMPFILE=$( echo _orc_$file | tr \/ \\ )
-    TMPFILE=$TMP/$TMPFILE
-    echo $TMPFILE
 	if [[ $LINE_NUMBER != "" ]]; then
 		sudo sed -i "${LINE_NUMBER} i\\${LINE}" $file
 	elif [[ $AFTER_LINE != "" ]]; then
+		TMPFILE=$( echo _orc_$file | tr \/ \\ )
+	    TMPFILE=$TMP/$TMPFILE
+	    echo $TMPFILE
 		sudo awk "/$AFTER_LINE/ { print; print \"$LINE\"; next }1" $file > $TMPFILE
 		sudo mv $TMPFILE $file
 	else
@@ -25,7 +24,7 @@ line_add() {
 			echo "Line $LINE already exists in file $file"
 		else
 			echo "Adding line $LINE to the end of file $file"
-			sudo echo $LINE >> $file
+			sudo echo "$LINE" >> $file
 		fi
 	fi
 }

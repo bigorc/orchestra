@@ -1,6 +1,5 @@
 {
   "type": "container",
-  "client": "controller",
   "resources": [
     {
       "stateMachine": "sql",
@@ -22,17 +21,17 @@
         {
           "section": "database",
           "name": "connection",
-          "value": "mysql://cinder:password@orchestra/cinder"
+          "value": "mysql://cinder:password@controller/cinder"
         },
         {
           "section": "keystone_authtoken",
           "name": "auth_uri",
-          "value": "http://orchestra:5000"
+          "value": "http://controller:5000"
         },
         {
           "section": "keystone_authtoken",
           "name": "auth_host",
-          "value": "orchestra"
+          "value": "controller"
         },
         {
           "section": "keystone_authtoken",
@@ -72,7 +71,7 @@
         {
         	"section": "DEFAULT",
         	"name": "rabbit_host",
-        	"value": "orchestra"
+        	"value": "controller"
         },
         {
         	"section": "DEFAULT",
@@ -104,16 +103,16 @@ keystone user-role-add --user=cinder --tenant=service --role=admin\n
 keystone service-list|grep -q \"OpenStack Block Storage\"
 if [ ! $? -eq 0 ]; then
 	keystone service-create --name=cinder --type=volume --description=\"OpenStack Block Storage\"\n
-	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://orchestra:8776/v1/%\(tenant_id\)s --internalurl=http://orchestra:8776/v1/%\(tenant_id\)s --adminurl=http://orchestra:8776/v1/%\(tenant_id\)s\n
+	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://controller:8776/v1/%\(tenant_id\)s --internalurl=http://controller:8776/v1/%\(tenant_id\)s --adminurl=http://controller:8776/v1/%\(tenant_id\)s\n
 	keystone service-create --name=cinderv2 --type=volumev2 --description=\"OpenStack Block Storage V2\"\n
-	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://orchestra:8776/v2/%\(tenant_id\)s --internalurl=http://orchestra:8776/v2/%\(tenant_id\)s --adminurl=http://orchestra:8776/v2/%\(tenant_id\)s\n
+	keystone endpoint-create --service-id=$(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://controller:8776/v2/%\(tenant_id\)s --internalurl=http://controller:8776/v2/%\(tenant_id\)s --adminurl=http://controller:8776/v2/%\(tenant_id\)s\n
 fi"
     },
     {
       "stateMachine": "cmd",
       "sm_args": "bash /tmp/cinder.sh",
       "SERVICE_TOKEN": "ADMIN",
-      "SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+      "SERVICE_ENDPOINT": "http://controller:35357/v2.0"
     },
     {
       "stateMachine": "cmd",

@@ -12,6 +12,7 @@
   <property name="lib.dir" location="lib" />
   <property name="bin.dir" location="bin" />
   <property name="keystore.dir" location="keystore" />
+  <property name="ro.dir" location="ro" />
   <path id="classpath">
 	<fileset dir="${lib.dir}">
 		<include name="*.jar"/>
@@ -120,6 +121,9 @@
       <tarfileset dir="${conf.dir}/init/"  filemode="755" prefix="/etc/init.d/"/>
       <data src="${keystore.dir}/" type="directory">
         <mapper type="perm" prefix="/var/lib/orchestra/keystore"/>
+      </data>
+      <data src="${ro.dir}/" type="directory">
+        <mapper type="perm" prefix="/var/lib/orchestra/ro"/>
       </data>
 
     </deb>

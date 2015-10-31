@@ -6,3 +6,6 @@ newline
 newline
 David
 World
+*.cfg
+source /etc/network/interfaces.d/*.cfg
+source /etc/network/interfaces.d/*.cfg

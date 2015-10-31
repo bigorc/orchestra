@@ -23,19 +23,24 @@ import org.slf4j.LoggerFactory;
 
 public class Server implements Daemon {
 	private Component orchestraServer;
-	Map<String, String> properties = new HashMap<String, String>();
+	static Map<String, String> properties = new HashMap<String, String>();
 	private static final transient Logger logger = LoggerFactory.getLogger(Server.class);
-	public Server() {
-		orchestraServer = new Component();
-	}
 	
-	public void config() {
+	static {
 		properties.put("truststore", "keystore/serverTrust.jks");
 		properties.put("keystore", "keystore/serverKey.jks");
 		properties.put("port", "8183");
 		properties.put("keystore.password", "password");
 		properties.put("key.password", "password");
 		properties.put("truststore.password", "password");
+		properties.put("ro.dir", "ro");
+	}
+	
+	public Server() {
+		orchestraServer = new Component();
+	}
+	
+	public void config() {
 		Properties conf = new Properties();
         InputStream is = this.getClass().getResourceAsStream("/server.conf");
         try {
@@ -50,6 +55,10 @@ public class Server implements Daemon {
 		
 	}
 
+	public static String getProperty(String key) {
+		return properties.get(key);
+	}
+	
 	public void start() throws Exception {
 		System.out.println("Starting orchestra server.");
 		org.restlet.Server server = orchestraServer.getServers().add(

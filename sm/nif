@@ -24,12 +24,16 @@ nif_down() {
 }
 
 nif_persist() {
+	add_source
+	if [[ $NIF_MODE == "" ]]; then
+		echo "NIF_MODE must not be empty"
+		exit 1
+	fi
 	if [[ $NIF_MODE == "static" ]] && [[ $NIF_IP == "" ]]; then
 		echo "NIF_IP must be set when NIF_MODE is static"
 		exit 1
 	fi
 	echo "Persisting nif $1"
-	add_source
 	if [[ ! -d /etc/network/interfaces.d ]]; then
 		mkdir -p /etc/network/interfaces.d
 	else

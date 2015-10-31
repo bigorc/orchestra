@@ -1,5 +1,0 @@
-{
-  "stateMachine": "content",
-  "sm_args": "/etc/network/interfaces",
-  "CONTENT": "auto lo\niface lo inet loopback\n\nsource /etc/network/interfaces.d/*.cfg"
-}

@@ -1,0 +1,12 @@
+{
+  "type": "container",
+  "client": "network",
+  "resources": [
+    "$'examples/openstack/repository.json'",
+    "$'examples/openstack/hosts.json'",
+    "$'examples/openstack/mysql/client.json'",
+    "$'examples/openstack/nif/network.json'",
+    "$'examples/openstack/ntp/client.json'",
+    "$'examples/openstack/neutron/network.json'"
+  ]
+}

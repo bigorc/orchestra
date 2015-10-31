@@ -1,5 +1,6 @@
 {
 	"type": "container",
+	"LOCAL_IP": "192.168.131.172",
 	"resources":
 		[
 		 {
@@ -153,7 +154,7 @@
 				  {
 					  "section": "ovs",
 					  "name": "local_ip",
-					  "value": "192.168.131.172"
+					  "value": "$LOCAL_IP"
 				  },
 				  {
 					  "section": "ovs",

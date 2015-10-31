@@ -1,0 +1,18 @@
+{
+  "type": "container",
+  "client": "controller",
+  "resources": [
+    "$'examples/openstack/ntp/server.json'",
+    "$'examples/openstack/nif/controller.json'",
+    "$'examples/openstack/mysql/server.json'",
+    "$'examples/openstack/repository.json'",
+    "$'examples/openstack/rabbitmq.json'"
+    "$'examples/openstack/keystone.json'",
+    "$'examples/openstack/glance.json'",
+    "$'examples/openstack/nova/controller.json'",
+    "$'examples/openstack/neutron/controller.json'",
+    "$'examples/openstack/ceilometer/controller.json'",
+    "$'examples/openstack/horizon.json'",
+    "$'examples/openstack/neutron/initial-networks.json'"
+  ]
+}

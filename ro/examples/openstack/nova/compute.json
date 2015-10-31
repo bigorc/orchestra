@@ -1,6 +1,6 @@
 {
   "type": "container",
-  "compute_ip": "192.168.178.151",
+  "MANAGEMENT_IP": "192.168.178.151",
   "resources": [
     {
       "stateMachine": "package",
@@ -35,7 +35,7 @@
     		 {
        			 "section": "DEFAULT",
        			 "name": "my_ip",
-       			 "value": "$compute_ip"
+       			 "value": "$MANAGEMENT_IP"
     		 },
     		 {
        			 "section": "DEFAULT",
@@ -50,7 +50,7 @@
     		 {
        			 "section": "DEFAULT",
        			 "name": "vncserver_proxyclient_address",
-       			 "value": "$compute_ip"
+       			 "value": "$MANAGEMENT_IP"
     		 },
     		 {
        			 "section": "DEFAULT",
