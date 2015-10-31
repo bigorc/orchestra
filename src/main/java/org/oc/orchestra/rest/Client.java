@@ -1,36 +1,22 @@
 package org.oc.orchestra.rest;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Date;
-
 import org.apache.shiro.codec.Base64;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.oc.orchestra.auth.CertificateHelper;
-import org.oc.orchestra.auth.Constants;
 import org.oc.orchestra.auth.KeystoreHelper;
-import org.oc.orchestra.auth.ServerAuthHelper;
 import org.oc.orchestra.dao.ClientDao;
-import org.oc.util.LocalCommand;
-import org.oc.util.LocalCommandBuilder;
 import org.oc.util.SpringUtil;
 import org.restlet.data.Status;
-import org.restlet.engine.header.Header;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -39,25 +25,12 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
-import org.restlet.util.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-
-import sun.security.x509.AlgorithmId;
-import sun.security.x509.CertificateAlgorithmId;
-import sun.security.x509.CertificateIssuerName;
-import sun.security.x509.CertificateSerialNumber;
-import sun.security.x509.CertificateSubjectName;
-import sun.security.x509.CertificateValidity;
-import sun.security.x509.CertificateVersion;
-import sun.security.x509.CertificateX509Key;
-import sun.security.x509.X500Name;
-import sun.security.x509.X509CertImpl;
-import sun.security.x509.X509CertInfo;
 
 @Component
 public class Client extends ServerResource {
@@ -103,7 +76,6 @@ public class Client extends ServerResource {
 	@Put
 	public Representation updateClient() throws JSONException, GeneralSecurityException, IOException {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
-		String apikey = getQuery().getValues("apikey");
 		String updated_by = AuthFilter.getUserPass(getRequest())[0];
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.oc.orchestra.dao.Client client = clientDao.getClient(clientname);

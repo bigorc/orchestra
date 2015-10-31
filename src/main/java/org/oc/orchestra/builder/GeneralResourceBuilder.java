@@ -1,16 +1,10 @@
 package org.oc.orchestra.builder;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.oc.json.Json;
 import org.oc.orchestra.ResourceFactory;
 import org.oc.orchestra.resource.GeneralResource;
 import org.oc.orchestra.resource.Resource;
-import org.oc.orchestra.state.State;
 
 public class GeneralResourceBuilder extends ResourceFactory implements Builder {
 
@@ -25,7 +19,6 @@ public class GeneralResourceBuilder extends ResourceFactory implements Builder {
 		resource.setStateMachine(sm);
 		String state = (String) json.get(SM_STATE);
 		resource.setState(state);
-		String arg0 = (String) json.get("sm_arg0");
 		int i = 0;
 		while(json.get("sm_arg" + i) != null) {
 			resource.addArg((String) json.get("sm_arg" + i));

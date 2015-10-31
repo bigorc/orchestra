@@ -9,10 +9,7 @@ import java.util.Map.Entry;
 
 import org.json.simple.JSONObject;
 import org.oc.orchestra.client.Client;
-import org.oc.orchestra.coordinate.Coordinator;
-import org.oc.orchestra.coordinate.Curator;
 import org.oc.orchestra.sm.StateMachine;
-import org.oc.orchestra.state.StateException;
 
 public class GeneralResource extends Resource {
 	private static final int sleep_interval = 1000;
