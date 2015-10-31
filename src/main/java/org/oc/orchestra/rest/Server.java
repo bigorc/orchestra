@@ -44,7 +44,10 @@ public class Server implements Daemon {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        
+		for(String key : conf.stringPropertyNames()) {
+			properties.put(key, conf.getProperty(key));
+		}
+		
 	}
 
 	public void start() throws Exception {

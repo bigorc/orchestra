@@ -18,7 +18,7 @@
     </property>
   </bean>
   <bean id="securityManager" class="org.apache.shiro.config.IniSecurityManagerFactory">
-  	<constructor-arg value="shiro.ini"/>
+  	<constructor-arg value="classpath:shiro.ini"/>
   </bean>
   <bean id="mongoClient" class="com.mongodb.MongoClient">
   	<constructor-arg index="0">

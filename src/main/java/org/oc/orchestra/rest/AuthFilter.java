@@ -10,6 +10,7 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.Factory;
 import org.oc.orchestra.auth.ShiroAuth;
+import org.oc.util.SpringUtil;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
@@ -18,6 +19,7 @@ import org.restlet.routing.Filter;
 import org.restlet.util.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AuthFilter extends Filter {
 	private final Logger logger = LoggerFactory.getLogger(AuthFilter.class);
@@ -28,8 +30,11 @@ public class AuthFilter extends Filter {
 		System.out.println("AuthFilter was invoked.");
 		
 		String path = request.getResourceRef().getPath();
+		
+		@SuppressWarnings("unchecked")
 		Factory<org.apache.shiro.mgt.SecurityManager> factory = 
-				new IniSecurityManagerFactory("shiro.ini");
+				(Factory<SecurityManager>) SpringUtil.getBean("securityManager");
+
 		SecurityManager securityManager = factory.getInstance();
 		SecurityUtils.setSecurityManager(securityManager);
 		List<java.security.cert.Certificate> certs = request.getClientInfo().getCertificates();
