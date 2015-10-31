@@ -110,6 +110,7 @@
       </data>
       <data src="${conf.dir}/" type="directory" conffile="true">
         <exclude name="**/*.cfg"/>
+        <exclude name="**/*.conf"/>
         <exclude name="**/init/**"/>
         <mapper type="perm" prefix="/etc/orchestra"/>
       </data>

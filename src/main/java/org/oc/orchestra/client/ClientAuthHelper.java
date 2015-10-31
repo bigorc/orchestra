@@ -37,16 +37,15 @@ import com.mongodb.DBCollection;
 
 public class ClientAuthHelper {
 	private static Map<String, String> cache = new HashMap<String, String>();
-	private static String host = "orchestra";
-	private static int port = 8183;
-//	private static BasicDBObject matcher;
 	private String username;
 	private String password;
 	private String filename;
+	private String apikeyPath;
 	
 	public ClientAuthHelper(String username, String password) {
 		this.username = username;
 		this.password = password;
+		this.apikeyPath = Client.getProperty("apikey.dir");
 		this.filename = new Md5Hash(username) + ".apikey";
 	}
 	
@@ -63,8 +62,8 @@ public class ClientAuthHelper {
 		HttpCommandBuilder builder = new HttpCommandBuilder(username, password);
 		HttpCommand command = builder.setScheme("https")
 			.setNeedAuthHeader(true)
-			.setHost(host)
-			.setPort(port)
+			.setHost(Client.getProperty("server"))
+			.setPort(Integer.valueOf(Client.getProperty("port")))
 			.setAction("update")
 			.setTarget("apikey")
 			.addPathParameter(username)
@@ -102,7 +101,7 @@ public class ClientAuthHelper {
 			System.out.println(jsonString);
 			OutputStream out = null;
 			try {
-				out = new FileOutputStream(filename);
+				out = new FileOutputStream(apikeyPath + "/" + filename);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -112,7 +111,7 @@ public class ClientAuthHelper {
 	}
 
 	private String loadApikeyFromFile() {
-		File file = new File(filename);
+		File file = new File(apikeyPath + "/" + filename);
 		InputStream in = null;
 		if(!file.exists()) return null;
 		

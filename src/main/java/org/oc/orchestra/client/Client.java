@@ -131,6 +131,7 @@ public class Client implements Daemon{
 //		properties.put("server", null);
 		properties.put("port", "8183");
 		properties.put("connectString", "localhost:2281");
+		properties.put("apikey.dir", ".");
 	}
 	
 	public static String getProperty(String key) {
@@ -386,6 +387,9 @@ public class Client implements Daemon{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		for(String key : conf.stringPropertyNames()) {
+			properties.put(key, conf.getProperty(key));
+		}
 		username = conf.getProperty("username");
 		password = conf.getProperty("password");
 		properties.put("server", conf.getProperty("server"));
@@ -401,6 +405,7 @@ public class Client implements Daemon{
 		logger.info("port=" + properties.get("port"));
 		logger.info("connectString = " + connectString);
 		logger.info("zk_session_timeout = " + zk_session_timeout);
+		logger.info("apikey.dir=" + properties.get("apikey.dir"));
 		if(conf.containsKey("keystore")) {
 			System.setProperty("javax.net.ssl.keyStore", conf.getProperty("keystore"));
 		} else {

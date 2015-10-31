@@ -52,7 +52,8 @@ public class Server implements Daemon {
 
 	public void start() throws Exception {
 		System.out.println("Starting orchestra server.");
-		org.restlet.Server server = orchestraServer.getServers().add(Protocol.HTTPS, Integer.valueOf(properties.get("port")));
+		org.restlet.Server server = orchestraServer.getServers().add(
+				Protocol.HTTPS, Integer.valueOf(properties.get("port")));
 		for(Entry<String, String> entry : properties.entrySet()) {
 			logger.info(entry.getKey() + "=" + entry.getValue());
 		}
