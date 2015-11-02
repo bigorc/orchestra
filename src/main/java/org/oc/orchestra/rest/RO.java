@@ -1,37 +1,18 @@
 package org.oc.orchestra.rest;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-import java.util.UUID;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.io.FileUtils;
-//import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.header.Header;
@@ -45,15 +26,15 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.restlet.util.Series;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RO extends ServerResource {
-	private String tmp_path = "/tmp";
-	
+	private final Logger logger = LoggerFactory.getLogger(RO.class);
 	@Get
 	public Representation getRo() throws URISyntaxException {
-		System.out.println("Pro resource was invoked");
 		String filename = getQuery().getValues("filename");
-		System.out.println("filename is " + filename);
+		logger.debug("filename:" + Server.getProperty("ro.dir") + "/" + filename);
 		
 		File file = new File(Server.getProperty("ro.dir") + "/"  + filename);
 		if(!file.exists()) {
@@ -62,8 +43,6 @@ public class RO extends ServerResource {
 		}
 		getResponse().setStatus(Status.SUCCESS_OK);
 		FileRepresentation fr = new FileRepresentation(file, MediaType.TEXT_PLAIN);
-//		fr.getDisposition().setType(Disposition.TYPE_ATTACHMENT);
-//		fr.getDisposition().setFilename(filename);
 		return fr;
 	}
 	
@@ -87,7 +66,6 @@ public class RO extends ServerResource {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("header md5:" + md5 + ";calculated md5:" + digest);
 		if(md5 == null || !md5.equals(digest)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 			return new StringRepresentation("File upload failed.");
@@ -104,9 +82,10 @@ public class RO extends ServerResource {
 			File file;
 			if(upload_path == null) {
 				file = new File(Server.getProperty("ro.dir") + "/"  + filename);
+				logger.debug("filename:" + Server.getProperty("ro.dir") + "/" + filename);
 			} else {
-				file = new File(Server.getProperty("ro.dir") + "/"  + upload_path);
-				file = new File(Server.getProperty("ro.dir") + "/"  + upload_path + "/" + filename);
+				file = new File(Server.getProperty("ro.dir") + "/" + upload_path + "/" + filename);
+				logger.debug("filename:" + Server.getProperty("ro.dir") + "/" + upload_path + "/" + filename);
 			}
 			file.getParentFile().mkdirs();
 			file.createNewFile();
@@ -121,7 +100,7 @@ public class RO extends ServerResource {
 		boolean recursive = "true".equals(getQuery().getFirstValue("recursive")) ? true : false;
 		String[] filenames = getQuery().getValuesArray("filename");
 		for(String filename : filenames) {
-			System.out.println("filename is " + filename);
+			logger.debug("filename:" + Server.getProperty("ro.dir") + "/" + filename);
 
 			File file = new File(Server.getProperty("ro.dir") + "/"  + filename);
 			if(file.exists()) {

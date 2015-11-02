@@ -2,11 +2,9 @@ package org.oc.orchestra.rest;
 
 import java.util.List;
 
-import org.apache.shiro.codec.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.oc.orchestra.dao.RoleDao;
-import org.oc.orchestra.dao.RolePermission;
 import org.oc.orchestra.dao.RolePermissionRelationDao;
 import org.oc.util.SpringUtil;
 import org.restlet.data.Status;
@@ -27,7 +25,7 @@ public class Role extends ServerResource {
 	@Get
 	public Representation getRole() throws JSONException {
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		logger.info("Role:" + rolename );
+		logger.debug("Role:" + rolename );
 		RoleDao roleDao = (RoleDao) SpringUtil.getBean("roleDao");
 		org.oc.orchestra.dao.Role role = roleDao.read(rolename);
 		if(role == null) {
@@ -51,7 +49,7 @@ public class Role extends ServerResource {
 	@Post
 	public Representation createRole() throws JSONException {
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		logger.info("Creating Role:" + rolename );
+		logger.debug("Creating Role:" + rolename );
 		RoleDao roleDao = (RoleDao) SpringUtil.getBean("roleDao");
 		org.oc.orchestra.dao.Role role = roleDao.read(rolename);
 		if(role == null) {
@@ -88,7 +86,7 @@ public class Role extends ServerResource {
 	@Put
 	public Representation updateRole() throws JSONException {
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		logger.info("Updating Role:" + rolename );
+		logger.debug("Updating Role:" + rolename );
 		RoleDao roleDao = (RoleDao) SpringUtil.getBean("roleDao");
 		org.oc.orchestra.dao.Role role = roleDao.read(rolename);
 		if(role == null) {
@@ -134,7 +132,7 @@ public class Role extends ServerResource {
 	@Delete
 	public Representation deleteRole() {
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		logger.info("Creating Role:" + rolename );
+		logger.debug("Creating Role:" + rolename );
 		RolePermissionRelationDao rpDao = (RolePermissionRelationDao) SpringUtil.getBean("rolePermissionDao");
 		rpDao.removeRolePermission(rolename, null);
 		RoleDao roleDao = (RoleDao) SpringUtil.getBean("roleDao");

@@ -1,8 +1,5 @@
 package org.oc.orchestra.rest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -13,7 +10,6 @@ import java.util.Properties;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
-import org.oc.orchestra.client.Client;
 import org.restlet.Component;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -34,6 +30,9 @@ public class Server implements Daemon {
 		properties.put("key.password", "password");
 		properties.put("truststore.password", "password");
 		properties.put("ro.dir", "ro");
+		properties.put("nonce.expiration.period", "15");
+		properties.put("nonce.deletion.period", "1");
+		properties.put("request.timeout", "5");
 	}
 	
 	public Server() {
@@ -64,7 +63,7 @@ public class Server implements Daemon {
 		org.restlet.Server server = orchestraServer.getServers().add(
 				Protocol.HTTPS, Integer.valueOf(properties.get("port")));
 		for(Entry<String, String> entry : properties.entrySet()) {
-			logger.info(entry.getKey() + "=" + entry.getValue());
+			logger.debug(entry.getKey() + "=" + entry.getValue());
 		}
 			
 		Series<Parameter> parameters = server.getContext().getParameters();

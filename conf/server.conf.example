@@ -8,3 +8,6 @@ truststore.password=password
 keystore=/var/lib/orchestra/keystore/serverKey.jks
 keystore.password=password
 key.password=password
+#nonce.expiration.period=15 #in minutes, default to be 15
+#nonce.deletion.period=1 #in minutes, default to be 1
+#request.timeout=5 #in minutes, default to be 5

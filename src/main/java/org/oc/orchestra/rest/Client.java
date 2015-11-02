@@ -42,7 +42,7 @@ public class Client extends ServerResource {
 	@Post
 	public Representation createClient() throws JSONException, GeneralSecurityException, IOException {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
-		logger.info("client authenticated:" + getRequest().getClientInfo().isAuthenticated());
+		logger.debug("client:" + clientname);
 		String updated_by = AuthFilter.getUserPass(getRequest())[0];
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.oc.orchestra.dao.Client client = clientDao.getClient(clientname);
@@ -76,6 +76,7 @@ public class Client extends ServerResource {
 	@Put
 	public Representation updateClient() throws JSONException, GeneralSecurityException, IOException {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("client:" + clientname);
 		String updated_by = AuthFilter.getUserPass(getRequest())[0];
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.oc.orchestra.dao.Client client = clientDao.getClient(clientname);
@@ -108,6 +109,7 @@ public class Client extends ServerResource {
 	@Get
 	public Representation getClient() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, JSONException, UnrecoverableKeyException {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("client:" + clientname);
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.oc.orchestra.dao.Client client = clientDao.getClient(clientname);
 		if(client == null) {
@@ -126,6 +128,7 @@ public class Client extends ServerResource {
 	@Delete
 	public Representation deleteClient() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, JSONException, UnrecoverableKeyException {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("client:" + clientname);
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.oc.orchestra.dao.Client client = clientDao.getClient(clientname);
 		if(client == null) {

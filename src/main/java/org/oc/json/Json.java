@@ -1,10 +1,7 @@
 package org.oc.json;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,14 +17,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -51,10 +42,9 @@ public class Json {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Json.class);
 	
-	public static final String orchestra_server = "localhost:8111";
+//	public static final String orchestra_server = "localhost:8111";
 	public static final String pro_path = "pro/";
-//	public static final String orchestra_port = "8111";
-	
+
 	public Json(JSONObject root) {
 		this.root = root;
 	}
@@ -63,10 +53,17 @@ public class Json {
 		InputStream is = openInputStream(filename);
 		Reader reader = new InputStreamReader(is);
 		Object obj = JSONValue.parse(reader);
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		if(obj instanceof JSONObject) this.root = (JSONObject) obj;
 		if(obj instanceof JSONArray) this.rootArray = (JSONArray) obj;
 	}
 
+	@SuppressWarnings("resource")
 	public static InputStream openInputStream(String filename) {
 		InputStream is;
 		try {
@@ -108,7 +105,6 @@ public class Json {
 		this.rootArray = array;
 	}
 
-	//the principle of "lazy references"
 	public Object get(String namespace) {
 		if(namespace.startsWith("$'")) {
 			return resolveReference(namespace);
@@ -189,7 +185,7 @@ public class Json {
 	}
 
 	public void expandArrayIterator(Object current) {
-		Map arrits = new HashMap();
+		Map<Object, Object> arrits = new HashMap<Object, Object>();
 		//expand array comprehensions here
 		if(current instanceof JSONObject) {
 			JSONObject obj = (JSONObject)current;

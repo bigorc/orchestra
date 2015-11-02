@@ -1,114 +1,49 @@
 package org.oc.orchestra.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Timer;
-import java.util.UUID;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
-import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.curator.retry.RetryOneTime;
-import org.apache.http.Consts;
-import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.util.EntityUtils;
-import org.apache.shiro.codec.Base64;
-import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Perms;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
-import org.apache.zookeeper.data.Stat;
-import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.oc.orchestra.ResourceFactory;
-import org.oc.orchestra.auth.KeystoreHelper;
-import org.oc.orchestra.constraint.Constraint;
 import org.oc.orchestra.coordinate.Coordinator;
 import org.oc.orchestra.coordinate.Curator;
 import org.oc.orchestra.coordinate.ResourceWatcher;
 import org.oc.orchestra.coordinate.TaskWatcher;
-import org.oc.orchestra.parser.ConstraintParser;
-import org.oc.orchestra.parser.ConstraintsVisitor;
-import org.oc.orchestra.parser.RulesLexer;
-import org.oc.orchestra.parser.RulesParser;
 import org.oc.orchestra.provider.ACLProvider;
-import org.oc.orchestra.resource.Resource;
-import org.oc.util.CipherUtil;
-import org.oc.util.HttpUtil;
-import org.restlet.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 public class Client implements Daemon{
 	static String resourcePath = "/orchestra/resources";
@@ -116,8 +51,6 @@ public class Client implements Daemon{
 	private static String name = getName();
 	protected static String resourceClientPath = resourcePath + "/" + name;
 	protected static String taskClientPath = taskPath + "/" + name;
-
-	private static final String keystore_pass = "password";
 
 	private static String connectString;
 	private static int zk_session_timeout = 60000;
@@ -130,7 +63,7 @@ public class Client implements Daemon{
 	static {
 //		properties.put("server", null);
 		properties.put("port", "8183");
-		properties.put("connectString", "localhost:2281");
+		properties.put("zookeeper.connectString", "localhost:2281");
 		properties.put("apikey.dir", ".");
 	}
 	
@@ -166,7 +99,6 @@ public class Client implements Daemon{
 
 	private static Coordinator coordinator;
 	
-	private String keystorename = "keystore/clientKey.jks";
 	private Timer taskTimer;
 	private Timer resourceTimer;
 
@@ -174,13 +106,10 @@ public class Client implements Daemon{
 		if(username == null) config();
 		curator = getClientBuilder(false).build();
 		curator.getConnectionStateListenable().addListener(new ConnectionStateListener() {
-			boolean needReregister = false;
-			
 			@Override
             public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 logger.info("** STATE CHANGED TO : " + newState);
                 if(newState == ConnectionState.LOST) {
-                	needReregister = true;
                 }
                 if(newState == ConnectionState.RECONNECTED) {
                 	start();
@@ -191,7 +120,6 @@ public class Client implements Daemon{
 	}
 	
 	public static void main(String[] args) throws ParseException, ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, URISyntaxException, SignatureException {
-		String filename = null;
 		new ArgsHelper().handle(args);
 
 //	    httpclient.getConnectionManager().shutdown();

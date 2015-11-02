@@ -19,14 +19,17 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class User extends ServerResource {
+	private final Logger logger = LoggerFactory.getLogger(User.class);
 	@Override
 	protected Representation get() {
-		System.out.println("The GET method of user resource was invoked.");
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		
 		String userName = (String) getRequest().getAttributes().get("username");
+		logger.debug("username:" + userName);
 		org.oc.orchestra.dao.User user = userDao.getUser(userName );
 		JSONObject jo = new JSONObject();
 		try {
@@ -41,11 +44,10 @@ public class User extends ServerResource {
 	
 	@Post
 	public Representation create() {
-		System.out.println("The Post method of user resource was invoked.");
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		String username = (String) getRequest().getAttributes().get("username");
 		String password = getQuery().getValues("password");
-
+		logger.debug("username:" + username);
 		org.oc.orchestra.dao.User user = userDao.getUser(username );
 		String encryptedPassword = encryptPassword(password);
 		
@@ -81,11 +83,10 @@ public class User extends ServerResource {
 	
 	@Put
 	public Representation update() {
-		System.out.println("The PUT method of user resource was invoked.");
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		String username = (String) getRequest().getAttributes().get("username");
 		String password = getQuery().getValues("password");
-
+		logger.debug("username:" + username);
 		org.oc.orchestra.dao.User user = userDao.getUser(username );
 		
 		String encryptedPassword;
@@ -107,10 +108,10 @@ public class User extends ServerResource {
 	
 	@Delete
 	public Representation delete() {
-		System.out.println("The DELETE method of user resource was invoked.");
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		org.oc.orchestra.dao.User user = new org.oc.orchestra.dao.User();
 		String username = (String) getRequest().getAttributes().get("username");
+		logger.debug("username:" + username);
 		user.setUsername(username);
 		userDao.deleteUser(username);
 		getResponse().setStatus(Status.SUCCESS_OK, "User is deleted.");

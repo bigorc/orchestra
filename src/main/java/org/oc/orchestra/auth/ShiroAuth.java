@@ -9,6 +9,8 @@ import org.apache.shiro.util.Factory;
 import org.oc.orchestra.rest.Apikey;
 import org.oc.util.SpringUtil;
 import org.restlet.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -16,14 +18,12 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 public class ShiroAuth {
-	
 	private Subject user;
 	
 	public ShiroAuth(String username, String password) {
 		this.user = SecurityUtils.getSubject();
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 		user.login(token);
-		System.out.println("user is authenticated: " + user.isAuthenticated());
 	}
 	
 	public ShiroAuth(Request request) {
@@ -38,7 +38,6 @@ public class ShiroAuth {
 		
 		this.user = SecurityUtils.getSubject();
 		user.login(token);
-		System.out.println("user is authenticated: " + user.isAuthenticated());
 	}
 	
 	public boolean isAuthenticated() {

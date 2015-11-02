@@ -5,18 +5,21 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.oc.orchestra.builder.OptionBuilder;
 import org.oc.orchestra.dao.UserDao;
 import org.oc.util.SpringUtil;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Users extends ServerResource {
+	private final Logger logger = LoggerFactory.getLogger(OptionBuilder.class);
 	@Override
 	protected Representation get() throws ResourceException {
-		System.out.println("The GET method of users resource was invoked.");
+		logger.debug("Getting list of users");
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
 		List<org.oc.orchestra.dao.User> users = userDao.findAll();
 		JSONArray json = new JSONArray();

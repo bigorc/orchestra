@@ -248,5 +248,4 @@ public class HttpCommandBuilder {
 	public HttpRequestBase getRequest() {
 		return request;
 	}
-
 }

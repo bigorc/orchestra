@@ -1,13 +1,10 @@
 package org.oc.orchestra.rest;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.oc.orchestra.dao.Role;
-import org.oc.orchestra.dao.RoleDao;
 import org.oc.orchestra.dao.RolePermissionRelationDao;
 import org.oc.util.SpringUtil;
 import org.restlet.ext.json.JsonRepresentation;

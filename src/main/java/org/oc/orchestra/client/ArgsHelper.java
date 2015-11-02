@@ -1,11 +1,6 @@
 package org.oc.orchestra.client;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLine;
@@ -22,8 +17,6 @@ public class ArgsHelper {
 	String host;
 	String port;
 	private CommandLine cmd;
-	private Map<String, String> argValue = new HashMap<String, String>();
-	private Object zk_connect_string;
 	
 	public void handle(String[] args) throws ParseException, IOException, 
 			org.apache.commons.cli.ParseException {
@@ -51,8 +44,6 @@ public class ArgsHelper {
 		port = cmd.hasOption("port") ? 
 				cmd.getOptionValue("port") : Client.getProperty("port");
 		
-		zk_connect_string = cmd.hasOption('z') ? 
-				cmd.getOptionValue('z') : Client.getProperty("zookeeper.connectString");
 		
 		if(targets.length == 0) {
 			startCli();
@@ -133,8 +124,9 @@ public class ArgsHelper {
 	private static String prompt(String output) {
 		System.out.print(output);
 		Scanner input = new Scanner(System.in, "utf-8");
-		
-		return input.nextLine();
+		String line = input.nextLine();
+		input.close();
+		return line;
 	}
 
 	private void startCli() {

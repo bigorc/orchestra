@@ -3,8 +3,6 @@ package org.oc.orchestra.sm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +13,6 @@ public class StateMachine extends AbstractStateMachine {
 	private final Logger logger = LoggerFactory.getLogger(StateMachine.class);
 	public static String sm_path = "sm/";
 	private Runner runner;
-//	private Map<String, String> properties;
 	
 	public StateMachine(String sm, List<String> args, Map<String, String> properties) {
 		this(sm, args);
@@ -44,9 +41,8 @@ public class StateMachine extends AbstractStateMachine {
 				}
 			} else {
 				BufferedReader out = runner.getSystemOut();
-				String line, result = null;
+				String line;
 				while((line = out.readLine()) != null) {
-					result = line;
 					logger.info(line);
 				}
 			}

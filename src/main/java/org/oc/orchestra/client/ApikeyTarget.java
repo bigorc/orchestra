@@ -4,7 +4,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.http.HttpResponse;
 
 public class ApikeyTarget extends Target {
-
 	public ApikeyTarget(HttpCommandBuilder builder) {
 		this.builder = builder;
 	}

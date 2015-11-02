@@ -8,14 +8,16 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserRole extends ServerResource {
-
+	private final Logger logger = LoggerFactory.getLogger(UserRole.class);
 	@Get
 	public Representation userHasRole() {
 		String username = (String) getRequest().getAttributes().get("username");
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		System.out.println("username:" + username + "    rolename:" + rolename);
+		logger.debug("username:" + username + "    rolename:" + rolename);
 		UserRoleRelationDao ur = (UserRoleRelationDao) SpringUtil.getBean("userRoleRelationDao");
 		if(ur.hasUserRole(username, rolename)) {
 			getResponse().setStatus(Status.SUCCESS_NO_CONTENT, "User has the role.");
@@ -29,7 +31,7 @@ public class UserRole extends ServerResource {
 	public Representation addUserRole() {
 		String username = (String) getRequest().getAttributes().get("username");
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		System.out.println("username:" + username + "    rolename:" + rolename);
+		logger.debug("username:" + username + "    rolename:" + rolename);
 		UserRoleRelationDao ur = (UserRoleRelationDao) SpringUtil.getBean("userRoleRelationDao");
 		if(ur.hasUserRole(username, rolename)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "User already has the role");
@@ -43,7 +45,7 @@ public class UserRole extends ServerResource {
 	public Representation removeUserRole() {
 		String username = (String) getRequest().getAttributes().get("username");
 		String rolename = (String) getRequest().getAttributes().get("rolename");
-		System.out.println("username:" + username + "    rolename:" + rolename);
+		logger.debug("username:" + username + "    rolename:" + rolename);
 		UserRoleRelationDao ur = (UserRoleRelationDao) SpringUtil.getBean("userRoleRelationDao");
 		if(ur.hasUserRole(username, rolename)) {
 			ur.removeUserRole(username, rolename);

@@ -8,9 +8,12 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("deprecation")
 public class HttpCommand {
+	private final Logger logger = LoggerFactory.getLogger(HttpCommand.class);
 	private HttpRequestBase request;
 	private HttpClient httpclient;
 	
@@ -30,6 +33,7 @@ public class HttpCommand {
 	public HttpResponse execute() {
 		httpclient = getHttpClient();
 		try {
+			logger.debug(request.getURI().toString());
 			return httpclient.execute(request);
 		} catch (IOException e) {
 			e.printStackTrace();

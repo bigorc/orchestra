@@ -102,7 +102,7 @@ public class KeystoreHelper {
         // loading CertificateChain
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         InputStream certstream = new ByteArrayInputStream(cert);
-		Collection clientCerts = cf.generateCertificates(certstream ) ;
+		Collection<?> clientCerts = cf.generateCertificates(certstream ) ;
         Certificate[] certs = (Certificate[]) clientCerts.toArray(new Certificate[0]);
 
         if(key_password != null) password = key_password;

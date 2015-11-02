@@ -7,11 +7,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.UUID;
+
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.oc.orchestra.auth.Constants;
+import org.oc.orchestra.builder.OptionBuilder;
 import org.oc.util.SpringUtil;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -22,6 +24,8 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -31,16 +35,17 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 public class Apikey extends ServerResource {
-	
+	private final Logger logger = LoggerFactory.getLogger(Apikey.class);
 	@Get
 	public Representation getApikey() throws JSONException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
 		String username = (String) getRequest().getAttributes().get("username");
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("username:" + username);
+		logger.debug("clientname:" + clientname);
 		DBCollection coll = getStore();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
 		DBObject dbo = coll.findOne(query);
-		System.out.println(dbo);
     	if(dbo == null) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
@@ -60,6 +65,9 @@ public class Apikey extends ServerResource {
 	public Representation createApikey() throws JSONException, UnrecoverableKeyException, KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, IOException {
 		String username = (String) getRequest().getAttributes().get("username");
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("username:" + username);
+		logger.debug("clientname:" + clientname);
+		
 		DBCollection coll = getStore();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
@@ -86,6 +94,9 @@ public class Apikey extends ServerResource {
 	public Representation deleteApikey() {
 		String username = (String) getRequest().getAttributes().get("username");
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("username:" + username);
+		logger.debug("clientname:" + clientname);
+		
 		DBCollection coll = getStore();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
@@ -98,6 +109,9 @@ public class Apikey extends ServerResource {
 	private JSONObject generateApikey() throws JSONException, UnrecoverableKeyException, KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, IOException {
 		String username = (String) getRequest().getAttributes().get("username");
 		String clientname = (String) getRequest().getAttributes().get("clientname");
+		logger.debug("username:" + username);
+		logger.debug("clientname:" + clientname);
+		
 		DBCollection coll = getStore();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);

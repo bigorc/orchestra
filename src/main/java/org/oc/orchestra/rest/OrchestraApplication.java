@@ -3,7 +3,6 @@ package org.oc.orchestra.rest;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 
 public class OrchestraApplication extends Application {
 	

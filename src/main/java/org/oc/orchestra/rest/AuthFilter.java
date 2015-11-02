@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.codec.Base64;
-import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.Factory;
 import org.oc.orchestra.auth.ShiroAuth;
@@ -19,7 +18,6 @@ import org.restlet.routing.Filter;
 import org.restlet.util.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class AuthFilter extends Filter {
 	private final Logger logger = LoggerFactory.getLogger(AuthFilter.class);
@@ -27,7 +25,6 @@ public class AuthFilter extends Filter {
 	@Override
 	protected int beforeHandle (Request request, Response response) {
 		int result = CONTINUE;
-		System.out.println("AuthFilter was invoked.");
 		
 		String path = request.getResourceRef().getPath();
 		
@@ -57,17 +54,17 @@ public class AuthFilter extends Filter {
 			
 			ShiroAuth shiro = new ShiroAuth(username, password);
 			if(!shiro.isAuthenticated()) {
-				System.out.println("user is not authenticated!");
+				logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "You are not authenticated");
 			} else if (path.startsWith("/apikey")) {
 				String user = path.split("/")[2];
-				System.out.println(user);
+				logger.debug("checking permission to access apikey of " + user);
 				if(!shiro.hasRole("admin") && !shiro.hasPermission("apikey:" + user + ":*")) {
-					logger.info("Unauthorized user " + user);
+					logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
 					response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
 				}
 			} else if(!shiro.hasRole("admin")) {
-				System.out.println("user is not authorized!");
+				logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
 			}
 		} else {
@@ -85,11 +82,6 @@ public class AuthFilter extends Filter {
 		return result;
 	}
 
-	@Override
-	protected void afterHandle(Request request, Response response) {
-		logger.info("client authenticated:" + request.getClientInfo().isAuthenticated());
-	}
-	
 	public static String[] getUserPass(Request request) {
 		Series<Header> headers = (Series<Header>)request.getAttributes().get("org.restlet.http.headers");
 		String authHeader = headers.getFirstValue("Authorization");

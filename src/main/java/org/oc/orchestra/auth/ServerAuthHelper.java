@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -14,16 +13,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.oc.orchestra.rest.Server;
 import org.oc.util.CipherUtil;
 import org.oc.util.HttpUtil;
 import org.oc.util.SpringUtil;
 import org.restlet.Request;
-import org.restlet.data.Digest;
 import org.restlet.data.Form;
 import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
@@ -38,16 +36,11 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 public class ServerAuthHelper {
-	private static final int NONCE_EXPIRATION_PERIOD = 15;
 	private final Logger logger = LoggerFactory.getLogger(ServerAuthHelper.class);
-	private static final int NONCE_DELETION_PERIOD = 1;
-	private static final int REQUEST_TIMEOUT = 5;
 	public static final String LAST_DELETION_TIME = "last_delete";
 	public static final String MINUTESTAMPS = "minute_stamps";
 	private Request request;
 	private static DB db;
-	private static DBCollection debugColl;
-	
 	public ServerAuthHelper(Request request) {
 		this.request = request;
 		if(db == null) db = getDB();
@@ -119,7 +112,7 @@ public class ServerAuthHelper {
 	public boolean validateTimestamp(String timestamp) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(Constants.TIMESTAMP_FORMAT);
 		DateTime date = formatter.parseDateTime(timestamp);
-		if(date.plusMinutes(REQUEST_TIMEOUT).isBeforeNow() || date.minusMinutes(5).isAfterNow()) 
+		if(date.plusMinutes(Integer.valueOf(Server.getProperty("request.timeout"))).isBeforeNow() || date.minusMinutes(5).isAfterNow()) 
 			return false;
 		return true;
 	}
@@ -170,11 +163,12 @@ public class ServerAuthHelper {
 		DateTime date = formatter.parseDateTime(last_delete);
 		
 		
-		if(date.plusMinutes(NONCE_DELETION_PERIOD).isBeforeNow()) {
+		if(date.plusMinutes(Integer.valueOf(Server.getProperty("nonce.deletion.period"))).isBeforeNow()) {
 			logger.info("The last elimination of outdated nonces is 1 minutes ago, need to delete again.");
 			DBCollection minColl = db.getCollection(MINUTESTAMPS);
 			DateTimeFormatter minFormatter = DateTimeFormat.forPattern(Constants.MINUTES_TIME_FORMAT);
-			String expiration_time = current.minusMinutes(NONCE_EXPIRATION_PERIOD).toString(minFormatter);
+			String expiration_time = current.minusMinutes(Integer.valueOf(
+					Server.getProperty("nonce.expiration.period"))).toString(minFormatter);
 			BasicDBObject query = new BasicDBObject("minutestamp", 
 					new BasicDBObject("$lt", expiration_time));
 			DBCursor cursor = minColl.find(query);
