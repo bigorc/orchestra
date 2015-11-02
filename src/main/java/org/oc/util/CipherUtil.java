@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyStore;
@@ -26,7 +25,6 @@ import org.apache.shiro.codec.Base64;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.crypto.BlowfishCipherService;
 import org.apache.shiro.util.ByteSource;
-import org.restlet.Request;
 
 public class CipherUtil {
 	private static final String CIPHER_ALGORITHM = "Blowfish";

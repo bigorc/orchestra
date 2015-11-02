@@ -13,6 +13,7 @@ import org.apache.commons.lang.WordUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.oc.json.InvalidJsonException;
 import org.oc.json.Json;
 import org.oc.orchestra.builder.Builder;
 import org.oc.orchestra.resource.Resource;
@@ -170,7 +171,7 @@ public class ResourceFactory {
 		InputStream is = Json.openInputStream(filename);
 		Reader reader = new InputStreamReader(is);
 		Object obj = JSONValue.parse(reader);
-		if(obj == null) throw new RuntimeException("Invalid json.");
+		if(obj == null) throw new InvalidJsonException("Invalid json.");
 		if(obj instanceof JSONObject) {
 			result.add(makeResource((JSONObject) obj));
 		} else if(obj instanceof JSONArray) {

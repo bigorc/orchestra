@@ -222,7 +222,7 @@ public class Json {
 				Object  arrval = null;
 				//handle value expansion
 				if(value instanceof JSONObject) {
-					throw new RuntimeException("namespace of array iterator must refer to an array.");
+					throw new JsonParseException("namespace of array iterator must refer to an array.");
 				} else if(value instanceof JSONArray || isArrayIterator(value)) {
 					if(value instanceof JSONArray) {
 						arrval = value;
@@ -230,13 +230,13 @@ public class Json {
 						String val = (String) value;
 						arrval = get(val.substring(2, val.length() - 1));
 						if(!(arrval instanceof JSONArray))
-							throw new RuntimeException("namespace of array iterator must refer to an array.");
+							throw new JsonParseException("namespace of array iterator must refer to an array.");
 					}
 					for(Object o : (JSONArray)arrval) {
 						values.add(o.toString());
 					}
 					if(keys.size() != values.size())
-						throw new RuntimeException("size of value array does not match size of key array.");
+						throw new JsonParseException("size of value array does not match size of key array.");
 				} else {
 					arrval = new JSONArray();
 					for(int i = 0;i < keys.size();i++)
