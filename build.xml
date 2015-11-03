@@ -4,7 +4,7 @@
   <!-- The value of a property is accessed via ${} -->
   <property name="antlr.src.dir" location="target/generated-sources/antlr4" />
   <property name="main.src.dir" location="src/main/java" />
-  <property name="src.dir" location="${main.src.dir};src/main/antlr4;${antlr.src.dir}" />
+  <property name="src.dir" location="${main.src.dir}" />
   <property name="build.dir" location="target/classes" />
   <property name="dist.dir" location="dist" />
   <property name="conf.dir" location="conf" />
@@ -55,14 +55,11 @@
   </target>
 
   <target name="client-jar">
-    <jar destfile="${dist.dir}/lib/orchestra-client.jar">
-      <fileset dir="${build.dir}">
-        <filename name="org/oc/orchestra/client/**"/>
-      </fileset>
-      <fileset dir="${build.dir}">
-        <filename name="org/oc/orchestra/auth/KeystoreHelper.class"/>
-      </fileset>
-    </jar>
+    <jar destfile="${dist.dir}/lib/orchestra-client.jar"
+        basedir="${build.dir}"
+        includes="**"
+        excludes="**/org/orchestra/rest/"
+	/>
   </target>
 
   <target name="resource">
@@ -71,7 +68,7 @@
     </copy>
   </target>
   <!-- Compiles the java code (including the usage of library for JUnit -->
-  <target name="compile" depends="clean, makedir, parser, resource">
+  <target name="compile" depends="clean, makedir, resource">
     <javac nowarn="on" srcdir="${src.dir}" destdir="${build.dir}">
       <classpath>
       	<path refid="classpath"/>
@@ -89,7 +86,49 @@
     </javadoc>
   </target>
 
- <target name="package" depends="jar, client-jar">
+ <target name="package-client" depends="client-jar">
+    <taskdef name="deb" classname="org.vafer.jdeb.ant.DebAntTask"/>
+
+    <copy todir="${build.dir}/deb/control">
+      <fileset dir="src/deb/control"/>
+      <filterset begintoken="[[" endtoken="]]">
+        <filter token="version" value="${version}"/>
+        <filter token="description" value="${description}"/>
+        <filter token="name" value="${ant.project.name}"/>
+      </filterset>
+    </copy>
+    <deb destfile="${dist.dir}/${ant.project.name}-client.deb" control="${build.dir}/deb/control" verbose="true">
+      <data src="${lib.dir}" type="directory">
+        <exclude name="**/*-sources.jar"/>
+        <exclude name="**/*-javadoc.jar"/>
+        <exclude name="**/org.restlet*.jar"/>
+        <mapper type="perm" prefix="/usr/share/orchestra/lib"/>
+        <exclude name=""/>
+      </data>
+      <data src="${dist.dir}/lib/orchestra-client.jar" type="file">
+        <mapper type="perm" prefix="/usr/share/orchestra/"/>
+      </data>
+      <data src="${conf.dir}/" type="directory" conffile="true">
+        <exclude name="**/*.cfg"/>
+        <exclude name="**/*.conf"/>
+        <exclude name="**/*.ini"/>
+        <exclude name="**/server.conf.example"/>
+        <exclude name="**/init/**"/>
+        <mapper type="perm" prefix="/etc/orchestra"/>
+      </data>
+      <tarfileset dir="${bin.dir}/"  filemode="755" prefix="/usr/bin">
+        <exclude name="**/antlr4"/>
+      </tarfileset>
+      <tarfileset dir="${conf.dir}/init/"  filemode="755" prefix="/etc/init.d/">
+        <exclude name="**/orchestra-server"/>
+      </tarfileset>
+      <data src="${keystore.dir}/" type="directory">
+        <exclude name="**/server*.jks"/>
+        <mapper type="perm" prefix="/var/lib/orchestra/keystore"/>
+      </data>
+    </deb>
+ </target>
+ <target name="package" depends="jar">
     <taskdef name="deb" classname="org.vafer.jdeb.ant.DebAntTask"/>
 
     <copy todir="${build.dir}/deb/control">
@@ -104,9 +143,11 @@
     <deb destfile="${dist.dir}/${ant.project.name}.deb" control="${build.dir}/deb/control" verbose="true">
 
       <data src="${lib.dir}" type="directory">
+        <exclude name="**/*-sources.jar"/>
+        <exclude name="**/*-javadoc.jar"/>
         <mapper type="perm" prefix="/usr/share/orchestra/lib"/>
       </data>
-      <data src="${dist.dir}/lib/" type="directory">
+      <data src="${dist.dir}/lib/orchestra.deb" type="file">
         <mapper type="perm" prefix="/usr/share/orchestra/"/>
       </data>
       <data src="${conf.dir}/" type="directory" conffile="true">

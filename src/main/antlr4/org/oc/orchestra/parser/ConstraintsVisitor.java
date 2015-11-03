@@ -3,18 +3,18 @@ package org.oc.orchestra.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.oc.orchestra.constraint.AsyncRemoteResourceObjectConstraint;
-import org.oc.orchestra.constraint.AsyncRemoteStateMachineConstraint;
-import org.oc.orchestra.constraint.BeforeConstraint;
-import org.oc.orchestra.constraint.Constraint;
-import org.oc.orchestra.constraint.DistributedSMConstraint;
-import org.oc.orchestra.constraint.Proable;
-import org.oc.orchestra.constraint.RemoteResourceObjectConstraint;
-import org.oc.orchestra.constraint.ResourceObjectConstraint;
-import org.oc.orchestra.constraint.RemoteStateMachineConstraint;
-import org.oc.orchestra.constraint.StateMachineConstraint;
-import org.oc.orchestra.constraint.SMable;
-import org.oc.orchestra.coordinate.Curator;
+import org.orchestra.constraint.AsyncRemoteResourceObjectConstraint;
+import org.orchestra.constraint.AsyncRemoteStateMachineConstraint;
+import org.orchestra.constraint.BeforeConstraint;
+import org.orchestra.constraint.Constraint;
+import org.orchestra.constraint.DistributedSMConstraint;
+import org.orchestra.constraint.Proable;
+import org.orchestra.constraint.RemoteResourceObjectConstraint;
+import org.orchestra.constraint.RemoteStateMachineConstraint;
+import org.orchestra.constraint.ResourceObjectConstraint;
+import org.orchestra.constraint.SMable;
+import org.orchestra.constraint.StateMachineConstraint;
+import org.orchestra.coordinate.Curator;
 
 public class ConstraintsVisitor extends RulesBaseVisitor<Constraint>{
 	private String connectString;

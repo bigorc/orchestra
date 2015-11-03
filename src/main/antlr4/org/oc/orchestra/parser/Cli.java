@@ -3,9 +3,9 @@ package org.oc.orchestra.parser;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import org.oc.orchestra.constraint.Constraint;
 import org.oc.orchestra.parser.RulesLexer;
 import org.oc.orchestra.parser.RulesParser;
+import org.orchestra.constraint.Constraint;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
