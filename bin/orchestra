@@ -11,7 +11,7 @@ if [ $BINDIR != "/usr/bin" ]; then
 	CLASSPATH=target/classes:conf/
 	LIBDIR=lib/
 else
-	CLASSPATH=/usr/share/orchestra/orchestra.jar/:/etc/orchestra/
+	CLASSPATH=/usr/share/orchestra/orchestra-client.jar:/usr/share/orchestra/orchestra.jar/:/etc/orchestra/
 	LIBDIR=/usr/share/orchestra/lib/
 fi
 
@@ -22,4 +22,4 @@ do
 	CLASSPATH="$i:$CLASSPATH"
 done
 
-java -cp $CLASSPATH org.oc.orchestra.client.Client "$@"
+java -cp $CLASSPATH org.orchestra.client.Client "$@"

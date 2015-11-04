@@ -51,7 +51,6 @@ public class Server implements Daemon {
 		for(String key : conf.stringPropertyNames()) {
 			properties.put(key, conf.getProperty(key));
 		}
-		
 	}
 
 	public static String getProperty(String key) {

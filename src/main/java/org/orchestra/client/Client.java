@@ -62,7 +62,6 @@ public class Client implements Daemon{
 	
 	static Map<String, String> properties = new HashMap<String, String>();
 	static {
-//		properties.put("server", null);
 		properties.put("port", "8183");
 		properties.put("zookeeper.connectString", "localhost:2281");
 		properties.put("apikey.dir", ".");
@@ -329,68 +328,68 @@ public class Client implements Daemon{
 		zk_session_timeout = conf.containsKey("zookeeper.session.timeout") ? 
 			Integer.valueOf(conf.getProperty("zookeeper.session.timeout")) : 
 				zk_session_timeout;
-		logger.info("username = " + username);
-		logger.info("server=" + properties.get("server"));
-		logger.info("port=" + properties.get("port"));
-		logger.info("connectString = " + connectString);
-		logger.info("zk_session_timeout = " + zk_session_timeout);
-		logger.info("apikey.dir=" + properties.get("apikey.dir"));
+		logger.debug("username = " + username);
+		logger.debug("server=" + properties.get("server"));
+		logger.debug("port=" + properties.get("port"));
+		logger.debug("connectString = " + connectString);
+		logger.debug("zk_session_timeout = " + zk_session_timeout);
+		logger.debug("apikey.dir=" + properties.get("apikey.dir"));
 		if(conf.containsKey("keystore")) {
 			System.setProperty("javax.net.ssl.keyStore", conf.getProperty("keystore"));
 		} else {
 			System.setProperty("javax.net.ssl.keyStore", "keystore/clientKey.jks");
 		}
-		logger.info("javax.net.ssl.keyStore = " + System.getProperty("javax.net.ssl.keyStore"));
+		logger.debug("javax.net.ssl.keyStore = " + System.getProperty("javax.net.ssl.keyStore"));
 		if(conf.containsKey("keystore.password")) {
 			System.setProperty("javax.net.ssl.keyStorePassword", conf.getProperty("keystore.password"));
 		} else {
 			System.setProperty("javax.net.ssl.keyStorePassword", "password");
 		}
-		logger.info("javax.net.ssl.keyStorePassword = " + System.getProperty("javax.net.ssl.keyStorePassword"));
+		logger.debug("javax.net.ssl.keyStorePassword = " + System.getProperty("javax.net.ssl.keyStorePassword"));
 		if(conf.containsKey("truststore")) {
 			System.setProperty("javax.net.ssl.trustStore", conf.getProperty("truststore"));
 		} else {
 			System.setProperty("javax.net.ssl.trustStore", "keystore/clientTrust.jks");
 		}
-		logger.info("javax.net.ssl.trustStore = " + System.getProperty("javax.net.ssl.trustStore"));
+		logger.debug("javax.net.ssl.trustStore = " + System.getProperty("javax.net.ssl.trustStore"));
 		if(conf.containsKey("truststore.password")) {
 			System.setProperty("javax.net.ssl.trustStorePassword", conf.getProperty("truststore.password"));
 		} else {
 			System.setProperty("javax.net.ssl.trustStorePassword", "keystore/clientTrust.jks");
 		}
-		logger.info("javax.net.ssl.trustStorePassword = " + System.getProperty("javax.net.ssl.trustStorePassword"));
+		logger.debug("javax.net.ssl.trustStorePassword = " + System.getProperty("javax.net.ssl.trustStorePassword"));
 		if(conf.containsKey("zookeeper.keystore")) {
 			System.setProperty("zookeeper.ssl.keyStore.location", conf.getProperty("zookeeper.keystore"));
 		} else {
 			System.setProperty("zookeeper.ssl.keyStore.location", "keystore/zookeeperKey.jks");
 		}
-		logger.info("zookeeper.ssl.keyStore.location = " + System.getProperty("zookeeper.ssl.keyStore.location"));
+		logger.debug("zookeeper.ssl.keyStore.location = " + System.getProperty("zookeeper.ssl.keyStore.location"));
 		if(conf.containsKey("zookeeper.keystore.password")) {
 			System.setProperty("zookeeper.ssl.keyStore.password", conf.getProperty("zookeeper.keystore.password"));
 		} else {
 			System.setProperty("zookeeper.ssl.keyStore.password", "password");
 		}
-		logger.info("zookeeper.ssl.keyStore.password = " + System.getProperty("zookeeper.ssl.keyStore.password"));
+		logger.debug("zookeeper.ssl.keyStore.password = " + System.getProperty("zookeeper.ssl.keyStore.password"));
 		if(conf.containsKey("zookeeper.truststore")) {
 			System.setProperty("zookeeper.ssl.trustStore.location", conf.getProperty("zookeeper.truststore"));
 		} else {
 			System.setProperty("zookeeper.ssl.trustStore.location", "keystore/zookeeperTrust.jks");
 		}
-		logger.info("zookeeper.ssl.trustStore.location = " + System.getProperty("zookeeper.ssl.trustStore.location"));
+		logger.debug("zookeeper.ssl.trustStore.location = " + System.getProperty("zookeeper.ssl.trustStore.location"));
 		if(conf.containsKey("zookeeper.truststore.password")) {
 			System.setProperty("zookeeper.ssl.trustStore.password", conf.getProperty("zookeeper.truststore.password"));
 		} else {
 			System.setProperty("zookeeper.ssl.trustStore.password", "password");
 		}
-		logger.info("zookeeper.ssl.trustStore.password = " + System.getProperty("zookeeper.ssl.trustStore.password"));
+		logger.debug("zookeeper.ssl.trustStore.password = " + System.getProperty("zookeeper.ssl.trustStore.password"));
 		if(conf.containsKey("zookeeper.clientCnxnSocket")) {
 			System.setProperty("zookeeper.clientCnxnSocket", conf.getProperty("zookeeper.clientCnxnSocket"));
 		} else {
 			System.setProperty("zookeeper.clientCnxnSocket", "org.apache.zookeeper.ClientCnxnSocketNetty");
 		}
-		logger.info("zookeeper.clientCnxnSocket = " + System.getProperty("zookeeper.clientCnxnSocket"));
+		logger.debug("zookeeper.clientCnxnSocket = " + System.getProperty("zookeeper.clientCnxnSocket"));
 		System.setProperty("zookeeper.client.secure", "true");
-		logger.info("zookeeper.client.secure = " + System.getProperty("zookeeper.client.secure"));
+		logger.debug("zookeeper.client.secure = " + System.getProperty("zookeeper.client.secure"));
 		
 	}
 	

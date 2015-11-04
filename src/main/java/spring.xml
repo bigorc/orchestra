@@ -11,7 +11,7 @@
   
   <tx:annotation-driven />
   <context:component-scan 
-      base-package="org.oc.orchestra.dao" />
+      base-package="org.orchestra.dao" />
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
         <value>classpath:server.conf</value>
