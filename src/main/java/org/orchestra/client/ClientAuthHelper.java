@@ -79,7 +79,7 @@ public class ClientAuthHelper {
 	}
 	
 	public void removeApikeyFile() {
-		File file = new File(filename);
+		File file = new File(apikeyPath + "/" + filename);
 		if(file.exists()) file.delete();
 	}
 
@@ -139,7 +139,6 @@ public class ClientAuthHelper {
 				Constants.SIGNATURE_ALGORITHM + Constants.NEW_LINE +
 				timestamp  + Constants.NEW_LINE +
 				canonicalRequestHashHex;
-		System.out.println(stringToSign);
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(Constants.TIMESTAMP_FORMAT);
 		DateTime date = formatter.parseDateTime(timestamp);
 		String dateStamp = date .toString(Constants.DATE_FORMAT);
@@ -147,15 +146,6 @@ public class ClientAuthHelper {
 		byte[] kSigning = CipherUtil.sign(nonce  , kDate);
 		byte[] signature = CipherUtil.sign(stringToSign, kSigning);
 		String signatureHex = CipherUtil.toHex(signature);
-//		matcher.put("secret", secret);
-//		matcher.put("stringToSign", stringToSign);
-//		matcher.put("kDate", new String(kDate, StandardCharsets.UTF_8));
-//		matcher.put("kSigning", kSigning.toString());
-//		matcher.put("signature", signatureHex);
-//		DBCollection coll = ServerAuthHelper.getDB().getCollection("debug");
-//		coll.remove(new BasicDBObject());
-//		coll.insert(matcher);
-		System.out.println(signatureHex);
 		return signatureHex;
 	}
 
@@ -165,24 +155,13 @@ public class ClientAuthHelper {
 		String canonicalQueryString = canonicalizeQueryString(request);
 		String canonicalHeadersString = canonicalizeHeadersString(request);
 		String signedHeadersString = getSignedHeadersString(request);
-//		String requestPayloadHashHex = CipherUtil.toHex(
-//				CipherUtil.hash(getRequestPayload(request)));
-		
-//		matcher = new BasicDBObject();
-//		matcher.put("uri", canonicalURI);
-//		matcher.put("query", canonicalQueryString);
-//		matcher.put("cheader", canonicalHeadersString);
-//		matcher.put("sheader", signedHeadersString);
-//		matcher.put("payload", requestPayloadHashHex);
-		
+	
 		String canonicalRequest =
 				method + Constants.NEW_LINE +
 				canonicalURI + Constants.NEW_LINE +
 				canonicalQueryString + Constants.NEW_LINE +
 				canonicalHeadersString + Constants.NEW_LINE +
 				signedHeadersString;
-//				+ Constants.NEW_LINE + requestPayloadHashHex;
-		System.out.println(canonicalRequest);
 		return canonicalRequest;
 	}
 	
@@ -196,13 +175,11 @@ public class ClientAuthHelper {
 			buffer.append(values.trim());
 			buffer.append(Constants.NEW_LINE);
 		}
-		System.out.println(buffer.toString());
 		return buffer.toString();
 	}
 
 	private static String canonicalizeQueryString(HttpCommandBuilder request) {
 		String queryString = request.getQueryString();
-		System.out.println(queryString);
 		return HttpUtil.canonicalizeQueryString(queryString);
 	}
 
@@ -216,23 +193,6 @@ public class ClientAuthHelper {
 		}
 		return buffer.toString();
 	}
-//
-//	private static String getRequestPayload(HttpCommandBuilder request) {
-//		InputStream content = null;
-//		String string = null;
-//		try {
-//			HttpEntity entity = request.getEntity();
-//			if(entity != null) 
-//				content = entity.getContent();
-//			if (content == null) return "";
-//			string = IOUtils.toString(content, StandardCharsets.UTF_8);
-//		} catch (Exception e) {
-//			return "";
-//		}
-//		
-//		System.out.println(string);
-//		return string;
-//	}
 
 	private static class HeaderComparator implements Comparator<org.apache.http.Header> {
 		@Override

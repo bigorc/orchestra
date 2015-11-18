@@ -12,10 +12,10 @@ CLASS_PATH=$BASEDIR/target/classes:$BASEDIR/conf/
 
 for i in $BASEDIR/lib/*.jar
 do
-    CLASS_PATH="$i:$CLASS_PATH"
+    CLASS_PATH="$CLASS_PATH:$i"
 done
 
 # The fully qualified name of the class to execute
 CLASS="org.orchestra.rest.Server"
 
-$JAVA -cp $CLASS_PATH $CLASS
+java -cp $CLASS_PATH $CLASS

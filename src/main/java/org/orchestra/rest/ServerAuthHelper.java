@@ -61,7 +61,6 @@ public class ServerAuthHelper {
 		BasicDBObject query = new BasicDBObject("apikey", getParameter(Constants.PARAMETER_APIKEY));
 		DBCollection coll = db.getCollection("user");
 		DBObject dbo = coll.findOne(query);
-		System.out.println(dbo);
     	String secret = (String) dbo.get("secret");
 		String canonicalRequestHashHex = CipherUtil.toHex(CipherUtil.hash(getCanonicalRequest()));
 		
@@ -71,7 +70,6 @@ public class ServerAuthHelper {
 				Constants.SIGNATURE_ALGORITHM+ Constants.NEW_LINE +
 				timestamp  + Constants.NEW_LINE +
 				canonicalRequestHashHex;
-		System.out.println(stringToSign);
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(Constants.TIMESTAMP_FORMAT);
 		DateTime date = formatter.parseDateTime(timestamp);
 		String dateStamp = date .toString(Constants.DATE_FORMAT);
@@ -80,20 +78,7 @@ public class ServerAuthHelper {
 		byte[] kSigning = CipherUtil.sign(nonce  , kDate);
 		byte[] signature = CipherUtil.sign(stringToSign, kSigning);
 		String signatureHex = CipherUtil.toHex(signature);
-//		DBObject matcher = debugColl.findOne();
-//		System.out.println(matcher.get("secret") + "|" + secret);
-//		System.out.println("Does the secret match?" + matcher.get("secret").equals(secret));
-//		System.out.println(matcher.get("stringToSign") + "|" + stringToSign);
-//		System.out.println("Does the stringToSign match?" + matcher.get("stringToSign").equals(stringToSign));
-//		System.out.println(matcher.get("kDate") + "|" + new String(kDate, StandardCharsets.UTF_8));
-//		System.out.println("Does the kDate match?" + matcher.get("kDate").equals(kDate.toString()));
-//		System.out.println(matcher.get("kSigning") + "|" + kSigning);
-//		System.out.println("Does the kSigning match?" + matcher.get("kSigning").equals(kSigning.toString()));
-//		System.out.println(matcher.get("signature") + "|" + signature);
-//		System.out.println("Does the signature match?" + matcher.get("signature").equals(signatureHex));
-		
-		System.out.println(signatureHex);
-		
+	
 		return signatureHex;
 	}
 
@@ -112,8 +97,14 @@ public class ServerAuthHelper {
 	public boolean validateTimestamp(String timestamp) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(Constants.TIMESTAMP_FORMAT);
 		DateTime date = formatter.parseDateTime(timestamp);
-		if(date.plusMinutes(Integer.valueOf(Server.getProperty("request.timeout"))).isBeforeNow() || date.minusMinutes(5).isAfterNow()) 
+		Integer timeout = Integer.valueOf(Server.getProperty("request.deviation "));
+		if(date.plusMinutes(timeout).isBeforeNow()
+				|| date.minusMinutes(timeout).isAfterNow()) {
+			logger.info("Authentication failed because request time deviation exceed limit of " 
+				+ timeout + "minutes");
 			return false;
+		}
+			
 		return true;
 	}
 
@@ -164,7 +155,7 @@ public class ServerAuthHelper {
 		
 		
 		if(date.plusMinutes(Integer.valueOf(Server.getProperty("nonce.deletion.period"))).isBeforeNow()) {
-			logger.info("The last elimination of outdated nonces is 1 minutes ago, need to delete again.");
+			logger.info("Deleting outdated nonces again.");
 			DBCollection minColl = db.getCollection(MINUTESTAMPS);
 			DateTimeFormatter minFormatter = DateTimeFormat.forPattern(Constants.MINUTES_TIME_FORMAT);
 			String expiration_time = current.minusMinutes(Integer.valueOf(
@@ -194,31 +185,13 @@ public class ServerAuthHelper {
 		String canonicalQueryString = canonicalizeQueryString();
 		String canonicalHeadersString = canonicalizeHeadersString();
 		String signedHeadersString = getSignedHeadersString();
-//		String requestPayloadHashHex = CipherUtil.toHex(CipherUtil.hash(getRequestPayload()));
-		
+
 		String canonicalRequest =
 				method + Constants.NEW_LINE +
 				canonicalURI + Constants.NEW_LINE +
 				canonicalQueryString + Constants.NEW_LINE +
 				canonicalHeadersString + Constants.NEW_LINE +
 				signedHeadersString;
-//				+ Constants.NEW_LINE + requestPayloadHashHex;
-		
-//		debugColl = db.getCollection("debug");
-//		DBObject matcher = debugColl.findOne();
-//		System.out.println(matcher.get("uri") + "|" + canonicalURI);
-//		System.out.println("Does the uri match?" + matcher.get("uri").equals(canonicalURI));
-//		System.out.println(matcher.get("query") + "|" + canonicalQueryString);
-//		System.out.println("Does the query string match?" + matcher.get("query").equals(canonicalQueryString));
-//		System.out.println(matcher.get("cheader") + "|" + canonicalHeadersString);
-//		System.out.println("Does the canonical header match?" + matcher.get("cheader").equals(canonicalHeadersString));
-//		System.out.println(matcher.get("sheader") + "|" + signedHeadersString);
-//		System.out.println("Does the signed header match?" + matcher.get("sheader").equals(signedHeadersString));
-//		System.out.println(matcher.get("payload") + "|" + requestPayloadHashHex);
-//		System.out.println("Does the payload match?" + matcher.get("payload").equals(requestPayloadHashHex));
-		
-		
-		System.out.println(canonicalRequest);
 		return canonicalRequest;
 	}
 
@@ -251,7 +224,6 @@ public class ServerAuthHelper {
 		Form form = request.getResourceRef().getQueryAsForm();
 		String queryString = form.getQueryString();
 		queryString = URLDecoder.decode(queryString);
-		System.out.println(queryString);
 		return HttpUtil.canonicalizeQueryString(queryString);
 	}
 

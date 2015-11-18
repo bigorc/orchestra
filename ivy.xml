@@ -34,5 +34,7 @@
         <dependency org="org.restlet.jee" name="org.restlet.ext.fileupload" rev="2.1.5" />
         <dependency org="org.restlet.jee" name="org.restlet.ext.ssl" rev="2.1.5" />
         <dependency org="org.restlet.jse" name="org.restlet.ext.jetty" rev="2.1.5" />
+        <dependency org="org.apache.zookeeper" name="zookeeper" rev="3.5.1-alpha" />
+        <exclude org="xerces"/>
     </dependencies>
 </ivy-module>

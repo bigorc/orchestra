@@ -23,8 +23,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 
 import org.apache.shiro.codec.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeystoreHelper {
+	private static final transient Logger logger = LoggerFactory.getLogger(KeystoreHelper.class);
 	private String keystorename;
 	private KeyStore keystore;
 	private String password;
@@ -38,12 +41,12 @@ public class KeystoreHelper {
 		this.keystorename = keystorename;
 		this.password = password;
 		if(keystore == null) keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keystore.load( null , password.toCharArray());
+		keystore.load(null , password.toCharArray());
 		if(!new File(keystorename).exists()) {
 			store();
 		}
 		load();
-		System.out.println("Using keystore-file : "+keystorename);
+		logger.info("Using keystore-file : "+keystorename);
 	}
 	
 	public void reload(String keystorename, String password) throws NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, KeyStoreException {
@@ -53,7 +56,7 @@ public class KeystoreHelper {
 			store();
 		}
 		load();
-		System.out.println("Using keystore-file : "+keystorename);
+		logger.info("Using keystore-file : "+keystorename);
 	}
 	
 	public void saveCertificate(String alias, Certificate cert ) throws KeyStoreException, FileNotFoundException, NoSuchAlgorithmException, CertificateException, IOException {
@@ -74,6 +77,7 @@ public class KeystoreHelper {
 		if(file.getParentFile() != null) file.getParentFile().mkdirs();
 		FileOutputStream output = new FileOutputStream(file);
 	    keystore.store(output, password.toCharArray());
+	    output.flush();
 	    output.close();
 	}
 	
@@ -110,8 +114,8 @@ public class KeystoreHelper {
         keystore.setKeyEntry(alias, privateKey, 
                        password.toCharArray(),
                        certs );
-        System.out.println ("Key and certificate stored.");
-        System.out.println ("Alias:"+alias+"  Password:"+password);
+        logger.info("Key and certificate stored.");
+        logger.info("Alias:" + alias);
         store();
 	}
 

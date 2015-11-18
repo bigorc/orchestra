@@ -2,23 +2,19 @@ package org.orchestra.auth.shiro;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
 import org.orchestra.auth.Constants;
 import org.orchestra.rest.Apikey;
-import org.orchestra.util.SpringUtil;
 import org.restlet.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 public class ShiroAuth {
+	private final Logger logger = LoggerFactory.getLogger(ShiroAuth.class);
 	private Subject user;
 	
 	public ShiroAuth(String username, String password) {
@@ -36,7 +32,7 @@ public class ShiroAuth {
 		if(userObj != null) username = (String) userObj.get("username");
 		
 		RequestToken token = new RequestToken(username, request);
-		
+		logger.debug("Authenticating user:" + username);
 		this.user = SecurityUtils.getSubject();
 		user.login(token);
 	}

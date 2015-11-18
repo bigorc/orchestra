@@ -53,7 +53,6 @@ public class Client implements Daemon{
 	protected static String resourceClientPath = resourcePath + "/" + name;
 	protected static String taskClientPath = taskPath + "/" + name;
 
-	private static String connectString;
 	private static int zk_session_timeout = 60000;
 	private CuratorFramework curator;
 	private static String username;
@@ -121,14 +120,6 @@ public class Client implements Daemon{
 	
 	public static void main(String[] args) throws ParseException, ClientProtocolException, IOException, KeyManagementException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, URISyntaxException, SignatureException {
 		new ArgsHelper().handle(args);
-
-//	    httpclient.getConnectionManager().shutdown();
-		/*
-		System.out.println(filename);
-		List<Resource> resources = ResourceFactory.makeResources(filename);
-		for(Resource r: resources) {
-			r.realize();
-		}*/
 	}
 	
 	protected static String getZkTaskClientPath() {
@@ -324,14 +315,16 @@ public class Client implements Daemon{
 		if(conf.containsKey("port")) {
 			properties.put("port", conf.getProperty("port"));
 		}
-		connectString = conf.containsKey("zookeeper.connectString") ? conf.getProperty("zookeeper.connectString") : connectString;
+		if(conf.containsKey("zookeeper.connectString")) {
+			properties.put("zookeeper.connectString", conf.getProperty("zookeeper.connectString"));
+		}
 		zk_session_timeout = conf.containsKey("zookeeper.session.timeout") ? 
 			Integer.valueOf(conf.getProperty("zookeeper.session.timeout")) : 
 				zk_session_timeout;
 		logger.debug("username = " + username);
 		logger.debug("server=" + properties.get("server"));
 		logger.debug("port=" + properties.get("port"));
-		logger.debug("connectString = " + connectString);
+		logger.debug("zookeeper.connectString = " + properties.get("zookeeper.connectString"));
 		logger.debug("zk_session_timeout = " + zk_session_timeout);
 		logger.debug("apikey.dir=" + properties.get("apikey.dir"));
 		if(conf.containsKey("keystore")) {
@@ -355,31 +348,31 @@ public class Client implements Daemon{
 		if(conf.containsKey("truststore.password")) {
 			System.setProperty("javax.net.ssl.trustStorePassword", conf.getProperty("truststore.password"));
 		} else {
-			System.setProperty("javax.net.ssl.trustStorePassword", "keystore/clientTrust.jks");
+			System.setProperty("javax.net.ssl.trustStorePassword", "password");
 		}
 		logger.debug("javax.net.ssl.trustStorePassword = " + System.getProperty("javax.net.ssl.trustStorePassword"));
 		if(conf.containsKey("zookeeper.keystore")) {
 			System.setProperty("zookeeper.ssl.keyStore.location", conf.getProperty("zookeeper.keystore"));
 		} else {
-			System.setProperty("zookeeper.ssl.keyStore.location", "keystore/zookeeperKey.jks");
+			System.setProperty("zookeeper.ssl.keyStore.location", "keystore/testKeyStore.jks");
 		}
 		logger.debug("zookeeper.ssl.keyStore.location = " + System.getProperty("zookeeper.ssl.keyStore.location"));
 		if(conf.containsKey("zookeeper.keystore.password")) {
 			System.setProperty("zookeeper.ssl.keyStore.password", conf.getProperty("zookeeper.keystore.password"));
 		} else {
-			System.setProperty("zookeeper.ssl.keyStore.password", "password");
+			System.setProperty("zookeeper.ssl.keyStore.password", "testpass");
 		}
 		logger.debug("zookeeper.ssl.keyStore.password = " + System.getProperty("zookeeper.ssl.keyStore.password"));
 		if(conf.containsKey("zookeeper.truststore")) {
 			System.setProperty("zookeeper.ssl.trustStore.location", conf.getProperty("zookeeper.truststore"));
 		} else {
-			System.setProperty("zookeeper.ssl.trustStore.location", "keystore/zookeeperTrust.jks");
+			System.setProperty("zookeeper.ssl.trustStore.location", "keystore/testTrustStore.jks");
 		}
 		logger.debug("zookeeper.ssl.trustStore.location = " + System.getProperty("zookeeper.ssl.trustStore.location"));
 		if(conf.containsKey("zookeeper.truststore.password")) {
 			System.setProperty("zookeeper.ssl.trustStore.password", conf.getProperty("zookeeper.truststore.password"));
 		} else {
-			System.setProperty("zookeeper.ssl.trustStore.password", "password");
+			System.setProperty("zookeeper.ssl.trustStore.password", "testpass");
 		}
 		logger.debug("zookeeper.ssl.trustStore.password = " + System.getProperty("zookeeper.ssl.trustStore.password"));
 		if(conf.containsKey("zookeeper.clientCnxnSocket")) {
@@ -395,10 +388,9 @@ public class Client implements Daemon{
 	
 	public static CuratorFrameworkFactory.Builder getClientBuilder(boolean withAclProvider) {
 		// Create a client builder
-		if(connectString == null) config();
 		CuratorFrameworkFactory.Builder clientBuilder = CuratorFrameworkFactory
 				.builder()
-				.connectString(connectString)
+				.connectString(properties.get("zookeeper.connectString"))
 				.sessionTimeoutMs(zk_session_timeout)
 				.retryPolicy(new ExponentialBackoffRetry(1000, 3));
 		if(withAclProvider) {

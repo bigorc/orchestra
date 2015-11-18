@@ -21,18 +21,16 @@ public class ClientTarget extends Target {
 	}
 
 	public KeystoreHelper getKeystoreHelper() {
-		String keystorename = System.getProperty("javax.net.ssl.keyStore");
-		if(keystorename == null) keystorename = "keystore/clientKey.jks";
-		String keystore_password = System.getProperty("javax.net.ssl.keyStorePassword");
-		if(keystore_password == null) keystore_password = "password";
 		try {
-			return new KeystoreHelper(keystorename, keystore_password);
+			return new KeystoreHelper(System.getProperty("javax.net.ssl.keyStore"), 
+					System.getProperty("javax.net.ssl.keyStorePassword"));
 		} catch (KeyStoreException | NoSuchAlgorithmException
 				| CertificateException | IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
 	@Override
 	public void execute(String method, CommandLine cmd) {
 		builder.setNeedAuthHeader(true).setTarget("client");
@@ -65,6 +63,14 @@ public class ClientTarget extends Target {
 		if(method.equals("install")) {
 			if(response.getStatusLine().getStatusCode() == 409) {
 				System.out.println("Client already exists.");
+				try {
+					if(!helper.containsCertificate(name)) {
+						System.out.println("Client is already created on server, but the certificate is missing");
+						System.exit(1);
+					}
+				} catch (KeyStoreException e) {
+					e.printStackTrace();
+				}
 			} else if(response.getStatusLine().getStatusCode() == 201) {
 				JSONObject json = null;
 				try {
@@ -88,10 +94,12 @@ public class ClientTarget extends Target {
 				}
 			}
 			new Client().createParents();
+			output(response);
 			return;
 		}
 		if(method.equals("uninstall")) {
 			if(response.getStatusLine().getStatusCode() == 204) {
+				new ApikeyTarget().execute("delete", null);
 				new ClientAuthHelper(Client.getUsername(), Client.getPassword())
 					.removeApikeyFile();
 				try {

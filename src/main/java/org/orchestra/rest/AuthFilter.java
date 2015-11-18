@@ -50,7 +50,6 @@ public class AuthFilter extends Filter {
 			String[] name_pass = getUserPass(request);
 			String username = name_pass[0];
 			String password = name_pass[1];
-			System.out.println("username:" + username + ";password:" + password);
 			
 			ShiroAuth shiro = new ShiroAuth(username, password);
 			if(!shiro.isAuthenticated()) {

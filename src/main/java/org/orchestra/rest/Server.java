@@ -28,11 +28,12 @@ public class Server implements Daemon {
 		properties.put("port", "8183");
 		properties.put("keystore.password", "password");
 		properties.put("key.password", "password");
+		properties.put("key.size", "2048");
 		properties.put("truststore.password", "password");
 		properties.put("ro.dir", "ro");
 		properties.put("nonce.expiration.period", "15");
 		properties.put("nonce.deletion.period", "1");
-		properties.put("request.timeout", "5");
+		properties.put("request.deviation ", "5");
 	}
 	
 	public Server() {

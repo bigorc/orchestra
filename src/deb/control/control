@@ -1,8 +1,8 @@
-Package: orchestra
+Package: orchestration
 Version: 1.0-ubuntu12.04
 Section: misc
 Priority: low
 Architecture: all
-Description: orchestra
+Description: Cloud orchestration framework
 Maintainer: bigorc
 Depends: jsvc,openjdk-7-jre

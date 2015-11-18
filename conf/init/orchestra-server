@@ -3,16 +3,10 @@
 
 ### BEGIN INIT INFO
 # Provides:          orchestra.org
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
 # Short-Description: Starts the MyDaemon service
 # Description:       This file is used to start the daemon
 #                    and should be placed in /etc/init.d
 ### END INIT INFO
-
-# Author:   Sheldon Neilson <sheldon[AT]neilson.co.za>
-# Url:      www.neilson.co.za
-# Date:     25/04/2013
 
 NAME="orchestra"
 DESC="Orchestra server service"
@@ -37,7 +31,7 @@ do
 done
 
 # The fully qualified name of the class to execute
-CLASS="org.oc.orchestra.rest.Server"
+CLASS="org.orchestra.rest.Server"
 
 # Any command line arguments to be passed to the our Java Daemon implementations init() method 
 ARGS=""

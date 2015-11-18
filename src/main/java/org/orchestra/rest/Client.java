@@ -36,7 +36,6 @@ import com.mongodb.DBCollection;
 @Component
 public class Client extends ServerResource {
 	private final Logger logger = LoggerFactory.getLogger(Client.class);
-	private static final String SERVER_TRUSTSTORE = "keystore/serverTrust.jks";
 	private static final String algorithm = "SHA1withRSA";
 	private static final int days = 365;
 	
@@ -48,25 +47,30 @@ public class Client extends ServerResource {
 		ClientDao clientDao = (ClientDao) SpringUtil.getBean("clientDao");
 		org.orchestra.dao.Client client = clientDao.getClient(clientname);
 		if(client == null) {
+			//create client database record
 			client = new org.orchestra.dao.Client();
 			client.setCreator(updated_by);
 			client.setName(clientname);
 			clientDao.create(client);
+			
+			KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore"),
+					Server.getProperty("truststore.password"));
+		    if(helper.containsCertificate(clientname)) {
+		    	helper.deleteCertificate(clientname);
+		    }
 			String dn = "CN=" + clientname;
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		    keyGen.initialize(2048);
+		    keyGen.initialize(Integer.valueOf(Server.getProperty("key.size")));
 			KeyPair pair = keyGen.generateKeyPair();
 			
 			X509Certificate cert = CertificateHelper.generateCertificate(dn, pair, days, algorithm);
-			String password = "password";
-			KeystoreHelper helper = new KeystoreHelper(SERVER_TRUSTSTORE , password );
-		    helper.saveCertificate(clientname, cert);
+			helper.saveCertificate(clientname, cert);
 		    
 			JSONObject json = new org.json.JSONObject();
 			json.put("privateKey", Base64.encodeToString(pair.getPrivate().getEncoded()));
 			json.put("cert", Base64.encodeToString(cert.getEncoded()));
 			
-			getResponse().setStatus(Status.SUCCESS_CREATED, "Client is updated.");
+			getResponse().setStatus(Status.SUCCESS_CREATED, "Client is created.");
 			return new JsonRepresentation(json );
 		} else {
 			getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "Client already exists.");
@@ -92,12 +96,11 @@ public class Client extends ServerResource {
 		}
 		String dn = "CN=" + clientname;
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-	    keyGen.initialize(2048);
+	    keyGen.initialize(Integer.valueOf(Server.getProperty("key.size")));
 		KeyPair pair = keyGen.generateKeyPair();
 		
 		X509Certificate cert = CertificateHelper.generateCertificate(dn, pair, days, algorithm);
-		String password = "password";
-		KeystoreHelper helper = new KeystoreHelper(SERVER_TRUSTSTORE , password );
+		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore") , Server.getProperty("truststore.password") );
 	    helper.saveCertificate(clientname, cert);
 	    
 		JSONObject json = new org.json.JSONObject();
@@ -117,7 +120,7 @@ public class Client extends ServerResource {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Client not found.");
 			return null;
 		}
-		KeystoreHelper helper = new KeystoreHelper(SERVER_TRUSTSTORE , "password" );
+		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore") , Server.getProperty("truststore.password") );
 		JSONObject json = new org.json.JSONObject();
 		json.put("creator", client.getCreator());
 		json.put("created_at", client.getCreated_at());
@@ -142,7 +145,7 @@ public class Client extends ServerResource {
 		DBCollection col = Apikey.getStore();
 		col.remove(new BasicDBObject("clientname", clientname));
 		
-		KeystoreHelper helper = new KeystoreHelper(SERVER_TRUSTSTORE , "password" );
+		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore") , Server.getProperty("truststore.password"));
 		helper.deleteCertificate(clientname);
 		
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT, "Client is deleted.");

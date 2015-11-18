@@ -119,8 +119,6 @@ public class Apikey extends ServerResource {
 		
 		String apikey = UUID.randomUUID().toString() + UUID.randomUUID().toString();
 		String secret = new SecureRandomNumberGenerator().nextBytes(64).toBase64();
-		System.out.println(apikey);
-		System.out.println(secret);
 		if(cursor.count() == 0) {
 			BasicDBObject doc = new BasicDBObject("username", username)
 				.append("clientname", clientname)

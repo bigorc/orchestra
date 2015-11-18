@@ -8,6 +8,13 @@ public class ApikeyTarget extends Target {
 		this.builder = builder;
 	}
 
+	public ApikeyTarget() {
+		this.builder = new HttpCommandBuilder(Client.getUsername(), Client.getPassword())
+			.setScheme("https")
+			.setHost(Client.getProperty("server"))
+			.setPort(Integer.valueOf(Client.getProperty("port")));
+	}
+
 	@Override
 	public void execute(String method, CommandLine cmd) {
 		String username = builder.getUsername();

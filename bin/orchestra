@@ -3,23 +3,52 @@
 BIN="${BASH_SOURCE-$0}"
 BIN="$(dirname "${BIN}")"
 BINDIR="$(cd "${BIN}"; pwd)"
+BASEDIR="$BINDIR/.."
 echo $BINDIR
 
 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 
 if [ $BINDIR != "/usr/bin" ]; then
-	CLASSPATH=target/classes:conf/
-	LIBDIR=lib/
+	CLASSPATH=$BASEDIR/target/classes:$BASEDIR/conf/
+	LIBDIR=$BASEDIR/lib/
 else
 	CLASSPATH=/usr/share/orchestra/orchestra-client.jar:/usr/share/orchestra/orchestra.jar/:/etc/orchestra/
 	LIBDIR=/usr/share/orchestra/lib/
 fi
-
-echo $CLASSPATH
 
 for i in $LIBDIR/*.jar
 do
 	CLASSPATH="$i:$CLASSPATH"
 done
 
-java -cp $CLASSPATH org.orchestra.client.Client "$@"
+if [ -d "logs" ]; then
+	mkdir logs
+fi
+STDOUT=logs/stdout.log
+STDERR=logs/stderr.log
+
+CLIENTCLASS=org.orchestra.client.Client
+
+start() {
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR $CLIENTCLASS 
+}
+
+stop() {
+	jsvc -home $JAVA_HOME -cp $CLASSPATH -outfile $STDOUT -errfile $STDERR -stop $CLIENTCLASS 
+}
+
+restart() {
+	stop
+	start
+}
+
+run() {
+	java -cp $CLASSPATH $CLIENTCLASS "$@"
+}
+case $1 in
+start-daemons) start;;
+stop-daemons) stop;;
+restart-daemons) restart;;
+*) run "$@";;
+esac
+

@@ -48,17 +48,18 @@
     />
   </target>
   <target name="auth-jar">
-    <jar destfile="${dist.dir}/lib/roleAuthProvider.jar"
-        basedir="${build.dir}"
-        includes="org/oc/orchestra/provider/**"
-    />
+    <jar destfile="${dist.dir}/lib/role-provider.jar" >
+      <fileset dir="${build.dir}/org/orchestra/provider/"/>
+      <fileset dir="${build.dir}/org/orchestra/client/"/>
+      <fileset dir="${build.dir}/org/orchestra/auth/"/>
+    </jar>
   </target>
 
   <target name="client-jar">
     <jar destfile="${dist.dir}/lib/orchestra-client.jar"
         basedir="${build.dir}"
         includes="**"
-        excludes="**/org/orchestra/rest/"
+        excludes="**/org/orchestra/rest/,**/*.properties,**/*.conf,**/*.conf.example,**/*.cfg"
 	/>
   </target>
 
@@ -68,7 +69,7 @@
     </copy>
   </target>
   <!-- Compiles the java code (including the usage of library for JUnit -->
-  <target name="compile" depends="clean, makedir, resource">
+  <target name="compile" depends="clean, makedir, resource, resolve">
     <javac nowarn="on" srcdir="${src.dir}" destdir="${build.dir}">
       <classpath>
       	<path refid="classpath"/>
@@ -124,6 +125,7 @@
       </tarfileset>
       <data src="${keystore.dir}/" type="directory">
         <exclude name="**/server*.jks"/>
+        <exclude name="**/clientKey.jks"/>
         <mapper type="perm" prefix="/var/lib/orchestra/keystore"/>
       </data>
     </deb>
@@ -147,7 +149,7 @@
         <exclude name="**/*-javadoc.jar"/>
         <mapper type="perm" prefix="/usr/share/orchestra/lib"/>
       </data>
-      <data src="${dist.dir}/lib/orchestra.deb" type="file">
+      <data src="${dist.dir}/lib/orchestra.jar" type="file">
         <mapper type="perm" prefix="/usr/share/orchestra/"/>
       </data>
       <data src="${conf.dir}/" type="directory" conffile="true">
