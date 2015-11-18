@@ -56,9 +56,9 @@ public class RoleDaoImpl extends JdbcDaoSupport implements RoleDao {
 //	}
 
 	@Override
-	public void delete(String roleName) {
+	public void delete(Role role) {
 		getJdbcTemplate().update("DELETE FROM roles WHERE name = ?",
-				new Object[] { roleName });
+				new Object[] { role.getName() });
 	}
 	private class RoleMapper implements RowMapper<Role> {
 

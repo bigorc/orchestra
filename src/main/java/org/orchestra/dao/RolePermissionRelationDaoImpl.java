@@ -73,8 +73,7 @@ public class RolePermissionRelationDaoImpl extends JdbcDaoSupport implements Rol
 	@Override
 	public void removeRolePermission(String rolename, String permission) {
 		if(permission == null) {
-			getJdbcTemplate().update("DELETE FROM roles_permissions WHERE role_name = ?",
-					new Object[] { rolename});
+			return;
 		} else {
 			getJdbcTemplate().update("DELETE FROM roles_permissions WHERE role_name = ? AND PERMISSION = ?",
 					new Object[] { rolename, permission });
@@ -94,5 +93,4 @@ public class RolePermissionRelationDaoImpl extends JdbcDaoSupport implements Rol
 		}
 		return nl;
 	}
-
 }

@@ -5,6 +5,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.orchestra.auth.Constants;
 import org.orchestra.rest.Apikey;
+import org.orchestra.rest.ServerAuthHelper;
 import org.restlet.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class ShiroAuth {
 	public ShiroAuth(Request request) {
 		String apikey = request.getResourceRef().getQueryAsForm()
 				.getFirstValue(Constants.PARAMETER_APIKEY);
-		DBCollection coll = Apikey.getStore();
+		DBCollection coll = ServerAuthHelper.getUserCollection();
 		DBObject userObj = coll.findOne(new BasicDBObject("apikey", apikey));
 		String username = null;
 		if(userObj != null) username = (String) userObj.get("username");

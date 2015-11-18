@@ -141,7 +141,9 @@ public class Role extends ServerResource {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Role not found.");
 			return null;
 		}
-		roleDao.delete(rolename);
+		role = new org.orchestra.dao.Role();
+		role.setName(rolename);
+		roleDao.delete(role);
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT, "Role is deleted.");
 		return null;
 	}

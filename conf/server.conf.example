@@ -1,8 +1,10 @@
 mysql.username = orchestra
 mysql.password = password
 mysql.url = jdbc:mysql://localhost:3306/orchestra
-mongodb.host = localhost
-mongodb.port = 27017
+#mongodb.host = localhost
+#mongodb.port = 27017
+#mongodb.user = orchestra
+#mongodb.password = orchestra
 truststore=/var/lib/orchestra/keystore/serverTrust.jks
 truststore.password=password
 keystore=/var/lib/orchestra/keystore/serverKey.jks

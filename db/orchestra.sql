@@ -23,26 +23,6 @@ CREATE TABLE `clients` (
 
 DROP TABLE IF EXISTS `user_roles`;
 DROP TABLE IF EXISTS `roles_permissions`;
-DROP TABLE IF EXISTS `permissions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `permissions` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `permission` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX (permission)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `permissions`
---
-
-LOCK TABLES `permissions` WRITE;
-/*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,'*');
-/*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `roles`
@@ -83,12 +63,6 @@ CREATE TABLE `roles_permissions` (
   CONSTRAINT role_fk
   FOREIGN KEY fk_role(role_name)
   REFERENCES roles(name)
-  ON UPDATE CASCADE
-  ON DELETE CASCADE,
-
-  CONSTRAINT permission_fk
-  FOREIGN KEY fk_perm(permission)
-  REFERENCES permissions(permission)
   ON UPDATE CASCADE
   ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

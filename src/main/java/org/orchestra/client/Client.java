@@ -209,7 +209,27 @@ public class Client implements Daemon{
 		}
 		cf.close();
 	}
-
+	
+	public void deleteParents() {
+		CuratorFramework cf = getClientBuilder(true).build();
+		cf.start();
+		try {
+			if(cf.checkExists().forPath(getZkClientResourcePath()) != null) {
+				cf.delete().forPath(getZkClientResourcePath());
+			}
+			if(cf.checkExists().forPath(getZkTaskClientPath()) != null) {
+				cf.delete().forPath(getZkTaskClientPath());
+			}
+		} catch(KeeperException.NoNodeException e) {
+			logger.warn("Client resource or task path does not exists.");
+		} catch (KeeperException.ConnectionLossException e) {
+			deleteParents();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		cf.close();
+	}
+	
 	public void resetAcl(String clientname) {
 		CuratorFramework cf = getClientBuilder(true).build();
 		cf.start();

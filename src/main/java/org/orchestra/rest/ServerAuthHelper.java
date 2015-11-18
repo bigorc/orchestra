@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -41,15 +42,33 @@ public class ServerAuthHelper {
 	public static final String MINUTESTAMPS = "minute_stamps";
 	private Request request;
 	private static DB db;
+	
 	public ServerAuthHelper(Request request) {
 		this.request = request;
 		if(db == null) db = getDB();
 	}
 
 	public static DB getDB() {
-		MongoClient mongoClient = (MongoClient) SpringUtil.getBean("mongoClient");
+		MongoClient mongoClient = null;
+		try {
+			mongoClient = new MongoClient(Server.getProperty("mongodb.host"), 
+					Integer.valueOf(Server.getProperty(Server.getProperty("mongodb.port"))));
+		} catch (NumberFormatException | UnknownHostException e) {
+			throw new RuntimeException(e);
+		}
 		DB db = mongoClient.getDB( "orchestra" );
+		boolean auth = db.authenticate(Server.getProperty("mongodb.user"), 
+				Server.getProperty("mongodb.password").toCharArray());
+		if(!auth) {
+			throw new RuntimeException("Mongodb authentication failed for user " + Server.getProperty("mongodb.user"));
+		}
 		return db;
+	}
+
+	public static DBCollection getUserCollection() {
+		
+		DBCollection coll = db.getCollection("user");
+		return coll;
 	}
 
 	private String getParameter(String name) {

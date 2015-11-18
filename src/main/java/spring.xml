@@ -20,14 +20,7 @@
   <bean id="securityManager" class="org.apache.shiro.config.IniSecurityManagerFactory">
   	<constructor-arg value="classpath:shiro.ini"/>
   </bean>
-  <bean id="mongoClient" class="com.mongodb.MongoClient">
-  	<constructor-arg index="0">
-  		<value>${mongodb.host}</value>
-  	</constructor-arg>
-  	<constructor-arg index="1">
-  		<value>${mongodb.port}</value>
-  	</constructor-arg>
-  </bean>
+  
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
     destroy-method="close">
     <property name="driverClassName" value="com.mysql.jdbc.Driver" />

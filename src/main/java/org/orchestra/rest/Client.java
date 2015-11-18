@@ -142,7 +142,7 @@ public class Client extends ServerResource {
 		clientDao.delete(clientname);
 		
 		//remove apikeys of the client
-		DBCollection col = Apikey.getStore();
+		DBCollection col = ServerAuthHelper.getUserCollection();
 		col.remove(new BasicDBObject("clientname", clientname));
 		
 		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore") , Server.getProperty("truststore.password"));

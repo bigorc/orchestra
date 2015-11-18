@@ -100,17 +100,15 @@ public class ClientTarget extends Target {
 		if(method.equals("uninstall")) {
 			if(response.getStatusLine().getStatusCode() == 204) {
 				new ApikeyTarget().execute("delete", null);
-				new ClientAuthHelper(Client.getUsername(), Client.getPassword())
-					.removeApikeyFile();
-				try {
-					helper.deleteCertificate(name);
-				} catch (KeyStoreException | NoSuchAlgorithmException
-						| CertificateException | IOException e) {
-					e.printStackTrace();
-				}
-		    } else if(response.getStatusLine().getStatusCode() == 404) {
-		    	throw new RuntimeException("Client does not exist.");
-		    }
+			}
+			new ClientAuthHelper(Client.getUsername(), Client.getPassword()).removeApikeyFile();
+			try {
+				helper.deleteCertificate(name);
+			} catch (KeyStoreException | NoSuchAlgorithmException
+					| CertificateException | IOException e) {
+				e.printStackTrace();
+			}
+			new Client().deleteParents();
 		}
 	    output(response);
 	}

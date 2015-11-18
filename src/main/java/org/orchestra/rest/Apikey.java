@@ -13,8 +13,6 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.orchestra.auth.Constants;
-import org.orchestra.builder.OptionBuilder;
-import org.orchestra.util.SpringUtil;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -28,11 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 
 public class Apikey extends ServerResource {
 	private final Logger logger = LoggerFactory.getLogger(Apikey.class);
@@ -42,7 +38,7 @@ public class Apikey extends ServerResource {
 		String clientname = (String) getRequest().getAttributes().get("clientname");
 		logger.debug("username:" + username);
 		logger.debug("clientname:" + clientname);
-		DBCollection coll = getStore();
+		DBCollection coll = ServerAuthHelper.getUserCollection();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
 		DBObject dbo = coll.findOne(query);
@@ -68,7 +64,7 @@ public class Apikey extends ServerResource {
 		logger.debug("username:" + username);
 		logger.debug("clientname:" + clientname);
 		
-		DBCollection coll = getStore();
+		DBCollection coll = ServerAuthHelper.getUserCollection();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
 		DBCursor cursor = coll.find(query);
@@ -97,7 +93,7 @@ public class Apikey extends ServerResource {
 		logger.debug("username:" + username);
 		logger.debug("clientname:" + clientname);
 		
-		DBCollection coll = getStore();
+		DBCollection coll = ServerAuthHelper.getUserCollection();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
 		coll.remove(query);
@@ -112,7 +108,7 @@ public class Apikey extends ServerResource {
 		logger.debug("username:" + username);
 		logger.debug("clientname:" + clientname);
 		
-		DBCollection coll = getStore();
+		DBCollection coll = ServerAuthHelper.getUserCollection();
 		BasicDBObject query = new BasicDBObject("username", username)
 			.append("clientname", clientname);
 		DBCursor cursor = coll.find(query);
@@ -139,13 +135,6 @@ public class Apikey extends ServerResource {
 		json.put("apikey", apikey);
 		json.put("secret", secret);
 		return json;
-	}
-
-	public static DBCollection getStore() {
-		MongoClient mongoClient = (MongoClient) SpringUtil.getBean("mongoClient");
-		DB db = mongoClient.getDB( "orchestra" );
-		DBCollection coll = db.getCollection("user");
-		return coll;
 	}
 
 }
