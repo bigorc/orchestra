@@ -101,7 +101,12 @@ public class ClientAuthHelper {
 			System.out.println(jsonString);
 			OutputStream out = null;
 			try {
-				out = new FileOutputStream(apikeyPath + "/" + filename);
+				String apikey_filename = apikeyPath + "/" + filename;
+				File file = new File(apikey_filename);
+				if(file.exists()) {
+					file.delete();
+				}
+				out = new FileOutputStream(apikey_filename);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -124,6 +129,7 @@ public class ClientAuthHelper {
 		JSONObject json = (JSONObject) JSONValue.parse(jsonString);
 		String apikey = (String) json.get("apikey");
 		String secret = (String) json.get("secret");
+		if(apikey == null || secret == null) return null;
 		cache.put(username, apikey);
 		cache.put(apikey, secret);
 		return apikey;

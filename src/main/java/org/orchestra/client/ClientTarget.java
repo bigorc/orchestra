@@ -15,7 +15,7 @@ import org.orchestra.auth.KeystoreHelper;
 public class ClientTarget extends Target {
 	public static final String PRIVATE_KEY = "privateKey";
 	public static final String CERT = "cert";
-
+ 
 	public ClientTarget(HttpCommandBuilder builder) {
 		this.builder = builder;
 	}

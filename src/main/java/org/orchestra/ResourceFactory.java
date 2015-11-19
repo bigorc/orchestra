@@ -19,7 +19,7 @@ import org.orchestra.json.Json;
 import org.orchestra.resource.Resource;
 
 public class ResourceFactory {
-	private static String builder_base = "org..builder.";
+	private static String builder_base = "org.orchestra.builder.";
 	private static String generic_class = "GeneralResource";
 	private static String resource_base = "org.orchestra.resource.";
 	

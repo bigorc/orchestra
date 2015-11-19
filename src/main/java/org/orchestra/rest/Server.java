@@ -33,7 +33,7 @@ public class Server implements Daemon {
 		properties.put("ro.dir", "ro");
 		properties.put("nonce.expiration.period", "15");
 		properties.put("nonce.deletion.period", "1");
-		properties.put("request.deviation", "5");
+		properties.put("synctime.limit", "5");
 		properties.put("mongodb.host", "localhost");
 		properties.put("mongodb.port", "27017");
 		properties.put("mongodb.user", "orchestra");

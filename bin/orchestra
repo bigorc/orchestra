@@ -4,7 +4,6 @@ BIN="${BASH_SOURCE-$0}"
 BIN="$(dirname "${BIN}")"
 BINDIR="$(cd "${BIN}"; pwd)"
 BASEDIR="$BINDIR/.."
-echo $BINDIR
 
 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 
@@ -21,7 +20,7 @@ do
 	CLASSPATH="$i:$CLASSPATH"
 done
 
-if [ -d "logs" ]; then
+if [ ! -d "logs" ]; then
 	mkdir logs
 fi
 STDOUT=logs/stdout.log

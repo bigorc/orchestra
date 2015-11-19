@@ -42,6 +42,7 @@ public class ServerAuthHelper {
 	public static final String MINUTESTAMPS = "minute_stamps";
 	private Request request;
 	private static DB db;
+	private static DBCollection userColl;
 	
 	public ServerAuthHelper(Request request) {
 		this.request = request;
@@ -52,7 +53,7 @@ public class ServerAuthHelper {
 		MongoClient mongoClient = null;
 		try {
 			mongoClient = new MongoClient(Server.getProperty("mongodb.host"), 
-					Integer.valueOf(Server.getProperty(Server.getProperty("mongodb.port"))));
+					Integer.valueOf(Server.getProperty("mongodb.port")));
 		} catch (NumberFormatException | UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
@@ -66,9 +67,9 @@ public class ServerAuthHelper {
 	}
 
 	public static DBCollection getUserCollection() {
-		
-		DBCollection coll = db.getCollection("user");
-		return coll;
+		if(db == null) db = getDB();
+		if(userColl == null) userColl = db.getCollection("user");
+		return userColl;
 	}
 
 	private String getParameter(String name) {
@@ -116,7 +117,7 @@ public class ServerAuthHelper {
 	public boolean validateTimestamp(String timestamp) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(Constants.TIMESTAMP_FORMAT);
 		DateTime date = formatter.parseDateTime(timestamp);
-		Integer timeout = Integer.valueOf(Server.getProperty("request.deviation "));
+		Integer timeout = Integer.valueOf(Server.getProperty("synctime.limit"));
 		if(date.plusMinutes(timeout).isBeforeNow()
 				|| date.minusMinutes(timeout).isAfterNow()) {
 			logger.info("Authentication failed because request time deviation exceed limit of " 
