@@ -8,4 +8,5 @@ public interface RolePermissionRelationDao {
 	public void addRolePermission(String rolename, String permission);
 	public void updateRolePermission(String rolename, String oldperm, String newperm);
 	public void removeRolePermission(String rolename, String permission);
+	void removeAllRolePermission(String rolename);
 }

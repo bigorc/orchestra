@@ -81,6 +81,12 @@ public class RolePermissionRelationDaoImpl extends JdbcDaoSupport implements Rol
 	}
 
 	@Override
+	public void removeAllRolePermission(String rolename) {
+		getJdbcTemplate().update("DELETE FROM roles_permissions WHERE role_name = ?",
+			new Object[] { rolename });
+		
+	}
+	@Override
 	public List<String> getRolesByPermission(String permission) {
 		List<RolePermission> list = getJdbcTemplate().
 				query("SELECT * FROM roles_permissions WHERE permission = ?",

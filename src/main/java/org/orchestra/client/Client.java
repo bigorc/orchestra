@@ -46,7 +46,7 @@ import org.orchestra.provider.ACLProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Client implements Daemon{
+public class Client implements Daemon {
 	static String resourcePath = "/orchestra/resources";
 	static String taskPath = "/orchestra/tasks";
 	private static String name = getName();

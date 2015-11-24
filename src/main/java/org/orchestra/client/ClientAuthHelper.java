@@ -127,6 +127,7 @@ public class ClientAuthHelper {
 		}
 		String jsonString = CipherUtil.decrypt(in, password);
 		JSONObject json = (JSONObject) JSONValue.parse(jsonString);
+		if(json == null) return null;
 		String apikey = (String) json.get("apikey");
 		String secret = (String) json.get("secret");
 		if(apikey == null || secret == null) return null;

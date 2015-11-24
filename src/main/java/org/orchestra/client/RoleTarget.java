@@ -32,11 +32,17 @@ public class RoleTarget extends Target {
 			}
 		} else if(method.equals("update")) {
 			builder.setMethod("put");
-			if(cmd.hasOption("permission")) {
-				String[] permissions = cmd.getOptionValues("perm");
-				for(String p : permissions) {
-					builder.addParameter("permission", p);
-				}
+			String[] permissions = cmd.getOptionValues("perm");
+			for(String p : permissions) {
+				builder.addParameter("permission", p);
+			}
+			if(cmd.hasOption("a")) {
+				builder.addParameter("add", "true");
+				if(cmd.hasOption("rm"))
+					throw new RuntimeException("Can't add and remove permissions at the same time.");
+			}
+			if(cmd.hasOption("rm")) {
+				builder.addParameter("remove", "true");
 			}
 		}
 		HttpCommand command = builder.build();

@@ -94,15 +94,18 @@ public class Role extends ServerResource {
 			role = new org.orchestra.dao.Role();
 			role.setName(rolename);
 			roleDao.create(role);
-			
 			//Add role's permissions if there are any
 			RolePermissionRelationDao rpDao = (RolePermissionRelationDao) SpringUtil.getBean("rolePermissionDao");
-			String[] permissions = getQuery().getValuesArray("permission");
-			if(permissions.length > 0) {
-				for(String p : permissions) {
-					rpDao.addRolePermission(rolename, p);
+			
+			if(!getQuery().getFirstValue("remove").equalsIgnoreCase("true")) {
+				String[] permissions = getQuery().getValuesArray("permission");
+				if(permissions.length > 0) {
+					for(String p : permissions) {
+						rpDao.addRolePermission(rolename, p);
+					}
 				}
 			}
+			
 			List<String> rps = rpDao.getPermissionsByRole(rolename);
 			String rpStr = "";
 			for(String rp : rps) {
@@ -117,11 +120,30 @@ public class Role extends ServerResource {
 		} else {
 			//Add role's permissions if there are any
 			RolePermissionRelationDao rpDao = (RolePermissionRelationDao) SpringUtil.getBean("rolePermissionDao");
-			rpDao.removeRolePermission(rolename, null);
+
 			String[] permissions = getQuery().getValuesArray("permission");
 			if(permissions.length > 0) {
-				for(String p : permissions) {
-					rpDao.addRolePermission(rolename, p);
+				if(getQuery().getFirstValue("add") != null) {
+					for(String p : permissions) {
+						rpDao.addRolePermission(rolename, p);
+					}
+				} else if(getQuery().getFirstValue("remove") != null) {
+					for(String p : permissions) {
+						rpDao.removeRolePermission(rolename, p);
+					}
+				} else {
+					rpDao.removeRolePermission(rolename, null);
+					for(String p : permissions) {
+						rpDao.addRolePermission(rolename, p);
+					}
+				}
+				
+			}
+			//Remove roles' permissions if there are any
+			String[] remove_permissions = getQuery().getValuesArray("remove_permission");
+			if(remove_permissions.length > 0) {
+				for(String p : remove_permissions) {
+					rpDao.removeRolePermission(rolename, p);
 				}
 			}
 			getResponse().setStatus(Status.SUCCESS_OK, "role is updated.");

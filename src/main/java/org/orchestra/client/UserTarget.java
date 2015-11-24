@@ -23,11 +23,15 @@ public class UserTarget extends Target {
 		} else if(method.equals("get")) {
 			builder.setMethod("get");
 		} else if(method.equals("create")) {
-			builder.setMethod("post");
+			if(!cmd.hasOption("pw")) ArgsHelper.usage();
+			String user_pass = cmd.getOptionValue("pw");
+			builder.setMethod("post").setParameter("password", user_pass);
 		} else if(method.equals("update")) {
-			if(!cmd.hasOption("up")) ArgsHelper.usage();
-			String user_pass = cmd.getOptionValue("up");
+			if(!cmd.hasOption("pw")) ArgsHelper.usage();
+			String user_pass = cmd.getOptionValue("pw");
 			builder.setMethod("put").setParameter("password", user_pass);
+		} else {
+			ArgsHelper.usage();
 		}
 		HttpCommand command = builder.build();
 		HttpResponse response = command.execute();

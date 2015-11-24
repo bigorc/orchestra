@@ -54,15 +54,15 @@ public class ArgsHelper {
 	private static Options getOptions() {
 		Options options = new Options();
 
-		Option user = OptionBuilder.withArgName( "User Name" )
+		Option user = OptionBuilder.withArgName("User Name")
                 .hasArg()
                 .withDescription("User name")
                 .withLongOpt("user")
                 .create('u');
-		Option password = OptionBuilder.withArgName( "password" )
+		Option password = OptionBuilder.withArgName("user password" )
                 .hasArg()
-                .withDescription("password")
-                .withLongOpt("password")
+                .withDescription("user password")
+                .withLongOpt("pass")
                 .create('p');
 		Option server = OptionBuilder.withArgName( "server" )
                 .hasArg()
@@ -84,11 +84,11 @@ public class ArgsHelper {
                 .withDescription("name")
                 .withLongOpt("name")
                 .create('n');
-		Option user_pass = OptionBuilder.withArgName( "User Password" )
+		Option user_pass = OptionBuilder.withArgName( "Password" )
                 .hasArg()
-                .withDescription("user password")
-                .withLongOpt("user_pass")
-                .create("up");
+                .withDescription("password")
+                .withLongOpt("password")
+                .create("pw");
 		Option path = OptionBuilder.withArgName( "Path" )
                 .hasArg()
                 .withDescription("path")
@@ -102,7 +102,15 @@ public class ArgsHelper {
 				.withDescription("Permission")
 				.withLongOpt("permission")
 				.create("perm");
-		permission.setArgs(10);
+		permission.setArgs(100);
+		Option add = OptionBuilder.withArgName("Add")
+				.withDescription("Add")
+				.withLongOpt("add")
+				.create("a");
+		Option rm = OptionBuilder.withArgName("Remove")
+				.withDescription("Remove")
+				.withLongOpt("remove")
+				.create("rm");
 		
 		options.addOption(user);
 		options.addOption(password);
@@ -114,6 +122,8 @@ public class ArgsHelper {
 		options.addOption(path);
 		options.addOption(recursive);
 		options.addOption(permission);
+		options.addOption(add);
+		options.addOption(rm);
 		return options;
 	}
 
