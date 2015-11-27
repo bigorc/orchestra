@@ -1,5 +1,7 @@
 package org.orchestra.rest;
 
+import java.util.List;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.PasswordMatcher;
@@ -7,9 +9,12 @@ import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.AuthenticatingRealm;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.orchestra.dao.Role;
 import org.orchestra.dao.UserDao;
+import org.orchestra.dao.UserRoleRelationDao;
 import org.orchestra.util.SpringUtil;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
@@ -24,20 +29,16 @@ import org.slf4j.LoggerFactory;
 
 public class User extends ServerResource {
 	private final Logger logger = LoggerFactory.getLogger(User.class);
+	
 	@Override
 	protected Representation get() {
 		UserDao userDao = (UserDao) SpringUtil.getBean("userDao");
-		
+		UserRoleRelationDao urDao = (UserRoleRelationDao) SpringUtil.getBean("userRoleRelationDao");
 		String userName = (String) getRequest().getAttributes().get("username");
 		logger.debug("username:" + userName);
-		org.orchestra.dao.User user = userDao.getUser(userName );
-		JSONObject jo = new JSONObject();
-		try {
-			jo.put("id", user.getId());
-			jo.put("username", user.getUsername());
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		org.orchestra.dao.User user = userDao.getUser(userName);
+		
+		JSONObject jo = new JSONObject(user);
 		getResponse().setStatus(Status.SUCCESS_OK, "User information.");
 		return new JsonRepresentation(jo);
 	}

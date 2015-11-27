@@ -2,11 +2,15 @@ package org.orchestra.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.orchestra.util.SpringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,16 @@ public class UserRoleRelationDaoImpl extends JdbcDaoSupport  implements UserRole
 			      );
 		if(userRoles.size() == 0) return false;
 		return true;
+	}
+	
+	@Override
+	public List<Role> findRolesByUser(String username) {
+		List<Role> userRoles = getJdbcTemplate().
+			      query("SELECT DISTINCT * FROM user_roles WHERE username=? ",
+			    		  new Object[] { username },
+			    		  new UserRoleResultSetExtractor()
+			      );
+		return userRoles;
 	}
 	
 	private class UserRoleMapper implements RowMapper<UserRole>{
@@ -59,5 +73,34 @@ public class UserRoleRelationDaoImpl extends JdbcDaoSupport  implements UserRole
 		getJdbcTemplate().update("DELETE FROM user_roles WHERE USERNAME = ? AND role_name = ?",
 				new Object[] { username, rolename });
 	}
+
+	@Override
+	public List<UserRole> findAll() {
+		List<UserRole> userRoles = getJdbcTemplate().
+			      query("SELECT * FROM user_roles ",
+			    		  new UserRoleMapper()
+			      );
+		return userRoles;
+	}
+	
+	private class UserRoleResultSetExtractor implements ResultSetExtractor<List<Role>> {
+		RolePermissionRelationDao rpDao;
+		@Override
+		public List<Role> extractData(ResultSet rs) throws SQLException,
+				DataAccessException {
+			rpDao = (RolePermissionRelationDao) SpringUtil.getBean("rolePermissionDao");
+			List<Role> roles = new ArrayList<Role>();
+			while(rs.next()){
+				Role role = new Role();
+				String rolename = rs.getString("ROLE_NAME");
+				role.setName(rolename);
+				role.setPermissions(rpDao.getPermissionsByRole(rolename));
+				roles.add(role);
+			}
+			return roles;
+		}
+
+	}
+
 
 }

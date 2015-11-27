@@ -138,7 +138,6 @@ public class ServerAuthHelper {
 		try {
 		    while(cursor.hasNext()) {
 		    	DBObject dbo = cursor.next();
-		    	System.out.println(dbo);
 		    	//shard nonces by minutestamp
 		    	DBCollection coll = db.getCollection((String) dbo.get("minutestamp"));
 		    	if(coll.find(new BasicDBObject("nonce", nonce)).count() != 0) {
@@ -175,7 +174,7 @@ public class ServerAuthHelper {
 		
 		
 		if(date.plusMinutes(Integer.valueOf(Server.getProperty("nonce.deletion.period"))).isBeforeNow()) {
-			logger.info("Deleting outdated nonces again.");
+			logger.info("Deleting outdated nonces.");
 			DBCollection minColl = db.getCollection(MINUTESTAMPS);
 			DateTimeFormatter minFormatter = DateTimeFormat.forPattern(Constants.MINUTES_TIME_FORMAT);
 			String expiration_time = current.minusMinutes(Integer.valueOf(
@@ -186,13 +185,11 @@ public class ServerAuthHelper {
 			try {
 			    while(cursor.hasNext()) {
 			    	DBObject dbo = cursor.next();
-			    	System.out.println(dbo);
 			    	db.getCollection((String) dbo.get("minutestamp")).remove(new BasicDBObject());
 			    }
 			} finally {
 			    cursor.close();
 			}
-			System.out.println(expiration_time);
 			minColl.remove(query);
 			coll.remove(new BasicDBObject());
 			coll.insert(new BasicDBObject(LAST_DELETION_TIME, current.toString(formatter)));

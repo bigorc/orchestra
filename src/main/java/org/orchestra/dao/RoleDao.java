@@ -8,4 +8,5 @@ public interface RoleDao {
 	public void delete(Role role);
 	public Role read(String roleName);
 	public List<Role> findAll();
+	public void delete(String string);
 }

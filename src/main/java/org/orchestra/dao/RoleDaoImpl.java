@@ -80,4 +80,11 @@ public class RoleDaoImpl extends JdbcDaoSupport implements RoleDao {
 		return roles;
 	}
 
+	@Override
+	public void delete(String name) {
+		Role role = new Role();
+		role.setName(name);
+		delete(role);
+	}
+
 }

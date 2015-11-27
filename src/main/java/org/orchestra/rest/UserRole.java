@@ -36,6 +36,7 @@ public class UserRole extends ServerResource {
 		if(ur.hasUserRole(username, rolename)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "User already has the role");
 		} else {
+			ur.addUserRole(username, rolename);
 			getResponse().setStatus(Status.SUCCESS_CREATED, "Add role to the user");
 		}
 		return null;

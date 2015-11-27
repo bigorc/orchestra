@@ -16,8 +16,12 @@ public class UserRoleTarget extends Target {
 		if(cmd.getArgs().length > 3) {
 			user = cmd.getArgs()[2];
 			role = cmd.getArgs()[3];
+			builder.setTarget("userrole").addPathParameter(user).addPathParameter(role);
+		} else if(method.equals("list")) {
+			builder.setTarget("userroles").setMethod("get");
+		} else {
+			ArgsHelper.usage();
 		}
-		builder.setTarget("userrole").addPathParameter(user).addPathParameter(role);
 		if(method.equals("rm")) {
 			builder.setMethod("delete");
 		} else if(method.equals("get")) {
