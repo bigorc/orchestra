@@ -39,6 +39,7 @@ public class ApikeyTarget extends Target {
 		} else {
 			helper.saveApikeyToFile(response);
 		}
+		System.out.println(response.getStatusLine());
 //		output(response);
 	}
 

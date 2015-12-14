@@ -47,7 +47,7 @@
         excludes="**/*.conf"
     />
   </target>
-  <target name="auth-jar">
+  <target name="provider-jar">
     <jar destfile="${dist.dir}/lib/role-provider.jar" >
       <fileset dir="${build.dir}/org/orchestra/provider/"/>
       <fileset dir="${build.dir}/org/orchestra/client/"/>

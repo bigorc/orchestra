@@ -21,10 +21,24 @@ import java.util.Locale;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordMatcher;
+import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.crypto.BlowfishCipherService;
+import org.apache.shiro.crypto.hash.DefaultHashService;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.crypto.hash.Sha512Hash;
+import org.apache.shiro.mgt.RealmSecurityManager;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.util.ByteSource;
+import org.apache.shiro.util.Factory;
+import org.apache.shiro.util.SimpleByteSource;
 
 public class CipherUtil {
 	private static final String CIPHER_ALGORITHM = "Blowfish";
@@ -121,4 +135,36 @@ public class CipherUtil {
 		return key;
 	}
 
+	public static String encryptPassword(String password) {
+		PasswordService passwordService = null;
+		Factory<org.apache.shiro.mgt.SecurityManager> factory = 
+				(Factory<SecurityManager>) SpringUtil.getBean("securityManager");
+
+		RealmSecurityManager secManager = (RealmSecurityManager)factory.getInstance();
+//		RealmSecurityManager secManager = (RealmSecurityManager) SecurityUtils.getSecurityManager();
+		for(Realm realm : secManager.getRealms()) {
+			if(realm.getName().equals("userRealm")) {
+				CredentialsMatcher matcher = ((AuthenticatingRealm)realm).getCredentialsMatcher();
+				passwordService = ((PasswordMatcher)matcher).getPasswordService();
+			}
+		}
+		
+		String encryptedPassword = passwordService.encryptPassword(password);
+		System.out.println(encryptedPassword);
+		return encryptedPassword;
+	}
+	
+	public static String generatePassword(String password) {
+		DefaultHashService hashService = new DefaultHashService();
+		hashService.setHashIterations(500000); 
+		hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+		hashService.setGeneratePublicSalt(true);
+		hashService.setPrivateSalt(new SimpleByteSource("myVERYSECRETBase64EncodedSalt"));
+
+		DefaultPasswordService passwordService = new DefaultPasswordService();
+		passwordService.setHashService(hashService);
+		String encryptedPassword = passwordService.encryptPassword(password);
+		System.out.println("Result:"+encryptedPassword);
+		return encryptedPassword;
+	}
 }

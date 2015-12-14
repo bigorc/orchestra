@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.http.ParseException;
+import org.orchestra.util.CipherUtil;
 
 public class ArgsHelper {
 	String host;
@@ -45,6 +46,20 @@ public class ArgsHelper {
 		
 		if(targets.length == 0) {
 			usage();
+		} else if(targets[0].equals("encrypt")){
+			int iteration = 500000;
+			if(cmd.hasOption('i')) {
+				iteration = Integer.valueOf(cmd.getOptionValue('i'));
+			}
+			String algorithm = "algorithm";
+			if(cmd.hasOption("al")) {
+				algorithm = cmd.getOptionValue("al");
+			}
+			String salt = "myVERYSECRETBase64EncodedSalt";
+			if(cmd.hasOption('S')) {
+				salt = cmd.getOptionValue('S');
+			}
+			CipherUtil.encryptPassword(targets[1]);
 		} else {
 			commandBuilder.setScheme("https").setHost(host).setPort(Integer.valueOf(port));
 			new TargetFactory(commandBuilder).getTarget(targets[0]).execute(targets[1], cmd);
@@ -111,6 +126,18 @@ public class ArgsHelper {
 				.withDescription("Remove")
 				.withLongOpt("remove")
 				.create("rm");
+		Option iteration = OptionBuilder.withArgName("Iteration")
+				.withDescription("Iteration")
+				.withLongOpt("iteration")
+				.create('i');
+		Option algorithm = OptionBuilder.withArgName("Algorithm")
+				.withDescription("Algorithm")
+				.withLongOpt("Algorithm")
+				.create("al");
+		Option salt = OptionBuilder.withArgName("salt")
+				.withDescription("salt")
+				.withLongOpt("salt")
+				.create('S');
 		
 		options.addOption(user);
 		options.addOption(password);
@@ -124,6 +151,9 @@ public class ArgsHelper {
 		options.addOption(permission);
 		options.addOption(add);
 		options.addOption(rm);
+		options.addOption(iteration);
+		options.addOption(algorithm);
+		options.addOption(salt);
 		return options;
 	}
 

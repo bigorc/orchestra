@@ -53,17 +53,19 @@ public class AuthFilter extends Filter {
 			
 			ShiroAuth shiro = new ShiroAuth(username, password);
 			if(!shiro.isAuthenticated()) {
-				logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
+				logger.warn(username + " is trying to access " + path + " and  is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "You are not authenticated");
 			} else if (path.startsWith("/apikey")) {
 				String user = path.split("/")[2];
 				logger.debug("checking permission to access apikey of " + user);
-				if(!shiro.hasRole("admin") && !shiro.hasPermission("apikey:" + user + ":*")) {
-					logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
+				if(!shiro.hasRole("admin") 
+						&& !shiro.hasPermission("apikey:" + user + ":*") 
+						&& !username.equals(user)) {
+					logger.warn(username + " is trying to access " + path + " and  is not authenticated!");
 					response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
 				}
 			} else if(!shiro.hasRole("admin")) {
-				logger.warn(username + "is trying to access " + path + " and  is not authenticated!");
+				logger.warn(username + " is trying to access " + path + " and  is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized operation");
 			}
 		} else {
