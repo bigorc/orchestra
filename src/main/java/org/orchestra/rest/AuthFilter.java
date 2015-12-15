@@ -43,7 +43,7 @@ public class AuthFilter extends Filter {
 			}
 			request.getClientInfo().setAuthenticated(true);
 		} else {
-			logger.info("client is not authenticatd");
+			logger.warn("client is not authenticatd");
 		}
 		
 		if(path.startsWith("/apikey") || path.startsWith("/client") || path.startsWith("/zkauth")) {
@@ -71,12 +71,12 @@ public class AuthFilter extends Filter {
 		} else {
 			ShiroAuth shiro = new ShiroAuth(request);
 			if(!request.getClientInfo().isAuthenticated()) {
-				logger.info("Unauthorized client");
+				logger.warn("Unauthorized client");
 				response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Unauthorized client");
 			}
 			
 			if(!shiro.isAuthenticated()) {
-				logger.info("user is not authenticated!");
+				logger.warn("user is not authenticated!");
 				response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "Not authenticated");
 			}
 		}

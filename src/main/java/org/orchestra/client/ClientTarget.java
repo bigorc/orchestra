@@ -88,8 +88,11 @@ public class ClientTarget extends Target {
 				
 				try {
 					helper.savePrivateKey(encodedPk, alias, null, encodeCert);
+					System.out.println("Saving certificate with alias " + alias);
+					Thread.sleep(5000);
 				} catch (KeyStoreException | NoSuchAlgorithmException
-						| CertificateException | IOException | InvalidKeySpecException e) {
+						| CertificateException | IOException | InvalidKeySpecException 
+						| InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
