@@ -52,6 +52,9 @@ public class ClientTarget extends Target {
 		} else if(method.equals("update")) {
 			new Client().update();
 			return;
+		} else if(method.equals("initzk")) {
+			new Client().createParents();
+			return;
 		} else if(method.equals("install")) {
 			builder.setMethod("post");
 		} else if(method.equals("uninstall")) {
@@ -88,18 +91,16 @@ public class ClientTarget extends Target {
 				
 				try {
 					helper.savePrivateKey(encodedPk, alias, null, encodeCert);
-					System.out.println("Saving certificate with alias " + alias);
-					Thread.sleep(5000);
+					return;
 				} catch (KeyStoreException | NoSuchAlgorithmException
-						| CertificateException | IOException | InvalidKeySpecException 
-						| InterruptedException e) {
+						| CertificateException | IOException | InvalidKeySpecException e) {
 					e.printStackTrace();
 				}
 			}
-			new Client().createParents();
 			output(response);
 			return;
 		}
+		
 		if(method.equals("uninstall")) {
 			if(response.getStatusLine().getStatusCode() == 204) {
 				new ApikeyTarget().execute("delete", null);
