@@ -6,11 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSessionContext;
 
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
+import org.orchestra.auth.ReloadableSslContextFactory;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.util.Series;
@@ -18,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Server implements Daemon {
-	private Component orchestraServer;
+	private static Component orchestraServer;
 	static Map<String, String> properties = new HashMap<String, String>();
 	private static final transient Logger logger = LoggerFactory.getLogger(Server.class);
 	
@@ -41,7 +47,7 @@ public class Server implements Daemon {
 	}
 	
 	public Server() {
-		orchestraServer = new Component();
+		if(orchestraServer == null) orchestraServer = new Component();
 	}
 	
 	public void config() {
@@ -69,8 +75,9 @@ public class Server implements Daemon {
 		for(Entry<String, String> entry : properties.entrySet()) {
 			logger.debug(entry.getKey() + "=" + entry.getValue());
 		}
-			
-		Series<Parameter> parameters = server.getContext().getParameters();
+		
+		Context context = server.getContext();
+		Series<Parameter> parameters = context.getParameters();
 		parameters.add("keystorePath", properties.get("keystore"));
 		parameters.add("keystorePassword", properties.get("keystore.password"));
 		parameters.add("keystoreType", "JKS");
@@ -79,6 +86,12 @@ public class Server implements Daemon {
 		parameters.add("truststorePath", properties.get("truststore"));
 		parameters.add("truststorePassword", properties.get("truststore.password"));
 		parameters.add("truststoreType", "JKS");
+//		parameters.add("sslContextFactory", "org.orchestra.auth.ReloadableSslContextFactory");
+		Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
+		ReloadableSslContextFactory sslContextFacotry = new ReloadableSslContextFactory();
+		sslContextFacotry.init(parameters);
+		attributes.put("sslContextFactory", sslContextFacotry);
+		context.setAttributes(attributes);
 		orchestraServer.getDefaultHost().attach(new OrchestraApplication());
 		orchestraServer.start();
 	}
@@ -103,5 +116,12 @@ public class Server implements Daemon {
 	public void init(DaemonContext arg0) throws DaemonInitException, Exception {
 		config();
 	}
+	
+	public static Component getServer() {
+		return orchestraServer;
+	}
 
+	public static ReloadableSslContextFactory getSslContextFactory() {
+		return (ReloadableSslContextFactory) orchestraServer.getServers().get(0).getContext().getAttributes().get("sslContextFactory");
+	}
 }

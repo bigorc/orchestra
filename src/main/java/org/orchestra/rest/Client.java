@@ -1,5 +1,6 @@
 package org.orchestra.rest;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -7,6 +8,7 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -19,6 +21,8 @@ import org.orchestra.dao.ClientDao;
 import org.orchestra.util.SpringUtil;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.ssl.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
@@ -52,23 +56,7 @@ public class Client extends ServerResource {
 			client.setCreator(updated_by);
 			client.setName(clientname);
 			clientDao.create(client);
-			
-			KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore"),
-					Server.getProperty("truststore.password"));
-		    if(helper.containsCertificate(clientname)) {
-		    	helper.deleteCertificate(clientname);
-		    }
-			String dn = "CN=" + clientname;
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		    keyGen.initialize(Integer.valueOf(Server.getProperty("key.size")));
-			KeyPair pair = keyGen.generateKeyPair();
-			
-			X509Certificate cert = CertificateHelper.generateCertificate(dn, pair, days, algorithm);
-			helper.saveCertificate(clientname, cert);
-		    
-			JSONObject json = new org.json.JSONObject();
-			json.put("privateKey", Base64.encodeToString(pair.getPrivate().getEncoded()));
-			json.put("cert", Base64.encodeToString(cert.getEncoded()));
+			JSONObject json = genCertAndReloadTruststore(clientname);
 			
 			getResponse().setStatus(Status.SUCCESS_CREATED, "Client is created.");
 			return new JsonRepresentation(json );
@@ -94,20 +82,31 @@ public class Client extends ServerResource {
 			client.setUpdated_by(updated_by);
 			clientDao.update(client);
 		}
+		JSONObject json = genCertAndReloadTruststore(clientname);
+		getResponse().setStatus(Status.SUCCESS_OK, "Client is updated.");
+		return new JsonRepresentation(json );
+	}
+
+	public JSONObject genCertAndReloadTruststore(String clientname)
+			throws NoSuchAlgorithmException, GeneralSecurityException,
+			IOException, KeyStoreException, CertificateException,
+			FileNotFoundException, JSONException, CertificateEncodingException {
 		String dn = "CN=" + clientname;
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 	    keyGen.initialize(Integer.valueOf(Server.getProperty("key.size")));
 		KeyPair pair = keyGen.generateKeyPair();
 		
 		X509Certificate cert = CertificateHelper.generateCertificate(dn, pair, days, algorithm);
-		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore") , Server.getProperty("truststore.password") );
+		KeystoreHelper helper = new KeystoreHelper(Server.getProperty("truststore"),
+				Server.getProperty("truststore.password") );
 	    helper.saveCertificate(clientname, cert);
+
+	    Server.getSslContextFactory().reload();
 	    
 		JSONObject json = new org.json.JSONObject();
 		json.put("privateKey", Base64.encodeToString(pair.getPrivate().getEncoded()));
 		json.put("cert", Base64.encodeToString(cert.getEncoded()));
-		getResponse().setStatus(Status.SUCCESS_OK, "Client is updated.");
-		return new JsonRepresentation(json );
+		return json;
 	}
 
 	@Get
