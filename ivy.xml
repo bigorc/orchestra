@@ -6,6 +6,7 @@
         <dependency org="commons-dbcp" name="commons-dbcp" rev="1.2.2"/>
         <dependency org="commons-io" name="commons-io" rev="2.4"/>
         <dependency org="commons-daemon" name="commons-daemon" rev="1.0.15"/>
+	<dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.2"/>
         <dependency org="org.mongodb" name="mongo-java-driver" rev="2.13.1"/>
         <dependency org="joda-time" name="joda-time" rev="2.7"/>
         <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1"/>
@@ -35,6 +36,7 @@
         <dependency org="org.restlet.jee" name="org.restlet.ext.ssl" rev="2.1.5" />
         <dependency org="org.restlet.jse" name="org.restlet.ext.jetty" rev="2.1.5" />
         <dependency org="org.apache.zookeeper" name="zookeeper" rev="3.5.1-alpha" />
+	<dependency org="org.json" name="json" rev="20140107"/>
         <exclude org="xerces"/>
     </dependencies>
 </ivy-module>
