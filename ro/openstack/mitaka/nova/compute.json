@@ -1,0 +1,129 @@
+{
+  "type": "container",
+  "MANAGEMENT_IP": "192.168.178.151",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "nova-compute-kvm",
+      "sm_state": "installed"
+    },
+    {
+    	"type": "ini",
+    	"file": "/etc/nova/nova.conf",
+    	"contain_properties": 
+    		[
+    		 {
+    			"section": "DEFAULT",
+    			"name": "auth_strategy",
+    			"value": "keystone"
+    		 },
+    		 {
+     			"section": "DEFAULT",
+     			"name": "rpc_backend",
+     			"value": "rabbit"
+     		 },
+    		 {
+      			"section": "DEFAULT",
+      			"name": "rabbit_host",
+      			"value": "controller"
+      		 },
+    		 {
+       			"section": "DEFAULT",
+       			"name": "rabbit_password",
+       			"value": "password"
+       		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "my_ip",
+       			 "value": "$MANAGEMENT_IP"
+    		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "vnc_enabled",
+       			 "value": "True"
+    		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "vncserver_listen",
+       			 "value": "0.0.0.0"
+    		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "vncserver_proxyclient_address",
+       			 "value": "$MANAGEMENT_IP"
+    		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "novncproxy_base_url",
+       			 "value": "http://192.168.178.145:6080/vnc_auto.html"
+    		 },
+    		 {
+       			 "section": "DEFAULT",
+       			 "name": "glance_host",
+       			 "value": "controller"
+    		 },
+    		 {
+     			"section": "database",
+     			"name": "connection",
+     			"value": "mysql://nova:password@controller/nova"
+     		 },
+     		 {
+     			"section": "keystone_authtoken",
+     			"name": "auth_uri",
+     			"value": "http://controller:5000"
+     		 },
+     		 {
+     			"section": "keystone_authtoken",
+     			"name": "auth_host",
+     			"value": "controller"
+     		 },
+     		 {
+      			"section": "keystone_authtoken",
+      			"name": "auth_port",
+      			"value": "35357"
+      		 },
+     		 {
+       			"section": "keystone_authtoken",
+       			"name": "auth_protocol",
+       			"value": "http"
+       		 },
+     		 {
+        		"section": "keystone_authtoken",
+        		"name": "admin_tenant_name",
+        		"value": "service"
+        	 },
+     		 {
+         		"section": "keystone_authtoken",
+         		"name": "admin_user",
+         		"value": "nova"
+         	 },
+     		 {
+          		"section": "keystone_authtoken",
+          		"name": "admin_password",
+          		"value": "password"
+          	 }
+    		]
+    },
+    {
+    	"type": "ini",
+    	"file": "/etc/nova/nova-compute.conf",
+    	"contain_properties":
+    		[
+    		 {
+    			 "section": "libvirt",
+    			 "name": "virt_type",
+    			 "value": "qemu"
+    		 }
+    		]
+    },
+    {
+        "stateMachine": "file",
+        "sm_args": "/var/lib/nova/nova.sqlite",
+        "sm_state": "non_existent"
+    },
+    {
+    	"stateMachine": "cmd",
+    	"sm_args": "service nova-compute restart"
+    }
+  ]
+}

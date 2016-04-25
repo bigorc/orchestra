@@ -1,0 +1,159 @@
+{
+  "type": "container",
+  "MANAGEMENT_IP": "192.168.178.145",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "nova-api nova-cert nova-conductor nova-consoleauth nova-novncproxy nova-scheduler python-novaclient",
+      "sm_state": "installed"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/nova/nova.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://nova:password@controller/nova"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rpc_backend",
+          "value": "rabbit"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_host",
+          "value": "controller"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_password",
+          "value": "password"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "my_ip",
+          "value": "$MANAGEMENT_IP"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "vncserver_listen",
+          "value": "$MANAGEMENT_IP"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "vncserver_proxyclient_address",
+          "value": "$MANAGEMENT_IP"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "auth_strategy",
+          "value": "keystone"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "service_neutron_metadata_proxy",
+          "value": "true"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "neutron_metadata_proxy_shared_secret",
+          "value": "secret"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "controller"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "nova"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://controller:5000"
+        }
+      ]
+    },
+    {
+      "stateMachine": "file",
+      "sm_args": "/var/lib/nova/nova.sqlite",
+      "sm_state": "non_existent"
+    },
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "sm_state": "",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE nova;GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "nova-manage db sync"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/nova.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone user-create --name=nova --pass=password --email=nova@example.com\n
+keystone user-role-add --user=nova --tenant=service --role=admin\n
+keystone service-create --name=nova --type=compute --description=\"OpenStack Compute\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ compute / {print $2}')   --publicurl=http://controller:8774/v2/%\(tenant_id\)s --internalurl=http://controller:8774/v2/%\(tenant_id\)s --adminurl=http://controller:8774/v2/%\(tenant_id\)s"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/nova.sh",
+      "SERVICE_TOKEN": "ADMIN",
+      "SERVICE_ENDPOINT": "http://controller:35357/v2.0"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-api restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-cert restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-consoleauth restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-scheduler restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-conductor restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service nova-novncproxy restart",
+    }
+  ]
+}

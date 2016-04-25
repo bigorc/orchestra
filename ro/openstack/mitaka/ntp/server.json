@@ -1,0 +1,5 @@
+{
+	"stateMachine": "package",
+	"sm_args": "ntp",
+	"sm_state": "installed"
+}

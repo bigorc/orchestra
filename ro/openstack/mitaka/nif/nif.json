@@ -1,0 +1,6 @@
+{
+  "stateMachine": "nif",
+  "sm_state": "up",
+  "NIF_PERSISTENT": "yes",
+  "NIF_MODE": "dhcp"
+}

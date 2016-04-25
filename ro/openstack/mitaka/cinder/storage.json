@@ -1,0 +1,114 @@
+{
+  "type": "container",
+  "client": "controller",
+  "storage_ip": "192.168.178.145",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "qemu lvm2 cinder-volume",
+      "sm_state": "installed"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "pvcreate /dev/sdb1"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "vgcreate cinder-volumes /dev/sdb1"
+    },
+    {
+      "stateMachine": "line",
+      "sm_args": "/etc/lvm/lvm.conf",
+      "sm_state": "existent",
+      "AFTER_LINE": "filter\s=\s\[\s\"a\\/\.\*\\/\"\s\]",
+      "LINE": "filter= [ \"a/sdb/\", \"r/.*/\"]"
+    },
+    {
+      "stateMachine": "line",
+      "sm_args": "/etc/lvm/lvm.conf",
+      "sm_state": "non_existent",
+      "LINE_PATTERN": "filter\s=\s\[\s\"a\\/\.\*\\/\"\s\]"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/cinder/cinder.conf",
+      "contain_properties": [
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://controller:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "controller"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "cinder"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "password"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rpc_backend",
+          "value": "rabbit"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_host",
+          "value": "controller"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_port",
+          "value": "5672"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_userid",
+          "value": "guest"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "rabbit_password",
+          "value": "password"
+        },
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://cinder:password@controller/cinder"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "my_ip",
+          "value": "$storage_ip"
+        },
+        {
+          "section": "DEFAULT",
+          "name": "glance_host",
+          "value": "controller"
+        }
+      ]
+    }
+  ]
+}

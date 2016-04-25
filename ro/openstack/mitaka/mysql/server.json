@@ -1,0 +1,64 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "cmd",
+      "sm_args": "sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password password' && sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password password'"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "python-mysqldb mysql-server",
+      "sm_state": "installed"
+    },
+    {
+      "stateMachine": "file",
+      "sm_args": "/etc/mysql/conf.d/mysqld_openstack.cnf",
+      "sm_state": "existent"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/mysql/conf.d/mysqld_openstack.cnf",
+      "contain_properties": [
+        {
+          "section": "mysqld",
+          "name": "bind-address",
+          "value": "0.0.0.0"
+        },
+        {
+          "section": "mysqld",
+          "name": "default-storage-engine",
+          "value": "innodb"
+        },
+        {
+          "section": "mysqld",
+          "name": "innodb_file_per_table"
+        },
+        {
+          "section": "mysqld",
+          "name": "collation-server",
+          "value": "utf8_general_ci"
+        },
+        {
+          "section": "mysqld",
+          "name": "init-connect",
+          "value": "'SET NAMES utf8'"
+        },
+        {
+          "section": "mysqld",
+          "name": "init-connect",
+          "value": "'SET NAMES utf8'"
+        },
+        {
+          "section": "mysqld",
+          "name": "character-set-server",
+          "value": "utf8"
+        }
+      ]
+    },
+    {
+     "stateMachine": "cmd",
+     "sm_args": "service mysql restart",
+     "sm_state": ""
+    }
+  ]
+}

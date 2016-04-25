@@ -1,0 +1,30 @@
+{
+	"type": "container",
+	"resources":
+		[
+		 {
+			 "stateMachine": "content",
+			 "sm_args": "/tmp/initial_networks.sh",
+			 "DEMO_CIDR": "10.0.0.0/24",
+			 "EXT_CIDR": "172.17.2.0/24",
+			 "EXT_GATEWAY": "172.17.2.254",
+			 "FLOATINGIP_START": "172.17.2.230",
+			 "FLOATINGIP_END": "172.17.2.240",
+			 "CONTENT": "neutron net-create ext-net --shared --router:external=True\n
+neutron subnet-create ext-net --name ext-subnet --allocation-pool start=$FLOATINGIP_START,end=$FLOATINGIP_END --disable-dhcp --gateway $EXT_GATEWAY $EXT_CIDR\n
+neutron net-create net1\n
+neutron subnet-create net1 --name subnet1 $DEMO_CIDR\n
+neutron router-create router1\n
+neutron router-interface-add router1 subnet1\n
+neutron router-gateway-set router1 ext-net"
+		 },
+		 {
+			 "stateMachine": "cmd",
+			 "sm_args": "bash /tmp/initial_networks.sh",
+			 "OS_USERNAME": "admin",
+			 "OS_PASSWORD": "password",
+			 "OS_TENANT_NAME": "admin",
+			 "OS_AUTH_URL": "http://controller:35357/v2.0"
+		 }
+		]
+}

@@ -1,0 +1,5 @@
+{
+  "stateMachine": "package",
+  "sm_args": "python-mysqldb",
+  "sm_state": "installed"
+}

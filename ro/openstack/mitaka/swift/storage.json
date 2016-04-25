@@ -1,0 +1,120 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "swift swift-account swift-container swift-object xfsprogs",
+      "sm_state": "installed"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/rsyncd.conf",
+      "contain_properties": [
+        {
+          "name": "uid",
+          "value": "swift"
+        },
+        {
+          "name": "gid",
+          "value": "swift"
+        },
+        {
+          "name": "log file",
+          "value": "/var/log/rsyncd.log"
+        },
+        {
+          "name": "pid file",
+          "value": "/var/run/rsyncd.pid"
+        },
+        {
+          "name": "address",
+          "value": "STORAGE_LOCAL_NET_IP"
+        },
+        {
+          "section": "account",
+          "name": "max connections",
+          "value": "2"
+        },
+        {
+          "section": "account",
+          "name": "path",
+          "value": "/srv/node/"
+        },
+        {
+          "section": "account",
+          "name": "read only",
+          "value": "false"
+        },
+        {
+          "section": "account",
+          "name": "lock file",
+          "value": "/var/lock/account.lock"
+        },
+        {
+        	"section": "container",
+        	"name": "max connections",
+        	"value": "2"
+        },
+        {
+        	"section": "container",
+        	"name": "path",
+        	"value": "/srv/node/"
+        },
+        {
+        	"section": "container",
+        	"name": "read only",
+        	"value": "false"
+        },
+        {
+        	"section": "container",
+        	"name": "lock file",
+        	"value": "/var/lock/container.lock"
+        },
+        {
+        	"section": "object",
+        	"name": "max connections",
+        	"value": "2"
+        },
+        {
+        	"section": "object",
+        	"name": "path",
+        	"value": "/srv/node/"
+        },
+        {
+        	"section": "object",
+        	"name": "read only",
+        	"value": "false"
+        },
+        {
+        	"section": "object",
+        	"name": "lock file",
+        	"value": "/var/lock/container.lock"
+        }
+      ]
+    },
+    {
+    	"type": "option",
+    	"file": "/etc/default/rsync",
+    	"contain_properties":
+    		[
+    		 {
+    			 "name": "RSYNC_ENABLE",
+    			 "value": "true"
+    		 }
+    		]
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service rsync restart"
+    },
+    {
+    	"stateMachine": "directory",
+    	"sm_args": "/var/swift/recon",
+    	"sm_state": "existent"
+    },
+    {
+    	"stateMachine": "cmd",
+        "sm_args": "chown -R swift:swift /var/swift/recon"
+    }
+  ]
+}

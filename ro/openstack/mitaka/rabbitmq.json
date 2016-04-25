@@ -1,0 +1,14 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "package",
+      "sm_args": "rabbitmq-server",
+      "sm_state": "installed"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "rabbitmqctl change_password guest password"
+    }
+  ]
+}

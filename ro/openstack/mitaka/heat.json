@@ -1,0 +1,184 @@
+{
+  "type": "container",
+  "resources": [
+    {
+      "stateMachine": "sql",
+      "sm_args": "mysql",
+      "DATABASE": "",
+      "DB_USERNAME": "root",
+      "DB_PASSWORD": "password",
+      "SQL": "CREATE DATABASE glance;GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'password';GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'password';"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "glance",
+      "sm_state": "installed"
+    },
+    {
+      "type": "ini",
+      "file": "/etc/glance/glance-api.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://glance:password@orchestra/glance"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://orchestra:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "orchestra"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "glance"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+          "section": "paste_deploy",
+          "name": "flavor",
+          "value": "keystone"
+        }
+      ],
+      "not_contain_properties": [
+        {
+          "section": "database",
+          "name": "sqlite_db",
+          "value": "/var/lib/glance/glance.sqlite"
+        }
+      ]
+    },
+    {
+      "type": "ini",
+      "file": "/etc/glance/glance-registry.conf",
+      "contain_properties": [
+        {
+          "section": "database",
+          "name": "connection",
+          "value": "mysql://glance:password@orchestra/glance"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_uri",
+          "value": "http://orchestra:5000"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_host",
+          "value": "orchestra"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_port",
+          "value": "35357"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "auth_protocol",
+          "value": "http"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_tenant_name",
+          "value": "service"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_user",
+          "value": "glance"
+        },
+        {
+          "section": "keystone_authtoken",
+          "name": "admin_password",
+          "value": "password"
+        },
+        {
+          "section": "paste_deploy",
+          "name": "flavor",
+          "value": "keystone"
+        }
+      ],
+      "not_contain_properties": [
+        {
+          "section": "database",
+          "name": "sqlite_db",
+          "value": "/var/lib/glance/glance.sqlite"
+        }
+      ]
+    },
+    {
+      "stateMachine": "file",
+      "sm_args": "/var/lib/glance/glance.sqlite",
+      "sm_state": "non_existent"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "glance-manage db_sync"
+    },
+    {
+      "stateMachine": "content",
+      "sm_args": "/tmp/glance.sh",
+      "sm_state": "set",
+      "CONTENT": "keystone user-create --name=glance --pass=password --email=glance@example.com\n
+keystone user-role-add --user=glance --tenant=service --role=admin\n
+keystone service-create --name=glance --type=image --description=\"OpenStack Image Service\"\n
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ image / {print $2}') --publicurl=http://orchestra:9292 --internalurl=http://orchestra:9292 --adminurl=http://orchestra:9292\n"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "bash /tmp/glance.sh",
+      "SERVICE_TOKEN": "ADMIN",
+      "SERVICE_ENDPOINT": "http://orchestra:35357/v2.0"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service glance-registry restart",
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "service glance-api restart"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "sleep 2s"
+    },
+    {
+      "stateMachine": "remote_file",
+      "sm_args": "http://download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img",
+      "sm_state": "downloaded",
+      "FILENAME": "/root/cirros.img"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "glance image-create --name \"cirros\" --disk-format qcow2 --container-format bare --is-public True --progress --file /root/cirros.img",
+      "OS_USERNAME": "admin",
+      "OS_PASSWORD": "password",
+      "OS_TENANT_NAME": "admin",
+      "OS_AUTH_URL": "http://orchestra:35357/v2.0"
+    }
+  ]
+}
