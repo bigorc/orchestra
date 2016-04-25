@@ -8,7 +8,11 @@
     },
     {
       "stateMachine": "cmd",
-      "sm_args": "rabbitmqctl change_password guest password"
+      "sm_args": "rabbitmqctl add_user openstack password"
+    },
+    {
+      "stateMachine": "cmd",
+      "sm_args": "rabbitmqctl set_permissions openstack \".*\" \".*\" \".*\""
     }
   ]
 }

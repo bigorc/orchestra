@@ -2,17 +2,17 @@
   "type": "container",
   "resources": [
     {
-      "$parent": "examples/openstack/nif/nif.json",
+      "$parent": "openstack/mitaka/nif/nif.json",
       "sm_args": "eth0"
     },
     {
-      "$parent": "examples/openstack/nif/nif.json",
+      "$parent": "openstack/mitaka/nif/nif.json",
       "NIF_MODE": "static",
       "sm_args": "eth1",
       "NIF_IP": "192.168.131.171/24"
     },
     {
-      "$parent": "examples/openstack/nif/nif.json",
+      "$parent": "openstack/mitaka/nif/nif.json",
       "sm_args": "eth2",
       "NIF_MODE": "manual",
       "NIF_UP": "ip link set dev $IFACE up",

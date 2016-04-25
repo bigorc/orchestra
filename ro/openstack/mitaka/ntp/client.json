@@ -3,12 +3,12 @@
   "resources": [
     {
       "stateMachine": "package",
-      "sm_args": "ntp",
+      "sm_args": "chrony",
       "sm_state": "installed"
     },
     {
       "type": "option",
-      "file": "/etc/ntp.conf",
+      "file": "/etc/chrony/chrony.conf",
       "multiValue": "true",
       "operator": " ",
       "contain_properties": [
@@ -20,7 +20,7 @@
     },
     {
       "stateMachine": "cmd",
-      "sm_args": "service ntp restart"
+      "sm_args": "service chrony restart"
     }
   ]
 }

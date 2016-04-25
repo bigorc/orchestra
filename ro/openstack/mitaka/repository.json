@@ -8,11 +8,16 @@
     },
     {
       "stateMachine": "cmd",
-      "sm_args": "add-apt-repository cloud-archive:icehouse"
+      "sm_args": "add-apt-repository cloud-archive:mitaka"
     },
     {
       "stateMachine": "cmd",
       "sm_args": "apt-get update"
+    },
+    {
+      "stateMachine": "package",
+      "sm_args": "python-openstackclient",
+      "sm_state": "installed"
     }
   ]
 }

@@ -2,11 +2,11 @@
   "type": "container",
   "client": "network",
   "resources": [
-    "$'examples/openstack/repository.json'",
-    "$'examples/openstack/hosts.json'",
-    "$'examples/openstack/mysql/client.json'",
-    "$'examples/openstack/nif/network.json'",
-    "$'examples/openstack/ntp/client.json'",
-    "$'examples/openstack/neutron/network.json'"
+    "$'openstack/mitaka/repository.json'",
+    "$'openstack/mitaka/hosts.json'",
+    "$'openstack/mitaka/mysql/client.json'",
+    "$'openstack/mitaka/nif/network.json'",
+    "$'openstack/mitaka/ntp/client.json'",
+    "$'openstack/mitaka/neutron/network.json'"
   ]
 }

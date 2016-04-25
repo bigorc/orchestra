@@ -2,17 +2,17 @@
   "type": "container",
   "client": "controller",
   "resources": [
-    "$'examples/openstack/ntp/server.json'",
-    "$'examples/openstack/nif/controller.json'",
-    "$'examples/openstack/mysql/server.json'",
-    "$'examples/openstack/repository.json'",
-    "$'examples/openstack/rabbitmq.json'"
-    "$'examples/openstack/keystone.json'",
-    "$'examples/openstack/glance.json'",
-    "$'examples/openstack/nova/controller.json'",
-    "$'examples/openstack/neutron/controller.json'",
-    "$'examples/openstack/ceilometer/controller.json'",
-    "$'examples/openstack/horizon.json'",
-    "$'examples/openstack/neutron/initial-networks.json'"
+    "$'openstack/mitaka/ntp/server.json'",
+    "$'openstack/mitaka/nif/controller.json'",
+    "$'openstack/mitaka/mysql/server.json'",
+    "$'openstack/mitaka/repository.json'",
+    "$'openstack/mitaka/rabbitmq.json'"
+    "$'openstack/mitaka/keystone.json'",
+    "$'openstack/mitaka/glance.json'",
+    "$'openstack/mitaka/nova/controller.json'",
+    "$'openstack/mitaka/neutron/controller.json'",
+    "$'openstack/mitaka/ceilometer/controller.json'",
+    "$'openstack/mitaka/horizon.json'",
+    "$'openstack/mitaka/neutron/initial-networks.json'"
   ]
 }

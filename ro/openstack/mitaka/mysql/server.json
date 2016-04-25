@@ -3,21 +3,21 @@
   "resources": [
     {
       "stateMachine": "cmd",
-      "sm_args": "sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password password' && sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password password'"
+      "sm_args": "sudo debconf-set-selections <<< 'mariadb-server mariadb-server/root_password password password' && sudo debconf-set-selections <<< 'mariadb-server mariadb-server/root_password_again password password'"
     },
     {
       "stateMachine": "package",
-      "sm_args": "python-mysqldb mysql-server",
+      "sm_args": "python-pymysql mariadb-server",
       "sm_state": "installed"
     },
     {
       "stateMachine": "file",
-      "sm_args": "/etc/mysql/conf.d/mysqld_openstack.cnf",
+      "sm_args": "/etc/mysql/conf.d/openstack.cnf",
       "sm_state": "existent"
     },
     {
       "type": "ini",
-      "file": "/etc/mysql/conf.d/mysqld_openstack.cnf",
+      "file": "/etc/mysql/conf.d/openstack.cnf",
       "contain_properties": [
         {
           "section": "mysqld",
@@ -37,16 +37,6 @@
           "section": "mysqld",
           "name": "collation-server",
           "value": "utf8_general_ci"
-        },
-        {
-          "section": "mysqld",
-          "name": "init-connect",
-          "value": "'SET NAMES utf8'"
-        },
-        {
-          "section": "mysqld",
-          "name": "init-connect",
-          "value": "'SET NAMES utf8'"
         },
         {
           "section": "mysqld",

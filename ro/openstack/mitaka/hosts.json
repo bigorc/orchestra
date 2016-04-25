@@ -1,5 +1,5 @@
 {
   "stateMachine": "hosts",
-  "sm_args": "192.168.178.145 controller",
+  "sm_args": "192.168.178.130 controller",
   "sm_state": "existent"
 }

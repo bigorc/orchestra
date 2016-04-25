@@ -2,13 +2,13 @@
   "type": "container",
   "client": "compute1",
   "resources": [
-    "$'examples/openstack/repository.json'",
-    "$'examples/openstack/hosts.json'",
-    "$'examples/openstack/nif/compute.json'",
-    "$'examples/openstack/mysql/client.json'",
-    "$'examples/openstack/ntp/client.json'",
-    "$'examples/openstack/nova/compute.json'",
-    "$'examples/openstack/neutron/compute.json'",
-    "$'examples/openstack/ceilometer/compute-agent.json'"
+    "$'openstack/mitaka/repository.json'",
+    "$'openstack/mitaka/hosts.json'",
+    "$'openstack/mitaka/nif/compute.json'",
+    "$'openstack/mitaka/mysql/client.json'",
+    "$'openstack/mitaka/ntp/client.json'",
+    "$'openstack/mitaka/nova/compute.json'",
+    "$'openstack/mitaka/neutron/compute.json'",
+    "$'openstack/mitaka/ceilometer/compute-agent.json'"
   ]
 }
